@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# osmanmeyredi.com
 
-## Getting Started
+Website and artist portal for **Osman Meyredi** — multi-instrumentalist, bassist and
+composer (Netherlands / Italy / Europe).
 
-First, run the development server:
+Two experiences in one Next.js app:
+
+- **Public site** — editorial artist website: About, Services (booking concerts,
+  band coaching, listening & collaboration workshops), Shows (ticketed concerts,
+  free gigs, live videos), Music, Media, Shop, Contact.
+- **Osman Studio** (`/studio`) — private portal where Osman adds and publishes
+  events, videos, releases, media and shop items without touching code.
+
+Design concept: *Listen Between the Notes* — warm editorial canvas, Fraunces +
+Inter, typographic date lists, restrained motion. See `docs/architecture.md`.
+
+## Stack
+
+Next.js (App Router) · TypeScript (strict) · Tailwind CSS v4 · Prisma 7 +
+PostgreSQL (with a zero-setup demo mode) · Zod · vitest.
+
+## Quick start (no database needed)
 
 ```bash
+npm install
+cp .env.example .env
+# in .env, set:
+#   AUTH_SECRET        → openssl rand -base64 48
+#   STUDIO_EMAIL       → your login email
+#   STUDIO_PASSWORD_HASH → npm run auth:hash -- "choose-a-password"
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Public site: http://localhost:3000
+- Studio: http://localhost:3000/studio (log in with the email/password above)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Without `DATABASE_URL` the app runs in **demo mode**: seeded, verified content from
+`src/data/demo/content.ts`; Studio edits persist to `.demo-data/store.json`.
+Example events are clearly labelled `[DEMO]` — delete them in the Studio before launch.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Going live on PostgreSQL
 
-## Learn More
+```bash
+# 1. Set DATABASE_URL in .env, then create the schema
+npx prisma migrate dev          # (production: npx prisma migrate deploy)
 
-To learn more about Next.js, take a look at the following resources:
+# 2. Create the owner account + seed verified content
+STUDIO_EMAIL=osman@… STUDIO_PASSWORD=… npx prisma db seed
+# add SEED_DEMO_EVENTS=false to skip the [DEMO] fixture events
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# 3. Restart. The Studio dashboard footer shows "Connected to database".
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Contact form delivery
 
-## Deploy on Vercel
+Set `RESEND_API_KEY` + `CONTACT_TO_EMAIL` to receive inquiries by email (Resend).
+Unset, inquiries append to `.demo-data/inquiries.json` and the server log.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Shop modes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Studio → Site settings: **Concepts only** (default; brand directions, no checkout) ·
+**External shop** (link out to Shopify, e.g. `shop.osmanmeyredi.com`) ·
+**Integrated storefront** (reserved for Shopify Storefront API). No card processing
+is ever implemented in this repo. Merch strategy: `docs/merch-directions.md`.
+
+## Commands
+
+```bash
+npm run dev          # develop
+npm run build        # production build
+npm start            # serve production build
+npm run typecheck    # strict TypeScript
+npm run lint         # eslint
+npm test             # vitest (event date/CTA logic, validation, protected mutations)
+npm run auth:hash -- "pw"   # bcrypt hash for demo-mode login
+```
+
+## Deploy
+
+- **Vercel-like**: set env vars, build. (Demo-mode edit persistence needs a writable
+  disk or a database — for production always use PostgreSQL.)
+- **Docker**: `docker build -t osman-site .` then
+  `docker run -p 3000:3000 --env-file .env osman-site`.
+
+## Content integrity
+
+Seed content contains only verified facts (site, Bandcamp, Discogs, press).
+No invented releases, press or tour history. Missing assets render as labelled
+placeholders — search the code for `PlaceholderImage` to find every replacement
+point. No Spotify/Apple Music artist profile could be verified as of Aug 2026;
+add those links in Studio → Releases when profiles exist.

@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local data & env
+.demo-data/
+.env
+
+# generated
+src/generated/

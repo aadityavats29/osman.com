@@ -1,0 +1,199 @@
+// Osman Meyredi — production schema (PostgreSQL)
+// Demo mode (no DATABASE_URL) uses the same domain types via src/server/repositories/demo.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  OWNER
+  EDITOR
+  READONLY
+}
+
+enum EventType {
+  TICKETED_CONCERT
+  FREE_GIG
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum EventState {
+  SCHEDULED
+  SOLD_OUT
+  CANCELLED
+}
+
+enum ReleaseType {
+  SINGLE
+  EP
+  ALBUM
+  COLLABORATION
+}
+
+enum MediaType {
+  ARTICLE
+  INTERVIEW
+  PODCAST
+  REVIEW
+  VIDEO
+}
+
+enum ServiceType {
+  CONCERTS
+  COACHING
+  WORKSHOPS
+}
+
+enum ProductStatus {
+  CONCEPT
+  AVAILABLE
+  ARCHIVED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         Role     @default(OWNER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Event {
+  id            String        @id @default(cuid())
+  slug          String        @unique
+  eventType     EventType
+  title         String
+  description   String        @default("")
+  date          DateTime      @db.Date
+  startTime     String // "20:30" 24h — kept as text to avoid timezone drift for venue-local times
+  endTime       String?
+  venue         String
+  address       String?
+  city          String
+  country       String
+  imageUrl      String?
+  ticketUrl     String?
+  venueUrl      String?
+  priceText     String?
+  collaborators String?
+  status        ContentStatus @default(DRAFT)
+  eventState    EventState    @default(SCHEDULED)
+  featured      Boolean       @default(false)
+  publishedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([status, date])
+  @@index([eventType, status, date])
+}
+
+model LiveVideo {
+  id              String        @id @default(cuid())
+  slug            String        @unique
+  title           String
+  description     String?
+  platform        String        @default("youtube") // youtube | vimeo
+  videoUrl        String
+  thumbnailUrl    String?
+  venue           String?
+  performanceDate DateTime?
+  year            Int?
+  tags            String[]      @default([])
+  status          ContentStatus @default(DRAFT)
+  featured        Boolean       @default(false)
+  sortOrder       Int           @default(0)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([status, sortOrder])
+}
+
+model Release {
+  id           String        @id @default(cuid())
+  slug         String        @unique
+  title        String
+  releaseType  ReleaseType
+  artworkUrl   String?
+  releaseDate  DateTime?
+  year         Int?
+  description  String?
+  credits      String?
+  spotifyUrl   String?
+  appleMusicUrl String?
+  youtubeUrl   String?
+  bandcampUrl  String?
+  otherUrl     String?
+  status       ContentStatus @default(DRAFT)
+  featured     Boolean       @default(false)
+  sortOrder    Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([status, sortOrder])
+}
+
+model MediaItem {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  publication String
+  headline    String
+  mediaType   MediaType     @default(ARTICLE)
+  date        DateTime?
+  articleUrl  String
+  imageUrl    String?
+  summary     String?
+  status      ContentStatus @default(DRAFT)
+  featured    Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([status, date])
+}
+
+model Service {
+  id               String        @id @default(cuid())
+  slug             String        @unique
+  serviceType      ServiceType   @unique
+  title            String
+  shortDescription String
+  body             String
+  imageUrl         String?
+  status           ContentStatus @default(PUBLISHED)
+  sortOrder        Int           @default(0)
+  updatedAt        DateTime      @updatedAt
+}
+
+model Product {
+  id                 String        @id @default(cuid())
+  slug               String        @unique
+  title              String
+  description        String
+  imageUrl           String?
+  category           String
+  priceText          String? // display-only in concept mode; real commerce lives in Shopify
+  status             ProductStatus @default(CONCEPT)
+  externalCommerceId String?
+  externalUrl        String?
+  featured           Boolean       @default(false)
+  sortOrder          Int           @default(0)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+}
+
+model SiteSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
