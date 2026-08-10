@@ -8,6 +8,20 @@ import { PlaceholderImage } from "@/components/shared/PlaceholderImage";
 import { EventList } from "@/components/public/EventList";
 import { VideoEmbed } from "@/components/public/VideoEmbed";
 import { TrackedLink } from "@/components/public/TrackedLink";
+import { Reveal } from "@/components/motion/Reveal";
+import { Marquee } from "@/components/motion/Marquee";
+
+const INSTRUMENTS = [
+  "Bass guitar",
+  "Double bass",
+  "Keyboards",
+  "Piano",
+  "Guitar",
+  "Drums",
+  "Voice",
+  "Composition",
+  "Arrangement",
+];
 
 export const dynamic = "force-dynamic";
 
@@ -90,10 +104,11 @@ export default async function HomePage() {
         </div>
       )}
 
-      {/* Hero */}
+      {/* Hero — first-load sequence: eyebrow → name → tagline → CTAs, then the
+          media opens through a clip mask while settling from a slight scale. */}
       <section className="py-20 sm:py-28">
         <Container wide>
-          <div className="reveal max-w-3xl">
+          <div className="hero-seq max-w-3xl">
             <p className="eyebrow">Amsterdam — Netherlands · Italy · Europe</p>
             <h1 className="font-display mt-5 text-6xl leading-[0.95] tracking-tight sm:text-7xl lg:text-8xl">
               Osman Meyredi
@@ -104,47 +119,60 @@ export default async function HomePage() {
             <div className="mt-9 flex flex-wrap items-center gap-6">
               <Link
                 href="/shows"
-                className="inline-block bg-ink px-6 py-3 text-sm font-medium tracking-wide text-canvas uppercase transition-colors hover:bg-accent-strong"
+                className="btn-motion inline-block bg-ink px-6 py-3 text-sm font-medium tracking-wide text-canvas uppercase"
               >
-                See dates
+                See dates <span className="arrow-nudge ml-1" aria-hidden="true">→</span>
               </Link>
-              <Link href="/contact" className="text-sm underline underline-offset-4">
+              <Link href="/contact" className="u-link text-sm">
                 Booking &amp; inquiries
               </Link>
             </div>
           </div>
-          <div className="mt-16">
+          <div className="hero-media mt-16">
             <PlaceholderImage label="Hero — performance photo or film still" ratio="16/9" />
           </div>
         </Container>
       </section>
 
+      {/* Instruments strip — one quiet marquee, part of the composition */}
+      <div className="border-t border-line py-5">
+        <Marquee duration={56} label="Instruments and disciplines">
+          {INSTRUMENTS.map((label) => (
+            <span key={label} className="flex items-center text-sm tracking-[0.18em] text-ink-faint uppercase">
+              <span className="px-6">{label}</span>
+              <span aria-hidden="true" className="text-line-dark">·</span>
+            </span>
+          ))}
+        </Marquee>
+      </div>
+
       {/* Next dates */}
       <section className="border-t border-line py-24">
         <Container wide>
-          <div className="flex items-baseline justify-between gap-6">
-            <div>
-              <p className="eyebrow">Next dates</p>
-              <h2 className="font-display mt-3 text-3xl sm:text-4xl">On stage soon</h2>
+          <Reveal variant="text">
+            <div className="flex items-baseline justify-between gap-6">
+              <div>
+                <p className="eyebrow">Next dates</p>
+                <h2 className="font-display mt-3 text-3xl sm:text-4xl">On stage soon</h2>
+              </div>
+              <Link href="/shows" className="u-link shrink-0 text-sm hover:text-accent-strong">
+                All dates
+              </Link>
             </div>
-            <Link
-              href="/shows"
-              className="shrink-0 text-sm underline underline-offset-4 hover:text-accent-strong"
-            >
-              All dates
-            </Link>
-          </div>
+          </Reveal>
           <div className="mt-10">
             {nextDates.length > 0 ? (
-              <EventList events={nextDates} />
+              <Reveal variant="card" delay={120}>
+                <EventList events={nextDates} />
+              </Reveal>
             ) : (
               <p className="border-t border-line pt-6 text-ink-soft">
                 No public dates are in the diary right now. In the meantime, there is plenty to{" "}
-                <Link href="/shows/live-videos" className="underline underline-offset-4">
+                <Link href="/shows/live-videos" className="u-link">
                   watch
                 </Link>{" "}
                 and{" "}
-                <Link href="/music" className="underline underline-offset-4">
+                <Link href="/music" className="u-link">
                   listen to
                 </Link>
                 .
@@ -158,13 +186,17 @@ export default async function HomePage() {
       {featuredRelease && (
         <section className="border-t border-line py-24">
           <Container wide>
-            <p className="eyebrow">Latest release</p>
+            <Reveal variant="text">
+              <p className="eyebrow">Latest release</p>
+            </Reveal>
             <div className="mt-10 grid items-start gap-10 md:grid-cols-[minmax(0,320px)_1fr]">
-              <PlaceholderImage
-                label={`Album artwork — ${featuredRelease.title}`}
-                ratio="1/1"
-              />
-              <div>
+              <Reveal variant="mask">
+                <PlaceholderImage
+                  label={`Album artwork — ${featuredRelease.title}`}
+                  ratio="1/1"
+                />
+              </Reveal>
+              <Reveal variant="text" delay={140}>
                 <h2 className="font-display text-3xl leading-tight sm:text-4xl">
                   {featuredRelease.title}
                 </h2>
@@ -198,14 +230,11 @@ export default async function HomePage() {
                   </ul>
                 )}
                 <p className="mt-6">
-                  <Link
-                    href="/music"
-                    className="text-sm underline underline-offset-4 hover:text-accent-strong"
-                  >
+                  <Link href="/music" className="u-link text-sm hover:text-accent-strong">
                     All releases
                   </Link>
                 </p>
-              </div>
+              </Reveal>
             </div>
           </Container>
         </section>
@@ -215,15 +244,25 @@ export default async function HomePage() {
       {services.length > 0 && (
         <section className="border-t border-line py-24">
           <Container wide>
-            <p className="eyebrow">Working with Osman</p>
-            <h2 className="font-display mt-3 text-3xl sm:text-4xl">
-              Concerts, coaching, workshops
-            </h2>
+            <Reveal variant="text">
+              <p className="eyebrow">Working with Osman</p>
+              <h2 className="font-display mt-3 text-3xl sm:text-4xl">
+                Concerts, coaching, workshops
+              </h2>
+            </Reveal>
             <div className="mt-12 grid gap-x-10 gap-y-12 md:grid-cols-3">
-              {services.map((service) => (
-                <div key={service.id} className="border-t border-line pt-6">
+              {services.map((service, i) => (
+                <Reveal
+                  key={service.id}
+                  variant="card"
+                  delay={i * 90}
+                  className="group border-t border-line pt-6 transition-colors duration-300 hover:border-ink"
+                >
                   <h3 className="font-display text-2xl">
-                    <Link href={`/services/${service.slug}`} className="hover:text-accent-strong">
+                    <Link
+                      href={`/services/${service.slug}`}
+                      className="inline-block transition-transform duration-300 ease-(--ease-out-cubic) group-hover:translate-x-1 hover:text-accent-strong"
+                    >
                       {service.title}
                     </Link>
                   </h3>
@@ -233,12 +272,12 @@ export default async function HomePage() {
                   <p className="mt-4">
                     <Link
                       href={`/services/${service.slug}`}
-                      className="text-sm underline underline-offset-4 hover:text-accent-strong"
+                      className="u-link text-sm hover:text-accent-strong"
                     >
-                      Read more
+                      Read more <span className="arrow-nudge" aria-hidden="true">→</span>
                     </Link>
                   </p>
-                </div>
+                </Reveal>
               ))}
             </div>
           </Container>
@@ -248,21 +287,20 @@ export default async function HomePage() {
       {/* About moment */}
       <section className="border-t border-line py-24">
         <Container>
-          <p className="eyebrow">About</p>
-          <p className="font-display mt-6 text-2xl leading-snug sm:text-3xl">
-            It began at six, picking out a Christmas song on the piano with his uncle — and
-            finishing the tune by ear. Today Osman plays piano, keyboards, bass guitar, guitar,
-            double bass and drums, sings, and has toured the U.K. with Frank Zappa&rsquo;s
-            longtime vocalist Ike Willis.
-          </p>
-          <p className="mt-8">
-            <Link
-              href="/about"
-              className="text-sm underline underline-offset-4 hover:text-accent-strong"
-            >
-              More about Osman
-            </Link>
-          </p>
+          <Reveal variant="text">
+            <p className="eyebrow">About</p>
+            <p className="font-display mt-6 text-2xl leading-snug sm:text-3xl">
+              It began at six, picking out a Christmas song on the piano with his uncle — and
+              finishing the tune by ear. Today Osman plays piano, keyboards, bass guitar, guitar,
+              double bass and drums, sings, and has toured the U.K. with Frank Zappa&rsquo;s
+              longtime vocalist Ike Willis.
+            </p>
+            <p className="mt-8">
+              <Link href="/about" className="u-link text-sm hover:text-accent-strong">
+                More about Osman <span className="arrow-nudge" aria-hidden="true">→</span>
+              </Link>
+            </p>
+          </Reveal>
         </Container>
       </section>
 
@@ -270,26 +308,25 @@ export default async function HomePage() {
       {featuredVideo && (
         <section className="bg-ink py-24 text-canvas">
           <Container wide>
-            <div className="flex items-baseline justify-between gap-6">
-              <div>
-                <p className="eyebrow">Live</p>
-                <h2 className="font-display mt-3 text-3xl sm:text-4xl">{featuredVideo.title}</h2>
+            <Reveal variant="text">
+              <div className="flex items-baseline justify-between gap-6">
+                <div>
+                  <p className="eyebrow">Live</p>
+                  <h2 className="font-display mt-3 text-3xl sm:text-4xl">{featuredVideo.title}</h2>
+                </div>
+                <Link href="/shows/live-videos" className="u-link shrink-0 text-sm text-canvas">
+                  All live videos
+                </Link>
               </div>
-              <Link
-                href="/shows/live-videos"
-                className="shrink-0 text-sm text-canvas underline underline-offset-4"
-              >
-                All live videos
-              </Link>
-            </div>
-            <div className="mt-10">
+            </Reveal>
+            <Reveal variant="media" delay={120} className="mt-10">
               <VideoEmbed
                 title={featuredVideo.title}
                 platform={featuredVideo.platform}
                 videoUrl={featuredVideo.videoUrl}
                 thumbnailUrl={featuredVideo.thumbnailUrl}
               />
-            </div>
+            </Reveal>
           </Container>
         </section>
       )}
@@ -298,26 +335,25 @@ export default async function HomePage() {
       {featuredMedia && (
         <section className="border-t border-line py-24">
           <Container>
-            <p className="eyebrow">{featuredMedia.publication}</p>
-            <h2 className="font-display mt-4 text-2xl leading-snug sm:text-3xl">
-              {featuredMedia.headline}
-            </h2>
-            <p className="mt-6">
-              <a
-                href={featuredMedia.articleUrl}
-                target="_blank"
-                rel="noopener"
-                className="text-sm underline underline-offset-4 hover:text-accent-strong"
-              >
-                Read the article
-              </a>
-              <Link
-                href="/media"
-                className="ml-6 text-sm text-ink-soft underline underline-offset-4"
-              >
-                All press
-              </Link>
-            </p>
+            <Reveal variant="text">
+              <p className="eyebrow">{featuredMedia.publication}</p>
+              <h2 className="font-display mt-4 text-2xl leading-snug sm:text-3xl">
+                {featuredMedia.headline}
+              </h2>
+              <p className="mt-6">
+                <a
+                  href={featuredMedia.articleUrl}
+                  target="_blank"
+                  rel="noopener"
+                  className="u-link text-sm hover:text-accent-strong"
+                >
+                  Read the article <span className="arrow-nudge" aria-hidden="true">→</span>
+                </a>
+                <Link href="/media" className="u-link ml-6 text-sm text-ink-soft">
+                  All press
+                </Link>
+              </p>
+            </Reveal>
           </Container>
         </section>
       )}
@@ -331,7 +367,7 @@ export default async function HomePage() {
               href="/shop"
               event="shop_click"
               eventProps={{ source: "home_teaser" }}
-              className="underline underline-offset-4 hover:text-accent-strong"
+              className="u-link hover:text-accent-strong"
             >
               Visit the shop
             </TrackedLink>
@@ -342,19 +378,23 @@ export default async function HomePage() {
       {/* Contact CTA band */}
       <section className="bg-ink py-24 text-canvas sm:py-28">
         <Container wide>
-          <h2 className="font-display max-w-2xl text-4xl leading-tight sm:text-5xl">
-            Book Osman for a concert, coaching or a workshop.
-          </h2>
-          <p className="mt-6 max-w-xl leading-relaxed text-canvas/75">
-            Tell him about the occasion, the room and the people in it — he&rsquo;ll come back
-            with a concrete proposal.
-          </p>
-          <Link
-            href="/contact"
-            className="mt-9 inline-block bg-accent px-7 py-3 text-sm font-medium tracking-wide text-canvas uppercase transition-colors hover:bg-accent-strong"
-          >
-            Get in touch
-          </Link>
+          <Reveal variant="text">
+            <h2 className="font-display max-w-2xl text-4xl leading-tight sm:text-5xl">
+              Book Osman for a concert, coaching or a workshop.
+            </h2>
+          </Reveal>
+          <Reveal variant="text" delay={130}>
+            <p className="mt-6 max-w-xl leading-relaxed text-canvas/75">
+              Tell him about the occasion, the room and the people in it — he&rsquo;ll come back
+              with a concrete proposal.
+            </p>
+            <Link
+              href="/contact"
+              className="btn-motion mt-9 inline-block bg-accent px-7 py-3 text-sm font-medium tracking-wide text-canvas uppercase"
+            >
+              Get in touch <span className="arrow-nudge ml-1" aria-hidden="true">→</span>
+            </Link>
+          </Reveal>
         </Container>
       </section>
     </>

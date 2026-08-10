@@ -30,7 +30,7 @@ export default async function ConcertsServicePage() {
       note={
         <p className="border-l-2 border-accent pl-4 text-sm text-ink-soft">
           Looking for tickets to an upcoming show?{" "}
-          <Link href="/shows/concerts" className="underline underline-offset-4">
+          <Link href="/shows/concerts" className="u-link">
             See Shows
           </Link>
           . This page is about booking Osman to perform at your event.

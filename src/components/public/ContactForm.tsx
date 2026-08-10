@@ -48,7 +48,7 @@ export function ContactForm({
           Osman reads every inquiry himself and will reply as soon as he can, usually within a
           few days. If your date is close or something changes in the meantime, you can always
           write directly to{" "}
-          <a href={`mailto:${contactEmail}`} className="underline underline-offset-4">
+          <a href={`mailto:${contactEmail}`} className="u-link">
             {contactEmail}
           </a>
           .

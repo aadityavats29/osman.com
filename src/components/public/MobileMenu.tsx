@@ -5,8 +5,11 @@ import Link from "next/link";
 import { NAV_ITEMS } from "./nav";
 
 /**
- * Full-screen mobile navigation. Large tap targets, grouped sub-navigation,
- * Escape closes, aria-expanded reflects state. Body scroll is locked while open.
+ * Full-screen mobile navigation with a real opening sequence: the panel fades
+ * in, items stagger upward, socials/utility follow; closing reverses cleanly.
+ * The panel stays mounted (CSS transitions, not mount/unmount), so rapidly
+ * tapping open/close simply reverses the animation — it can never get stuck.
+ * Closed state is `inert` and invisible to the tab order. Escape closes.
  */
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
@@ -26,6 +29,8 @@ export function MobileMenu() {
 
   const close = () => setOpen(false);
 
+  let itemIndex = 0;
+
   return (
     <div className="lg:hidden">
       <button
@@ -33,7 +38,7 @@ export function MobileMenu() {
         onClick={() => setOpen(true)}
         aria-expanded={open}
         aria-controls="mobile-menu"
-        className="-mr-2 flex h-11 w-11 items-center justify-center text-ink"
+        className="-mr-2 flex h-11 w-11 items-center justify-center text-ink transition-transform duration-150 active:scale-90"
         aria-label="Open menu"
       >
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
@@ -41,34 +46,41 @@ export function MobileMenu() {
         </svg>
       </button>
 
-      {open && (
-        <div
-          id="mobile-menu"
-          className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-canvas"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Site navigation"
-        >
-          <div className="flex h-16 shrink-0 items-center justify-between border-b border-line px-5 sm:px-8">
-            <Link href="/" onClick={close} className="font-display text-lg tracking-tight">
-              Osman Meyredi
-            </Link>
-            <button
-              type="button"
-              onClick={close}
-              aria-label="Close menu"
-              className="-mr-2 flex h-11 w-11 items-center justify-center text-ink"
-            >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <path d="M4 4l12 12M16 4L4 16" stroke="currentColor" strokeWidth="1.5" />
-              </svg>
-            </button>
-          </div>
+      <div
+        id="mobile-menu"
+        data-open={open}
+        inert={!open}
+        className="mobile-menu fixed inset-0 z-50 flex flex-col overflow-y-auto bg-canvas"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Site navigation"
+      >
+        <div className="flex h-16 shrink-0 items-center justify-between border-b border-line px-5 sm:px-8">
+          <Link href="/" onClick={close} className="font-display text-lg tracking-tight">
+            Osman Meyredi
+          </Link>
+          <button
+            type="button"
+            onClick={close}
+            aria-label="Close menu"
+            className="-mr-2 flex h-11 w-11 items-center justify-center text-ink transition-transform duration-200 hover:rotate-90"
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M4 4l12 12M16 4L4 16" stroke="currentColor" strokeWidth="1.5" />
+            </svg>
+          </button>
+        </div>
 
-          <nav className="px-5 py-8 sm:px-8" aria-label="Mobile">
-            <ul>
-              {NAV_ITEMS.map((item) => (
-                <li key={item.href} className="border-b border-line">
+        <nav className="px-5 py-8 sm:px-8" aria-label="Mobile">
+          <ul>
+            {NAV_ITEMS.map((item) => {
+              const i = itemIndex++;
+              return (
+                <li
+                  key={item.href}
+                  className="menu-item border-b border-line"
+                  style={{ "--i": i } as React.CSSProperties}
+                >
                   <Link
                     href={item.href}
                     onClick={close}
@@ -92,11 +104,20 @@ export function MobileMenu() {
                     </ul>
                   )}
                 </li>
-              ))}
-            </ul>
-          </nav>
-        </div>
-      )}
+              );
+            })}
+          </ul>
+          <div
+            className="menu-item mt-8 text-sm text-ink-soft"
+            style={{ "--i": itemIndex } as React.CSSProperties}
+          >
+            <p className="eyebrow mb-3">Booking & inquiries</p>
+            <Link href="/contact" onClick={close} className="u-link">
+              Get in touch
+            </Link>
+          </div>
+        </nav>
+      </div>
     </div>
   );
 }

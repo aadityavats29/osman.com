@@ -4,6 +4,7 @@ import { getRepos } from "@/server/repositories";
 import { upcomingPublished } from "@/lib/events";
 import { Container } from "@/components/shared/Container";
 import { EventList } from "@/components/public/EventList";
+import { Reveal } from "@/components/motion/Reveal";
 
 export const dynamic = "force-dynamic";
 
@@ -22,74 +23,90 @@ export default async function ShowsPage() {
   return (
     <section className="py-24 sm:py-32">
       <Container wide>
-        <p className="eyebrow">Shows</p>
-        <h1 className="font-display mt-4 text-4xl leading-tight sm:text-5xl">
-          Hear it live
-        </h1>
-        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-soft">
-          Ticketed concerts, free gigs around town, and live videos for the nights you
-          can&rsquo;t make it.
-        </p>
+        <Reveal variant="text">
+          <p className="eyebrow">Shows</p>
+          <h1 className="font-display mt-4 text-4xl leading-tight sm:text-5xl">
+            Hear it live
+          </h1>
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-soft">
+            Ticketed concerts, free gigs around town, and live videos for the nights you
+            can&rsquo;t make it.
+          </p>
+        </Reveal>
 
         {/* Concerts */}
         <div className="mt-20">
-          <div className="flex items-baseline justify-between gap-6">
-            <h2 className="font-display text-3xl">Concerts</h2>
-            <Link
-              href="/shows/concerts"
-              className="text-sm underline underline-offset-4 hover:text-accent-strong"
-            >
-              All concerts
-            </Link>
-          </div>
+          <Reveal variant="text">
+            <div className="flex items-baseline justify-between gap-6">
+              <h2 className="font-display text-3xl">Concerts</h2>
+              <Link
+                href="/shows/concerts"
+                className="u-link text-sm hover:text-accent-strong"
+              >
+                All concerts
+              </Link>
+            </div>
+          </Reveal>
           <div className="mt-8">
             {concerts.length > 0 ? (
-              <EventList events={concerts} />
+              <Reveal variant="card" delay={120}>
+                <EventList events={concerts} />
+              </Reveal>
             ) : (
-              <p className="border-t border-line pt-6 text-ink-soft">
-                No ticketed concerts are on the calendar right now.
-              </p>
+              <Reveal variant="text" delay={120}>
+                <p className="border-t border-line pt-6 text-ink-soft">
+                  No ticketed concerts are on the calendar right now.
+                </p>
+              </Reveal>
             )}
           </div>
         </div>
 
         {/* Gigs */}
         <div className="mt-20">
-          <div className="flex items-baseline justify-between gap-6">
-            <h2 className="font-display text-3xl">Upcoming gigs</h2>
-            <Link
-              href="/shows/gigs"
-              className="text-sm underline underline-offset-4 hover:text-accent-strong"
-            >
-              All gigs
-            </Link>
-          </div>
-          <p className="mt-3 text-sm text-ink-soft">Free entry — just come along.</p>
+          <Reveal variant="text">
+            <div className="flex items-baseline justify-between gap-6">
+              <h2 className="font-display text-3xl">Upcoming gigs</h2>
+              <Link
+                href="/shows/gigs"
+                className="u-link text-sm hover:text-accent-strong"
+              >
+                All gigs
+              </Link>
+            </div>
+            <p className="mt-3 text-sm text-ink-soft">Free entry — just come along.</p>
+          </Reveal>
           <div className="mt-8">
             {gigs.length > 0 ? (
-              <EventList events={gigs} />
+              <Reveal variant="card" delay={120}>
+                <EventList events={gigs} />
+              </Reveal>
             ) : (
-              <p className="border-t border-line pt-6 text-ink-soft">
-                No free gigs are announced at the moment.
-              </p>
+              <Reveal variant="text" delay={120}>
+                <p className="border-t border-line pt-6 text-ink-soft">
+                  No free gigs are announced at the moment.
+                </p>
+              </Reveal>
             )}
           </div>
         </div>
 
         {/* Live videos */}
         <div className="mt-20 border-t border-line pt-10">
-          <h2 className="font-display text-3xl">Live videos</h2>
-          <p className="mt-3 max-w-xl leading-relaxed text-ink-soft">
-            Recordings from tours, theatres and sessions — bass, keys, double bass and more.
-          </p>
-          <p className="mt-5">
-            <Link
-              href="/shows/live-videos"
-              className="inline-block border border-ink px-6 py-3 text-sm font-medium tracking-wide uppercase transition-colors hover:bg-ink hover:text-canvas"
-            >
-              Watch live videos
-            </Link>
-          </p>
+          <Reveal variant="text">
+            <h2 className="font-display text-3xl">Live videos</h2>
+            <p className="mt-3 max-w-xl leading-relaxed text-ink-soft">
+              Recordings from tours, theatres and sessions — bass, keys, double bass and more.
+            </p>
+            <p className="mt-5">
+              <Link
+                href="/shows/live-videos"
+                className="inline-block border border-ink px-6 py-3 text-sm font-medium tracking-wide uppercase transition-colors hover:bg-ink hover:text-canvas"
+              >
+                Watch live videos
+              </Link>
+            </p>
+          </Reveal>
         </div>
       </Container>
     </section>

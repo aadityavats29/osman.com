@@ -41,11 +41,15 @@ export function EventRow({
 
   return (
     <li className={`border-t border-line ${archive ? "opacity-60" : ""}`}>
-      <div className="flex flex-col gap-3 py-6 sm:flex-row sm:items-center sm:gap-8">
+      <div
+        className={`flex flex-col gap-3 py-6 sm:flex-row sm:items-center sm:gap-8 ${
+          archive ? "" : "event-row"
+        }`}
+      >
         {/* Date block */}
         <div className="flex items-baseline gap-2 sm:w-24 sm:shrink-0 sm:flex-col sm:gap-0">
           <span
-            className={`font-display tabular text-3xl leading-none ${
+            className={`event-row-day font-display tabular text-3xl leading-none ${
               cancelled ? "text-ink-faint line-through decoration-1" : ""
             }`}
           >
@@ -58,7 +62,9 @@ export function EventRow({
 
         {/* Event details */}
         <div className="min-w-0 flex-1">
-          <h3 className={`font-display text-xl leading-snug ${struck}`}>{event.title}</h3>
+          <h3 className={`event-row-title font-display text-xl leading-snug ${struck}`}>
+            {event.title}
+          </h3>
           <p className={`mt-1 text-sm text-ink-soft ${cancelled ? "line-through decoration-1" : ""}`}>
             {event.venue} · {event.city}, {event.country} · {event.startTime}
           </p>
@@ -88,10 +94,10 @@ function EventRowCta({ event }: { event: EventRecord }) {
             external
             event="ticket_click"
             eventProps={{ event: event.slug }}
-            className="inline-block bg-ink px-5 py-2.5 text-sm font-medium tracking-wide text-canvas uppercase transition-colors hover:bg-accent-strong"
+            className="btn-motion inline-block bg-ink px-5 py-2.5 text-sm font-medium tracking-wide text-canvas uppercase"
             aria-label={`Tickets for ${event.title}`}
           >
-            Tickets
+            Tickets <span className="arrow-nudge ml-1" aria-hidden="true">→</span>
           </TrackedLink>
         </div>
       );
@@ -107,10 +113,10 @@ function EventRowCta({ event }: { event: EventRecord }) {
               external
               event="gig_details_click"
               eventProps={{ event: event.slug }}
-              className="text-sm underline underline-offset-4 hover:text-accent-strong"
+              className="u-link text-sm hover:text-accent-strong"
               aria-label={`Details for ${event.title}`}
             >
-              Details
+              Details <span className="arrow-nudge" aria-hidden="true">→</span>
             </TrackedLink>
           )}
         </div>

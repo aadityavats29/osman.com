@@ -25,8 +25,16 @@
   --font-display: var(--font-fraunces), "Fraunces", Georgia, serif;
   --font-sans: var(--font-inter), "Inter", "Helvetica Neue", Arial, sans-serif;
 
-  /* Motion */
+  /* Motion — the site-wide timing system ("Listen Between the Notes").
+     micro: links/buttons/icons · entrance: headings/cards/rows ·
+     cinematic: hero & large media. One easing family, used everywhere. */
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ease-inout-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
+  --dur-micro: 220ms;
+  --dur-entrance: 650ms;
+  --dur-cinematic: 1100ms;
+  --stagger-step: 70ms;
 
   /* Layout */
   --container-prose: 42rem;
@@ -89,6 +97,366 @@ body {
       opacity: 1;
       transform: none;
     }
+  }
+}
+
+/* =========================================================================
+   MOTION SYSTEM
+   - Hidden pre-reveal states apply ONLY under html.js (set by an inline
+     script before first paint), so content is never invisible without JS.
+   - Every reveal has a keyframe safety net: if hydration/IO never arrives,
+     elements force themselves visible after 2.4s.
+   - prefers-reduced-motion strips transforms, marquees and parallax while
+     preserving all content.
+   ========================================================================= */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* ---- Scroll-reveal families ----
+     Elements are visible by default (no-JS safe, SEO safe). The client adds
+     .pre-reveal ONLY after hydration and ONLY to elements still below the
+     fold, so nothing a visitor can already see ever disappears. */
+  [data-reveal] {
+    transition-timing-function: var(--ease-out-cubic);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  /* A — editorial text: rises from below its baseline */
+  [data-reveal="text"] {
+    transition-property: opacity, transform;
+    transition-duration: var(--dur-entrance);
+  }
+  [data-reveal="text"].pre-reveal:not(.is-inview) {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+
+  /* B — image mask: clip opens top-to-bottom while the image settles from a
+     slight scale. The clip lives on the CHILD: a fully-clipped element reports
+     zero intersection, so the observed wrapper itself must stay unclipped. */
+  [data-reveal="mask"] {
+    transition-property: opacity;
+    transition-duration: var(--dur-entrance);
+  }
+  [data-reveal="mask"] > * {
+    clip-path: inset(0 0 0 0);
+    transition:
+      clip-path calc(var(--dur-cinematic) - 100ms) var(--ease-out-cubic)
+        var(--reveal-delay, 0ms),
+      transform var(--dur-cinematic) var(--ease-out-cubic) var(--reveal-delay, 0ms);
+  }
+  [data-reveal="mask"].pre-reveal:not(.is-inview) {
+    opacity: 0.001;
+  }
+  [data-reveal="mask"].pre-reveal:not(.is-inview) > * {
+    clip-path: inset(0 0 96% 0);
+    transform: scale(1.06);
+  }
+
+  /* C — card/list sequence: small rise, staggered via --reveal-delay */
+  [data-reveal="card"] {
+    transition-property: opacity, transform;
+    transition-duration: var(--dur-entrance);
+  }
+  [data-reveal="card"].pre-reveal:not(.is-inview) {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  /* D — cinematic media: slow settle from a slight enlargement */
+  [data-reveal="media"] {
+    transition-property: opacity, transform;
+    transition-duration: var(--dur-cinematic);
+  }
+  [data-reveal="media"].pre-reveal:not(.is-inview) {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+
+  /* ---- First-load hero sequence (pure CSS, works without hydration) ---- */
+  .hero-seq > * {
+    opacity: 0;
+    animation: hero-rise var(--dur-entrance) var(--ease-out-cubic) forwards;
+  }
+  .hero-seq > *:nth-child(1) { animation-delay: 80ms; }
+  .hero-seq > *:nth-child(2) { animation-delay: 200ms; }
+  .hero-seq > *:nth-child(3) { animation-delay: 340ms; }
+  .hero-seq > *:nth-child(4) { animation-delay: 480ms; }
+  .hero-seq > *:nth-child(5) { animation-delay: 620ms; }
+  @keyframes hero-rise {
+    from {
+      opacity: 0;
+      transform: translateY(22px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .hero-media {
+    animation: hero-media var(--dur-cinematic) var(--ease-out-cubic) 250ms both;
+    overflow: hidden;
+  }
+  .hero-media > * {
+    animation: hero-media-inner calc(var(--dur-cinematic) + 500ms)
+      var(--ease-out-soft) 250ms both;
+  }
+  @keyframes hero-media {
+    from {
+      opacity: 0;
+      clip-path: inset(6% 3% 6% 3%);
+    }
+    to {
+      opacity: 1;
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  @keyframes hero-media-inner {
+    from {
+      transform: scale(1.06);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+  /* ---- Route transition (template.tsx remounts per navigation) ---- */
+  .page-enter {
+    animation: page-enter 420ms var(--ease-out-cubic) both;
+  }
+  @keyframes page-enter {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* ---- Marquee ---- */
+  .marquee-track {
+    animation: marquee var(--marquee-duration, 48s) linear infinite;
+  }
+  .marquee:hover .marquee-track,
+  .marquee:focus-within .marquee-track {
+    animation-play-state: paused;
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+/* ---- Marquee layout (needed in both motion modes) ---- */
+.marquee {
+  overflow: hidden;
+  white-space: nowrap;
+}
+.marquee-track {
+  display: inline-flex;
+  width: max-content;
+  will-change: transform;
+}
+
+/* ---- Link underline: draws left → right, exits to the right ---- */
+.u-link {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  background-position: 100% calc(100% - 0.1em);
+  transition: background-size var(--dur-micro) var(--ease-out-cubic),
+    color var(--dur-micro) var(--ease-out-cubic);
+  padding-bottom: 0.15em;
+}
+.u-link:hover,
+.u-link:focus-visible {
+  background-size: 100% 1px;
+  background-position: 0% calc(100% - 0.1em);
+}
+
+/* ---- Buttons: sliding fill + soft press ---- */
+.btn-motion {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transition: color var(--dur-micro) var(--ease-out-cubic),
+    border-color var(--dur-micro) var(--ease-out-cubic),
+    transform 120ms var(--ease-out-cubic);
+}
+.btn-motion::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--btn-fill, var(--color-accent-strong));
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform calc(var(--dur-micro) + 120ms) var(--ease-out-cubic);
+}
+.btn-motion:hover::before,
+.btn-motion:focus-visible::before {
+  transform: scaleX(1);
+}
+.btn-motion:active {
+  transform: scale(0.98);
+}
+
+/* ---- Arrow nudge (used inside links/buttons) ---- */
+.arrow-nudge {
+  display: inline-block;
+  transition: transform var(--dur-micro) var(--ease-out-cubic);
+}
+a:hover .arrow-nudge,
+a:focus-visible .arrow-nudge,
+button:hover .arrow-nudge,
+button:focus-visible .arrow-nudge {
+  transform: translateX(6px);
+}
+
+/* ---- Event rows: quiet until touched, then everything leans in ---- */
+.event-row {
+  transition: background-color 300ms var(--ease-out-cubic),
+    padding 360ms var(--ease-out-cubic);
+}
+@media (hover: hover) {
+  .event-row:hover {
+    background-color: color-mix(in srgb, var(--color-canvas-soft) 62%, transparent);
+    padding-left: 0.9rem;
+    padding-right: 0.9rem;
+  }
+  .event-row:hover .event-row-title {
+    transform: translateX(4px);
+  }
+  .event-row:hover .event-row-day {
+    color: var(--color-accent);
+  }
+}
+.event-row-title,
+.event-row-day {
+  transition: transform 300ms var(--ease-out-cubic),
+    color 300ms var(--ease-out-cubic);
+}
+
+/* ---- Media hover: restrained masked zoom ---- */
+.media-zoom {
+  overflow: hidden;
+}
+.media-zoom > * {
+  transition: transform 600ms var(--ease-out-cubic);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .media-zoom:hover > *,
+  a:hover .media-zoom > *,
+  a:focus-visible .media-zoom > * {
+    transform: scale(1.035);
+  }
+}
+
+/* ---- Header: compacts and gains a veil after leaving the top ---- */
+.site-header {
+  transition: background-color 320ms var(--ease-out-cubic),
+    box-shadow 320ms var(--ease-out-cubic);
+}
+.site-header .header-inner {
+  transition: height 320ms var(--ease-out-cubic);
+}
+.js .site-header[data-scrolled="true"] {
+  background-color: color-mix(in srgb, var(--color-canvas) 88%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.js .site-header[data-scrolled="true"] .header-inner {
+  height: 3.25rem;
+}
+
+/* ---- Nav links: underline draws in ---- */
+.nav-link {
+  position: relative;
+  transition: color var(--dur-micro) var(--ease-out-cubic);
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 1.1rem;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-micro) var(--ease-out-cubic);
+}
+.nav-link:hover::after,
+.nav-link:focus-visible::after,
+.nav-link[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+
+/* ---- Mobile menu: interruptible open/close with item stagger ---- */
+.mobile-menu {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 340ms var(--ease-out-cubic),
+    visibility 0s linear 340ms;
+}
+.mobile-menu[data-open="true"] {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 340ms var(--ease-out-cubic);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mobile-menu .menu-item {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 400ms var(--ease-out-cubic),
+      transform 400ms var(--ease-out-cubic);
+    transition-delay: 0ms;
+  }
+  .mobile-menu[data-open="true"] .menu-item {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(60ms + var(--i, 0) * 45ms);
+  }
+}
+
+/* ---- Video poster → player transition ---- */
+@keyframes video-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- Video play button ---- */
+.play-button {
+  transition: transform 260ms var(--ease-out-cubic),
+    background-color 260ms var(--ease-out-cubic);
+}
+a:hover .play-button,
+button:hover .play-button,
+.video-figure:hover .play-button {
+  transform: scale(1.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+    transform: none;
+  }
+  .hero-seq > *,
+  .hero-media,
+  .hero-media > *,
+  .page-enter {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    clip-path: none;
   }
 }
 

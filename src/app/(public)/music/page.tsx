@@ -4,6 +4,7 @@ import { JsonLd, musicAlbumJsonLd } from "@/lib/seo";
 import { Container } from "@/components/shared/Container";
 import { PlaceholderImage } from "@/components/shared/PlaceholderImage";
 import { TrackedLink } from "@/components/public/TrackedLink";
+import { Reveal } from "@/components/motion/Reveal";
 
 export const dynamic = "force-dynamic";
 
@@ -31,20 +32,22 @@ export default async function MusicPage() {
   return (
     <section className="py-24 sm:py-32">
       <Container wide>
-        <p className="eyebrow">Music</p>
-        <h1 className="font-display mt-4 text-4xl leading-tight sm:text-5xl">All releases</h1>
-        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-soft">
-          Recordings Osman played on — from tours, sessions and collaborations.
-        </p>
-        {!hasStreaming && releases.length > 0 && (
-          <p className="mt-4 text-sm text-ink-faint">
-            Streaming links are being added — for now, listen on Bandcamp.
+        <Reveal variant="text">
+          <p className="eyebrow">Music</p>
+          <h1 className="font-display mt-4 text-4xl leading-tight sm:text-5xl">All releases</h1>
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-soft">
+            Recordings Osman played on — from tours, sessions and collaborations.
           </p>
-        )}
+          {!hasStreaming && releases.length > 0 && (
+            <p className="mt-4 text-sm text-ink-faint">
+              Streaming links are being added — for now, listen on Bandcamp.
+            </p>
+          )}
+        </Reveal>
 
         <div className="mt-16">
           {releases.length > 0 ? (
-            releases.map((release) => {
+            releases.map((release, i) => {
               const listenLinks: { label: string; href: string | null }[] = [
                 { label: "Spotify", href: release.spotifyUrl },
                 { label: "Apple Music", href: release.appleMusicUrl },
@@ -56,45 +59,49 @@ export default async function MusicPage() {
               );
 
               return (
-                <article
-                  key={release.id}
-                  className="grid gap-8 border-t border-line py-14 md:grid-cols-[minmax(0,260px)_1fr] md:gap-12"
-                >
-                  <JsonLd data={musicAlbumJsonLd(release)} />
-                  <PlaceholderImage label={`Album artwork — ${release.title}`} ratio="1/1" />
-                  <div>
-                    <h2 className="font-display text-3xl leading-tight">{release.title}</h2>
-                    <p className="tabular mt-2 text-sm text-ink-faint">
-                      {RELEASE_TYPE_LABELS[release.releaseType]}
-                      {release.year ? ` · ${release.year}` : ""}
-                    </p>
-                    {release.description && (
-                      <p className="mt-5 max-w-xl leading-relaxed text-ink-soft">
-                        {release.description}
+                <Reveal key={release.id} variant="card" delay={Math.min(i * 80, 160)}>
+                  <article className="grid gap-8 border-t border-line py-14 md:grid-cols-[minmax(0,260px)_1fr] md:gap-12">
+                    <JsonLd data={musicAlbumJsonLd(release)} />
+                    <div className="media-zoom">
+                      <PlaceholderImage
+                        label={`Album artwork — ${release.title}`}
+                        ratio="1/1"
+                      />
+                    </div>
+                    <div>
+                      <h2 className="font-display text-3xl leading-tight">{release.title}</h2>
+                      <p className="tabular mt-2 text-sm text-ink-faint">
+                        {RELEASE_TYPE_LABELS[release.releaseType]}
+                        {release.year ? ` · ${release.year}` : ""}
                       </p>
-                    )}
-                    {release.credits && (
-                      <p className="mt-3 text-sm text-ink-faint">{release.credits}</p>
-                    )}
-                    {availableLinks.length > 0 && (
-                      <ul className="mt-7 flex flex-wrap gap-3">
-                        {availableLinks.map((l) => (
-                          <li key={l.label}>
-                            <TrackedLink
-                              href={l.href}
-                              external
-                              event="listen_click"
-                              eventProps={{ platform: l.label, release: release.slug }}
-                              className="inline-block border border-ink px-4 py-2 text-sm font-medium tracking-wide uppercase transition-colors hover:bg-ink hover:text-canvas"
-                            >
-                              {l.label}
-                            </TrackedLink>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                </article>
+                      {release.description && (
+                        <p className="mt-5 max-w-xl leading-relaxed text-ink-soft">
+                          {release.description}
+                        </p>
+                      )}
+                      {release.credits && (
+                        <p className="mt-3 text-sm text-ink-faint">{release.credits}</p>
+                      )}
+                      {availableLinks.length > 0 && (
+                        <ul className="mt-7 flex flex-wrap gap-3">
+                          {availableLinks.map((l) => (
+                            <li key={l.label}>
+                              <TrackedLink
+                                href={l.href}
+                                external
+                                event="listen_click"
+                                eventProps={{ platform: l.label, release: release.slug }}
+                                className="inline-block border border-ink px-4 py-2 text-sm font-medium tracking-wide uppercase transition-colors duration-200 hover:bg-ink hover:text-canvas"
+                              >
+                                {l.label}
+                              </TrackedLink>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </article>
+                </Reveal>
               );
             })
           ) : (

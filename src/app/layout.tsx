@@ -60,7 +60,16 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
-      <body>{children}</body>
+      <body>
+        {/* Motion gate: mark JS availability before first paint so scroll-reveal
+            hiding never applies for no-JS visitors (progressive enhancement). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `document.documentElement.classList.add("js");`,
+          }}
+        />
+        {children}
+      </body>
     </html>
   );
 }

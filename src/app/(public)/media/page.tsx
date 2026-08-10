@@ -3,6 +3,7 @@ import { getRepos } from "@/server/repositories";
 import { formatEventDate } from "@/lib/events";
 import { JsonLd, articleJsonLd } from "@/lib/seo";
 import { Container } from "@/components/shared/Container";
+import { Reveal } from "@/components/motion/Reveal";
 
 export const dynamic = "force-dynamic";
 
@@ -25,34 +26,40 @@ export default async function MediaPage() {
   return (
     <section className="py-24 sm:py-32">
       <Container wide>
-        <p className="eyebrow">Media</p>
-        <h1 className="font-display mt-4 text-4xl leading-tight sm:text-5xl">Press</h1>
+        <Reveal variant="text">
+          <p className="eyebrow">Media</p>
+          <h1 className="font-display mt-4 text-4xl leading-tight sm:text-5xl">Press</h1>
+        </Reveal>
 
         {featured ? (
           <article className="mt-16 border-t border-line pt-10">
             <JsonLd data={articleJsonLd(featured)} />
-            <p className="eyebrow">{featured.publication}</p>
-            <h2 className="font-display mt-4 max-w-3xl text-3xl leading-tight sm:text-4xl">
-              {featured.headline}
-            </h2>
-            {featured.date && (
-              <p className="tabular mt-3 text-sm text-ink-faint">
-                {formatEventDate(featured.date).full}
+            <Reveal variant="text">
+              <p className="eyebrow">{featured.publication}</p>
+              <h2 className="font-display mt-4 max-w-3xl text-3xl leading-tight sm:text-4xl">
+                {featured.headline}
+              </h2>
+            </Reveal>
+            <Reveal variant="text" delay={120}>
+              {featured.date && (
+                <p className="tabular mt-3 text-sm text-ink-faint">
+                  {formatEventDate(featured.date).full}
+                </p>
+              )}
+              {featured.summary && (
+                <p className="mt-6 max-w-2xl leading-relaxed text-ink-soft">{featured.summary}</p>
+              )}
+              <p className="mt-7">
+                <a
+                  href={featured.articleUrl}
+                  target="_blank"
+                  rel="noopener"
+                  className="u-link text-sm hover:text-accent-strong"
+                >
+                  Read the article <span className="arrow-nudge" aria-hidden="true">→</span>
+                </a>
               </p>
-            )}
-            {featured.summary && (
-              <p className="mt-6 max-w-2xl leading-relaxed text-ink-soft">{featured.summary}</p>
-            )}
-            <p className="mt-7">
-              <a
-                href={featured.articleUrl}
-                target="_blank"
-                rel="noopener"
-                className="inline-block border border-ink px-6 py-3 text-sm font-medium tracking-wide uppercase transition-colors hover:bg-ink hover:text-canvas"
-              >
-                Read the article
-              </a>
-            </p>
+            </Reveal>
           </article>
         ) : (
           <p className="mt-16 border-t border-line pt-8 text-ink-soft">
@@ -62,31 +69,33 @@ export default async function MediaPage() {
 
         {rest.length > 0 && (
           <ul className="mt-20">
-            {rest.map((item) => (
+            {rest.map((item, i) => (
               <li key={item.id} className="border-t border-line py-8">
-                <JsonLd data={articleJsonLd(item)} />
-                <p className="eyebrow">{item.publication}</p>
-                <h2 className="font-display mt-2 text-2xl leading-snug">{item.headline}</h2>
-                {item.date && (
-                  <p className="tabular mt-2 text-sm text-ink-faint">
-                    {formatEventDate(item.date).full}
+                <Reveal variant="card" delay={Math.min(i * 80, 160)}>
+                  <JsonLd data={articleJsonLd(item)} />
+                  <p className="eyebrow">{item.publication}</p>
+                  <h2 className="font-display mt-2 text-2xl leading-snug">{item.headline}</h2>
+                  {item.date && (
+                    <p className="tabular mt-2 text-sm text-ink-faint">
+                      {formatEventDate(item.date).full}
+                    </p>
+                  )}
+                  {item.summary && (
+                    <p className="mt-3 max-w-2xl text-sm leading-relaxed text-ink-soft">
+                      {item.summary}
+                    </p>
+                  )}
+                  <p className="mt-4">
+                    <a
+                      href={item.articleUrl}
+                      target="_blank"
+                      rel="noopener"
+                      className="u-link text-sm hover:text-accent-strong"
+                    >
+                      Read the article <span className="arrow-nudge" aria-hidden="true">→</span>
+                    </a>
                   </p>
-                )}
-                {item.summary && (
-                  <p className="mt-3 max-w-2xl text-sm leading-relaxed text-ink-soft">
-                    {item.summary}
-                  </p>
-                )}
-                <p className="mt-4">
-                  <a
-                    href={item.articleUrl}
-                    target="_blank"
-                    rel="noopener"
-                    className="text-sm underline underline-offset-4 hover:text-accent-strong"
-                  >
-                    Read the article
-                  </a>
-                </p>
+                </Reveal>
               </li>
             ))}
           </ul>
@@ -94,10 +103,7 @@ export default async function MediaPage() {
 
         <p className="mt-20 border-t border-line pt-8 text-sm text-ink-soft">
           Press inquiries:{" "}
-          <a
-            href={`mailto:${settings.contactEmail}`}
-            className="underline underline-offset-4"
-          >
+          <a href={`mailto:${settings.contactEmail}`} className="u-link">
             {settings.contactEmail}
           </a>
         </p>

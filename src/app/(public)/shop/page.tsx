@@ -4,6 +4,7 @@ import { getRepos } from "@/server/repositories";
 import { Container } from "@/components/shared/Container";
 import { PlaceholderImage } from "@/components/shared/PlaceholderImage";
 import { TrackedLink } from "@/components/public/TrackedLink";
+import { Reveal } from "@/components/motion/Reveal";
 
 export const dynamic = "force-dynamic";
 
@@ -28,29 +29,33 @@ export default async function ShopPage() {
   return (
     <section className="py-24 sm:py-32">
       <Container wide>
-        <p className="eyebrow">Shop</p>
-        <h1 className="font-display mt-4 text-4xl leading-tight sm:text-5xl">
-          Objects built around listening
-        </h1>
-        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-soft">
-          A small collection is taking shape — printed matter, studio objects and editions that
-          come out of the same habits as the music: listening closely, keeping time, leaving
-          space. Everything is made slowly and on purpose, which is also why it isn&rsquo;t for
-          sale yet.
-        </p>
+        <Reveal variant="text">
+          <p className="eyebrow">Shop</p>
+          <h1 className="font-display mt-4 text-4xl leading-tight sm:text-5xl">
+            Objects built around listening
+          </h1>
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-soft">
+            A small collection is taking shape — printed matter, studio objects and editions that
+            come out of the same habits as the music: listening closely, keeping time, leaving
+            space. Everything is made slowly and on purpose, which is also why it isn&rsquo;t for
+            sale yet.
+          </p>
+        </Reveal>
 
         {settings.shopMode === "external" && settings.shopUrl && (
-          <p className="mt-10">
-            <TrackedLink
-              href={settings.shopUrl}
-              external
-              event="shop_click"
-              eventProps={{ source: "shop_page" }}
-              className="inline-block bg-ink px-7 py-3 text-sm font-medium tracking-wide text-canvas uppercase transition-colors hover:bg-accent-strong"
-            >
-              Visit the shop
-            </TrackedLink>
-          </p>
+          <Reveal variant="text" delay={120}>
+            <p className="mt-10">
+              <TrackedLink
+                href={settings.shopUrl}
+                external
+                event="shop_click"
+                eventProps={{ source: "shop_page" }}
+                className="btn-motion inline-block bg-ink px-7 py-3 text-sm font-medium tracking-wide text-canvas uppercase"
+              >
+                Visit the shop <span className="arrow-nudge ml-1" aria-hidden="true">→</span>
+              </TrackedLink>
+            </p>
+          </Reveal>
         )}
 
         {settings.shopMode === "storefront" && (
@@ -66,19 +71,26 @@ export default async function ShopPage() {
           <>
             {concepts.length > 0 && (
               <ul className="mt-16 grid gap-x-10 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
-                {concepts.map((product) => (
-                  <li key={product.id} className="border-t border-line pt-6">
-                    <PlaceholderImage label={`Product study — ${product.title}`} ratio="1/1" />
-                    <div className="mt-4 flex items-baseline justify-between gap-4">
-                      <h2 className="font-display text-xl">{product.title}</h2>
-                      <span className="inline-block shrink-0 border border-line-dark px-2.5 py-0.5 text-xs font-medium tracking-wide text-ink-soft uppercase">
-                        Concept
-                      </span>
-                    </div>
-                    <p className="eyebrow mt-1">{product.category}</p>
-                    <p className="mt-3 text-sm leading-relaxed text-ink-soft">
-                      {product.description}
-                    </p>
+                {concepts.map((product, i) => (
+                  <li key={product.id}>
+                    <Reveal variant="card" delay={i * 80} className="border-t border-line pt-6">
+                      <div className="media-zoom">
+                        <PlaceholderImage
+                          label={`Product study — ${product.title}`}
+                          ratio="1/1"
+                        />
+                      </div>
+                      <div className="mt-4 flex items-baseline justify-between gap-4">
+                        <h2 className="font-display text-xl">{product.title}</h2>
+                        <span className="inline-block shrink-0 border border-line-dark px-2.5 py-0.5 text-xs font-medium tracking-wide text-ink-soft uppercase">
+                          Concept
+                        </span>
+                      </div>
+                      <p className="eyebrow mt-1">{product.category}</p>
+                      <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+                        {product.description}
+                      </p>
+                    </Reveal>
                   </li>
                 ))}
               </ul>
@@ -88,7 +100,7 @@ export default async function ShopPage() {
               These pieces are in development, not on sale — no dates promised. If you&rsquo;d
               like to know when the first ones are ready, follow along on the social channels in
               the footer, or{" "}
-              <Link href="/contact" className="underline underline-offset-4">
+              <Link href="/contact" className="u-link">
                 drop a line
               </Link>{" "}
               and mention the shop.

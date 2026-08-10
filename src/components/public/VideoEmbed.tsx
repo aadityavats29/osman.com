@@ -47,7 +47,10 @@ export function VideoEmbed({
 
   if (playing) {
     return (
-      <div className={`relative w-full bg-ink ${className}`} style={{ aspectRatio: "16/9" }}>
+      <div
+        className={`relative w-full bg-ink ${className}`}
+        style={{ aspectRatio: "16/9", animation: "video-in 420ms var(--ease-out-cubic) both" }}
+      >
         <iframe
           src={src}
           title={title}
@@ -67,24 +70,26 @@ export function VideoEmbed({
         setPlaying(true);
       }}
       aria-label={`Play ${title}`}
-      className={`group relative block w-full cursor-pointer text-left ${className}`}
+      className={`video-figure group relative block w-full cursor-pointer text-left ${className}`}
     >
-      {thumb ? (
-        // Remote thumbnails come from arbitrary video CDNs; next/image would need
-        // per-host config, so a plain img with lazy loading is deliberate here.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={thumb}
-          alt=""
-          loading="lazy"
-          className="w-full object-cover"
-          style={{ aspectRatio: "16/9" }}
-        />
-      ) : (
-        <PlaceholderImage label={`Video still — ${title}`} ratio="16/9" />
-      )}
+      <span className="media-zoom block">
+        {thumb ? (
+          // Remote thumbnails come from arbitrary video CDNs; next/image would need
+          // per-host config, so a plain img with lazy loading is deliberate here.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={thumb}
+            alt=""
+            loading="lazy"
+            className="w-full object-cover"
+            style={{ aspectRatio: "16/9" }}
+          />
+        ) : (
+          <PlaceholderImage label={`Video still — ${title}`} ratio="16/9" />
+        )}
+      </span>
       <span className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
-        <span className="flex h-16 w-16 items-center justify-center rounded-none bg-ink/85 text-canvas transition-colors duration-200 group-hover:bg-accent">
+        <span className="play-button flex h-16 w-16 items-center justify-center rounded-none bg-ink/85 text-canvas group-hover:bg-accent">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path d="M5 3.5v13l11-6.5-11-6.5z" />
           </svg>
