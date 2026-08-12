@@ -89,3 +89,4 @@ No invented releases, press or tour history. Missing assets render as labelled
 placeholders — search the code for `PlaceholderImage` to find every replacement
 point. No Spotify/Apple Music artist profile could be verified as of Aug 2026;
 add those links in Studio → Releases when profiles exist.
+# osman.com
