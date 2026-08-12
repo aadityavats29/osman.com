@@ -59,7 +59,16 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
+    // suppressHydrationWarning: the inline script below adds a "js" class to
+    // <html> before React hydrates, so the className attribute intentionally
+    // differs from the server-rendered HTML. React would otherwise log a
+    // hydration-mismatch console error in development. Suppression is scoped
+    // to this element only — children are still fully checked.
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${inter.variable}`}
+      suppressHydrationWarning
+    >
       <body>
         {/* Motion gate: mark JS availability before first paint so scroll-reveal
             hiding never applies for no-JS visitors (progressive enhancement). */}
