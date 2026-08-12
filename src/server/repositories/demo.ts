@@ -153,7 +153,11 @@ const demoUsers: UserRepo = {
     // Demo mode has a single owner account configured via environment variables.
     // STUDIO_PASSWORD_HASH is a bcrypt hash — never a plain-text password.
     const adminEmail = process.env.STUDIO_EMAIL;
-    const hash = process.env.STUDIO_PASSWORD_HASH;
+    // Next.js expands $VAR references inside .env values, which would shred a
+    // bcrypt hash ("$2b$12$…"), so .env stores it with escaped dollars ("\$").
+    // Bcrypt hashes never contain backslashes, so unescaping here is safe and
+    // also keeps plain shell-exported values working.
+    const hash = process.env.STUDIO_PASSWORD_HASH?.replace(/\\\$/g, "$");
     if (!adminEmail || !hash) return null;
     if (email.toLowerCase() !== adminEmail.toLowerCase()) return null;
     return {
