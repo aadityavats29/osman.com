@@ -18,7 +18,7 @@ import { TrackedLink } from "@/components/public/TrackedLink";
  * no pinning, no continuous rotation for reduced motion.
  */
 
-const LABEL_TONES = ["#7a3e14", "#4c5530", "#3f4a56", "#5b2e0e"];
+const LABEL_TONES = ["#a34a45", "#46586b", "#4d5c48", "#3a3d41"];
 
 function labelTone(i: number): string {
   return LABEL_TONES[i % LABEL_TONES.length];
@@ -122,46 +122,84 @@ export function RecordsScroller({ releases }: { releases: ReleaseRecord[] }) {
     let raf = 0;
     let lastProgress = 0;
     let velocityBoost = 0;
+    let visible = false;
+
+    // Measurements are cached and refreshed on resize — never read scrollWidth
+    // or innerWidth inside the per-frame path.
+    let travel = 0;
+    let viewportH = window.innerHeight;
+    let centre = window.innerWidth / 2;
+    let halfSpan = window.innerWidth * 0.55;
+    const cards = Array.from(track.querySelectorAll<HTMLElement>("[data-record-card]"));
+    const discs = cards.map((c) => c.querySelector<HTMLElement>("[data-disc] > *"));
+
+    const remeasure = () => {
+      viewportH = window.innerHeight;
+      centre = window.innerWidth / 2;
+      halfSpan = window.innerWidth * 0.55;
+      // scrollWidth is unaffected by the card scale transforms; safe to cache.
+      travel = track.scrollWidth - window.innerWidth;
+    };
 
     const update = () => {
       raf = 0;
       const rect = section.getBoundingClientRect();
-      const total = rect.height - window.innerHeight;
-      if (total <= 0) return;
+      const total = rect.height - viewportH;
+      if (total <= 0 || travel <= 0) return;
       const progress = Math.min(1, Math.max(0, -rect.top / total));
 
-      const travel = track.scrollWidth - window.innerWidth;
-      track.style.transform = `translate3d(${(-progress * travel).toFixed(1)}px, -50%, 0)`;
-      if (bg) {
-        // Background typography drifts at 38% of the track speed.
-        bg.style.transform = `translate3d(${(-progress * travel * 0.38).toFixed(1)}px, -50%, 0)`;
-      }
-
-      // Scroll velocity nudges disc rotation (decays each frame).
       velocityBoost = Math.min(14, velocityBoost * 0.9 + Math.abs(progress - lastProgress) * 400);
       lastProgress = progress;
-      const discs = track.querySelectorAll<HTMLElement>("[data-disc] > *");
-      const centre = window.innerWidth / 2;
-      discs.forEach((disc) => {
-        const card = disc.closest<HTMLElement>("[data-record-card]");
-        if (!card) return;
-        const r = card.getBoundingClientRect();
+
+      // READ phase: collect all card rects before any style writes — no
+      // interleaved read/write layout thrash.
+      const rects = cards.map((c) => c.getBoundingClientRect());
+
+      // WRITE phase
+      track.style.transform = `translate3d(${(-progress * travel).toFixed(1)}px, -50%, 0)`;
+      if (bg) {
+        bg.style.transform = `translate3d(${(-progress * travel * 0.38).toFixed(1)}px, -50%, 0)`;
+      }
+      const spinNudge = velocityBoost > 0.4 ? `${velocityBoost.toFixed(1)}deg` : "";
+      cards.forEach((card, i) => {
+        const r = rects[i];
         const d = Math.abs(r.left + r.width / 2 - centre);
-        const scale = 1 + Math.max(0, 0.1 * (1 - Math.min(1, d / (window.innerWidth * 0.55))));
+        const scale = 1 + Math.max(0, 0.1 * (1 - Math.min(1, d / halfSpan)));
         card.style.transform = `scale(${scale.toFixed(3)})`;
-        disc.style.rotate = velocityBoost > 0.4 ? `${velocityBoost.toFixed(1)}deg` : "";
+        const disc = discs[i];
+        if (disc) disc.style.rotate = spinNudge;
       });
     };
 
     const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(update);
+      if (visible && !raf) raf = requestAnimationFrame(update);
     };
+    const onResize = () => {
+      remeasure();
+      onScroll();
+    };
+
+    // The whole system sleeps while the section is off-screen: no scroll
+    // work, and the continuous disc spins pause (data-anim-paused CSS).
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        section.dataset.animPaused = visible ? "false" : "true";
+        if (visible) {
+          remeasure();
+          onScroll();
+        }
+      },
+      { rootMargin: "25% 0px" }
+    );
+    io.observe(section);
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
-    update();
+    window.addEventListener("resize", onResize, { passive: true });
+    remeasure();
     return () => {
+      io.disconnect();
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", onResize);
       if (raf) cancelAnimationFrame(raf);
     };
   }, [mode]);

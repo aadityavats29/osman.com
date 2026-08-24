@@ -22,7 +22,7 @@ const RELEASE_TYPE_LABELS = {
   COLLABORATION: "Collaboration",
 } as const;
 
-const TONES = ["#7a3e14", "#4c5530", "#3f4a56", "#5b2e0e"];
+const TONES = ["#a34a45", "#46586b", "#4d5c48", "#3a3d41"];
 
 export function Discography({ releases }: { releases: ReleaseRecord[] }) {
   return (

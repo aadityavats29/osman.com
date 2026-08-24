@@ -7,20 +7,24 @@
 */
 
 @theme {
-  /* Colour — bone / charcoal / tobacco. One accent, olive reserved for
-     free-entry states. Grounded and European, not pastel. */
-  --color-canvas: #f1efe8;
-  --color-canvas-soft: #e6e2d6;
-  --color-ink: #141310;
-  --color-ink-soft: #4a483e;
-  --color-ink-faint: #79766a;
-  --color-line: #d3cfc0;
-  --color-line-dark: #302e27;
-  --color-accent: #7a3e14;
-  --color-accent-strong: #5b2e0e;
-  --color-ok: #4c5530;
-  --color-warn: #7e621c;
-  --color-danger: #7e2a1e;
+  /* Colour — nocturnal stage system: near-black blue-tinted canvas, graphite
+     surfaces, silver-white type, one oxblood accent. Dark backstage / vinyl /
+     stage light — never red-and-black rock cliché.
+     Semantics kept from the light era: "canvas" = page ground (now near-black),
+     "ink" = type (now cool off-white), "stage" = deepest black feature bands. */
+  --color-canvas: #0d0e10;
+  --color-canvas-soft: #16181c;
+  --color-stage: #08090a;
+  --color-ink: #e7e8e6;
+  --color-ink-soft: #a6a8a3;
+  --color-ink-faint: #6e716c;
+  --color-line: #26282c;
+  --color-line-dark: #383b40;
+  --color-accent: #a34a45;
+  --color-accent-strong: #c05f57;
+  --color-ok: #7e9270;
+  --color-warn: #c49a3d;
+  --color-danger: #cf6257;
 
   /* Type — Archivo variable (wght 100–900, wdth 62–125): strong grotesk
      display voice. Inter stays the quiet body/UI voice. */
@@ -57,7 +61,7 @@ body {
 
 ::selection {
   background: var(--color-accent);
-  color: var(--color-canvas);
+  color: #ffffff;
 }
 
 /* Visible, consistent focus for keyboard users */
@@ -377,9 +381,10 @@ button:focus-visible .arrow-nudge {
   transition: height 320ms var(--ease-out-cubic);
 }
 .site-header[data-scrolled="true"] {
-  background-color: color-mix(in srgb, var(--color-canvas) 88%, transparent);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  /* No backdrop-filter here: a full-width blur re-rasters on every scrolled
+     frame (integrated-GPU killer). A near-opaque tint reads the same on the
+     dark theme and costs nothing. */
+  background-color: color-mix(in srgb, var(--color-canvas) 96%, transparent);
 }
 .site-header[data-scrolled="true"] .header-inner {
   height: 3.25rem;
@@ -617,6 +622,20 @@ a:focus-visible .text-roll > span:last-child,
   }
 }
 
+/* Continuous animations pause whenever they cannot be seen:
+   - [data-anim-paused] is set by PauseWhenHidden / Marquee / RecordsScroller
+     via IntersectionObserver;
+   - discography vinyls only spin while their row is hovered (they are hidden
+     behind the clip mask otherwise). */
+[data-anim-paused="true"] .vinyl-spin,
+[data-anim-paused="true"] .marquee-track,
+[data-anim-paused="true"].marquee .marquee-track {
+  animation-play-state: paused;
+}
+.disco-row:not(:hover):not(:focus-within) .vinyl-spin {
+  animation-play-state: paused;
+}
+
 /* ---- Records section (pinned horizontal) ---- */
 .records-viewport {
   position: sticky;
@@ -650,7 +669,6 @@ a:focus-visible .text-roll > span:last-child,
 .record-card {
   flex-shrink: 0;
   width: clamp(240px, 34vw, 420px);
-  will-change: transform;
 }
 /* Mobile / reduced-motion fallback: native horizontal swipe */
 .records-swipe {
@@ -690,13 +708,18 @@ a:focus-visible .text-roll > span:last-child,
   top: 0;
   left: 0;
   z-index: 90;
-  width: 12px;
-  height: 12px;
-  margin: -6px 0 0 -6px;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
   border-radius: 50%;
+  /* Solid + outlined: silver core reads on the dark site, the dark ring keeps
+     it visible over silver buttons/light sleeves. No blend modes, no filters —
+     those forced compositor readback AND rendered black-on-black after the
+     nocturnal palette flip. */
   background: var(--color-ink);
-  mix-blend-mode: difference;
-  filter: invert(1);
+  box-shadow:
+    0 0 0 1.5px rgb(10 10 12 / 0.9),
+    0 0 10px rgb(0 0 0 / 0.35);
   pointer-events: none;
   display: none;
   align-items: center;
@@ -731,7 +754,7 @@ a:focus-visible .text-roll > span:last-child,
 }
 .cursor-dot[data-state="label"] .cursor-label {
   opacity: 1;
-  color: var(--color-canvas);
+  color: #ffffff;
 }
 .cursor-dot[data-state="disc"] {
   width: 58px;
@@ -792,9 +815,11 @@ a:focus-visible .text-roll > span:last-child,
       transform: scale(1);
     }
   }
-  /* ambient drift after intro */
+  /* ambient drift after intro — promoted so the filtered SVG rasterises
+     once and is texture-scaled, not re-filtered per frame */
   .hero-ambient {
     animation: hero-ambient 14s ease-in-out 2s infinite alternate;
+    will-change: transform;
   }
   @keyframes hero-ambient {
     from {
@@ -880,4 +905,190 @@ a:focus-visible .text-roll > span:last-child,
   .records-bgtype {
     display: none;
   }
+}
+
+/* =========================================================================
+   NAVIGATION PASS — vinyl trigger + fullscreen menu (Private Mansions
+   direction: instant frosted takeover, 400ms veil fade, large light
+   uppercase links; adapted with our masked staggered reveals).
+   ========================================================================= */
+
+/* ---- Vinyl trigger ---- */
+.vinyl-toggle {
+  position: relative;
+  /* Above the fullscreen menu (a sibling within the header's stacking
+     context) so the record stays clickable as the close control — the same
+     layering the reference site uses for its toggle. */
+  z-index: 80;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  transition: transform 280ms var(--ease-out-cubic);
+  will-change: transform;
+}
+.vinyl-toggle:hover,
+.vinyl-toggle:focus-visible {
+  transform: scale(1.1);
+}
+.vinyl-toggle .vinyl-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  will-change: transform;
+}
+.vinyl-toggle .vinyl-label-mark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: "wdth" 80;
+  font-size: 0.52rem;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  pointer-events: none;
+}
+/* Menu open: the record eases into a slow constant spin on top of its
+   scroll rotation (JS composes both) and the label mark swaps color. */
+.vinyl-toggle[aria-expanded="true"] .vinyl-label-mark {
+  color: var(--color-canvas);
+}
+
+/* ---- Fullscreen menu ---- */
+.fs-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  visibility: hidden;
+  pointer-events: none;
+}
+.fs-menu[data-state="open"],
+.fs-menu[data-state="closing"] {
+  visibility: visible;
+}
+.fs-menu[data-state="open"] {
+  pointer-events: auto;
+}
+/* Stage 1 — frosted near-black veil (PM: 400ms ease fade + blur) */
+.fs-veil {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--color-stage) 88%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+.fs-menu[data-state="open"] .fs-veil {
+  opacity: 1;
+}
+/* Stage 2 — links rise from below their line masks, staggered */
+.fs-link-mask {
+  display: block;
+  clip-path: inset(-12% -100vw 0 -100vw);
+}
+.fs-link-mask > * {
+  display: inline-block;
+  transform: translateY(112%);
+  transition: transform 560ms var(--ease-out-cubic);
+  transition-delay: calc(120ms + var(--i, 0) * 55ms);
+}
+.fs-menu[data-state="open"] .fs-link-mask > * {
+  transform: translateY(0);
+}
+/* Closing: links drop away quickly, veil follows */
+.fs-menu[data-state="closing"] .fs-link-mask > * {
+  transform: translateY(112%);
+  transition: transform 320ms var(--ease-inout-cubic);
+  transition-delay: calc(var(--i, 0) * 22ms);
+}
+.fs-menu[data-state="closing"] .fs-veil {
+  opacity: 0;
+  transition: opacity 380ms ease 160ms;
+}
+/* Meta column follows the links */
+.fs-meta {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 420ms var(--ease-out-cubic) 420ms,
+    transform 420ms var(--ease-out-cubic) 420ms;
+}
+.fs-menu[data-state="open"] .fs-meta {
+  opacity: 1;
+  transform: none;
+}
+.fs-menu[data-state="closing"] .fs-meta {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 200ms ease;
+}
+/* Link treatment: index numeral + big caps; PM hover = shift right + accent,
+   siblings dim */
+.fs-link {
+  display: flex;
+  align-items: baseline;
+  gap: 1.1rem;
+  color: var(--color-ink);
+  transition: color 240ms var(--ease-out-cubic),
+    transform 380ms var(--ease-out-cubic), opacity 280ms var(--ease-out-cubic);
+}
+.fs-link .fs-index {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--color-ink-faint);
+  transition: color 240ms var(--ease-out-cubic);
+}
+.fs-link:hover,
+.fs-link:focus-visible {
+  color: var(--color-accent-strong);
+  transform: translateX(22px);
+}
+.fs-link:hover .fs-index,
+.fs-link:focus-visible .fs-index {
+  color: var(--color-accent-strong);
+}
+.fs-nav:hover .fs-link:not(:hover) {
+  opacity: 0.38;
+}
+.fs-sub {
+  /* Wins over the mask's `> *` inline-block (same specificity, later rule
+     would lose — this declaration must be explicit) */
+  display: flex;
+  transition: opacity 280ms var(--ease-out-cubic);
+}
+.fs-nav:hover .fs-group:not(:hover) .fs-sub {
+  opacity: 0.38;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fs-veil,
+  .fs-link-mask > *,
+  .fs-meta,
+  .fs-link {
+    transition: none !important;
+    transform: none !important;
+  }
+  .fs-menu[data-state="open"] .fs-veil {
+    opacity: 1;
+  }
+  .vinyl-toggle .vinyl-face {
+    transform: none !important;
+  }
+}
+
+/* While the fullscreen menu is open the header dissolves to a floating
+   wordmark + vinyl over the veil (set via data attribute from the menu). */
+html[data-menu-open="true"] .site-header {
+  background: transparent;
+  border-color: transparent;
+}
+html[data-menu-open="true"] .site-header[data-scrolled="true"] {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }

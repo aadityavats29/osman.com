@@ -8,7 +8,7 @@
 export function RecordSleeve({
   title,
   year,
-  tone = "#7a3e14",
+  tone = "#a34a45",
   artworkUrl = null,
   withVinyl = false,
   vinylClassName = "",
@@ -36,7 +36,7 @@ export function RecordSleeve({
         </div>
       )}
       <div
-        className="relative aspect-square w-full overflow-hidden border border-line-dark bg-ink"
+        className="relative aspect-square w-full overflow-hidden border border-line-dark bg-stage"
         style={{ boxShadow: "6px 6px 0 0 rgb(0 0 0 / 0.12)" }}
       >
         {artworkUrl ? (
@@ -46,7 +46,7 @@ export function RecordSleeve({
           <div
             className="flex h-full w-full flex-col justify-between p-[8%]"
             style={{
-              background: `linear-gradient(150deg, #1c1a14 0%, #141310 55%, ${tone}33 100%)`,
+              background: `linear-gradient(150deg, #1b1d21 0%, #101114 55%, ${tone}30 100%)`,
             }}
             role="img"
             aria-label={`Placeholder sleeve artwork — ${title}`}
@@ -54,7 +54,7 @@ export function RecordSleeve({
             <div className="flex items-start justify-between">
               <span
                 className="eyebrow"
-                style={{ color: "#79766a" }}
+                style={{ color: "#8b8f94" }}
               >
                 {year ?? "—"}
               </span>
@@ -65,7 +65,7 @@ export function RecordSleeve({
               />
             </div>
             <p
-              className="display-caps text-canvas"
+              className="display-caps text-ink"
               style={{ fontSize: "clamp(1.2rem, 4.2cqw, 2.1rem)", opacity: 0.92 }}
             >
               {title}
