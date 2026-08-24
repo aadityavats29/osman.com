@@ -19,7 +19,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
       >
         Skip to content
       </a>
-      <SiteHeader />
+      <SiteHeader settings={settings} />
       <main id="main">{children}</main>
       <SiteFooter settings={settings} />
       <Cursor />

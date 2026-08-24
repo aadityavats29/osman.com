@@ -8,10 +8,12 @@ import { EventList } from "@/components/public/EventList";
 import { VideoEmbed } from "@/components/public/VideoEmbed";
 import { TrackedLink } from "@/components/public/TrackedLink";
 import { HeroArt } from "@/components/public/HeroArt";
+import { AboutArt } from "@/components/public/AboutArt";
 import { RecordSleeve } from "@/components/public/RecordSleeve";
 import { Reveal } from "@/components/motion/Reveal";
 import { Marquee } from "@/components/motion/Marquee";
 import { RecordsScroller } from "@/components/motion/RecordsScroller";
+import { PauseWhenHidden } from "@/components/motion/PauseWhenHidden";
 
 const INSTRUMENTS = [
   "Bass guitar",
@@ -218,17 +220,17 @@ export default async function HomePage() {
               <p className="eyebrow">Featured release</p>
             </Reveal>
             <div className="mt-12 grid items-start gap-x-14 gap-y-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-              <div className="roll-trigger group lg:sticky lg:top-24">
+              <PauseWhenHidden className="roll-trigger group lg:sticky lg:top-24">
                 <RecordSleeve
                   title={featuredRelease.title}
                   year={featuredRelease.year}
-                  tone="#7a3e14"
+                  tone="#a34a45"
                   artworkUrl={featuredRelease.artworkUrl}
                   withVinyl
                   vinylClassName="transition-transform duration-700 ease-(--ease-out-cubic) group-hover:translate-x-[16%]"
                   className="pr-[14%]"
                 />
-              </div>
+              </PauseWhenHidden>
               <div>
                 <h2 className="display-caps text-5xl sm:text-6xl xl:text-7xl">
                   {featuredRelease.title}
@@ -323,23 +325,31 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* About moment */}
+      {/* About moment — copy beside a dark instrument study (image change #2:
+          integrated into the composition, not a card bolted underneath) */}
       <section className="border-t border-line py-24">
-        <Container>
-          <Reveal variant="text">
-            <p className="eyebrow">About</p>
-            <p className="font-display mt-6 text-2xl leading-snug sm:text-3xl">
-              It began at six, picking out a Christmas song on the piano with his uncle — and
-              finishing the tune by ear. Today Osman plays piano, keyboards, bass guitar, guitar,
-              double bass and drums, sings, and has toured the U.K. with Frank Zappa&rsquo;s
-              longtime vocalist Ike Willis.
-            </p>
-            <p className="mt-8">
-              <Link href="/about" className="u-link text-sm hover:text-accent-strong">
-                More about Osman <span className="arrow-nudge" aria-hidden="true">→</span>
-              </Link>
-            </p>
-          </Reveal>
+        <Container wide>
+          <div className="grid items-center gap-x-14 gap-y-10 md:grid-cols-[minmax(0,7fr)_minmax(0,4fr)]">
+            <Reveal variant="text">
+              <p className="eyebrow">About</p>
+              <p className="font-display mt-6 text-2xl leading-snug sm:text-3xl">
+                It began at six, picking out a Christmas song on the piano with his uncle — and
+                finishing the tune by ear. Today Osman plays piano, keyboards, bass guitar,
+                guitar, double bass and drums, sings, and has toured the U.K. with Frank
+                Zappa&rsquo;s longtime vocalist Ike Willis.
+              </p>
+              <p className="mt-8">
+                <Link href="/about" className="u-link text-sm hover:text-accent-strong">
+                  More about Osman <span className="arrow-nudge" aria-hidden="true">→</span>
+                </Link>
+              </p>
+            </Reveal>
+            <Reveal variant="mask" delay={120} className="mx-auto w-full max-w-[300px] md:mx-0 md:justify-self-end">
+              <div className="media-zoom border border-line">
+                <AboutArt />
+              </div>
+            </Reveal>
+          </div>
         </Container>
       </section>
 
@@ -351,7 +361,7 @@ export default async function HomePage() {
         /* NOTE: no overflow-hidden here — it would re-parent position:sticky
            and break the pinned viewport. Horizontal overflow is contained by
            .records-viewport itself. */
-        <section className="border-t border-line bg-ink text-canvas">
+        <section className="border-t border-line bg-stage">
           <Container wide className="pt-20 pb-4">
             <p className="eyebrow" style={{ color: "var(--color-ink-faint)" }}>
               The records
@@ -366,7 +376,7 @@ export default async function HomePage() {
 
       {/* Featured live video — dark band */}
       {featuredVideo && (
-        <section className="bg-ink py-24 text-canvas">
+        <section className="bg-stage py-24">
           <Container wide>
             <Reveal variant="text">
               <div className="flex items-baseline justify-between gap-6">
@@ -374,7 +384,7 @@ export default async function HomePage() {
                   <p className="eyebrow">Live</p>
                   <h2 className="font-display mt-3 text-3xl sm:text-4xl">{featuredVideo.title}</h2>
                 </div>
-                <Link href="/shows/live-videos" className="u-link shrink-0 text-sm text-canvas">
+                <Link href="/shows/live-videos" className="u-link shrink-0 text-sm">
                   All live videos
                 </Link>
               </div>
@@ -436,7 +446,7 @@ export default async function HomePage() {
       </section>
 
       {/* Contact CTA band */}
-      <section className="bg-ink py-24 text-canvas sm:py-28">
+      <section className="border-t border-line bg-stage py-24 sm:py-28">
         <Container wide>
           <Reveal variant="text">
             <h2 className="font-display max-w-2xl text-4xl leading-tight sm:text-5xl">
@@ -444,13 +454,13 @@ export default async function HomePage() {
             </h2>
           </Reveal>
           <Reveal variant="text" delay={130}>
-            <p className="mt-6 max-w-xl leading-relaxed text-canvas/75">
+            <p className="mt-6 max-w-xl leading-relaxed text-ink-soft">
               Tell him about the occasion, the room and the people in it — he&rsquo;ll come back
               with a concrete proposal.
             </p>
             <Link
               href="/contact"
-              className="btn-motion mt-9 inline-block bg-accent px-7 py-3 text-sm font-medium tracking-wide text-canvas uppercase"
+              className="btn-motion mt-9 inline-block bg-accent px-7 py-3 text-sm font-medium tracking-wide text-white uppercase"
             >
               Get in touch <span className="arrow-nudge ml-1" aria-hidden="true">→</span>
             </Link>
