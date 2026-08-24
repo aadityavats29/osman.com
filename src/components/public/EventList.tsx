@@ -96,6 +96,7 @@ function EventRowCta({ event }: { event: EventRecord }) {
             eventProps={{ event: event.slug }}
             className="btn-motion inline-block bg-ink px-5 py-2.5 text-sm font-medium tracking-wide text-canvas uppercase"
             aria-label={`Tickets for ${event.title}`}
+            data-cursor="TICKETS"
           >
             Tickets <span className="arrow-nudge ml-1" aria-hidden="true">→</span>
           </TrackedLink>
@@ -115,6 +116,7 @@ function EventRowCta({ event }: { event: EventRecord }) {
               eventProps={{ event: event.slug }}
               className="u-link text-sm hover:text-accent-strong"
               aria-label={`Details for ${event.title}`}
+              data-cursor="DETAILS"
             >
               Details <span className="arrow-nudge" aria-hidden="true">→</span>
             </TrackedLink>

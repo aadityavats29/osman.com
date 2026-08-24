@@ -15,12 +15,23 @@ import type { CollectionRepo, Repos, SettingsRepo, UserRepo } from "./types";
 
 const g = globalThis as typeof globalThis & { __osmanPrisma?: PrismaClient };
 
+/**
+ * node-postgres treats sslmode=require as verify-full but emits a process
+ * warning about the upcoming semantic change (which Next's dev overlay then
+ * reports as a console error). Making verify-full explicit keeps identical
+ * security with no warning, while .env can keep the provider's canonical
+ * string (Neon hands out sslmode=require).
+ */
+function pgConnectionString(raw: string): string {
+  return raw.replace(/sslmode=require\b/, "sslmode=verify-full");
+}
+
 function client(): PrismaClient {
   if (!g.__osmanPrisma) {
-    const connectionString = process.env.DATABASE_URL;
-    if (!connectionString) throw new Error("DATABASE_URL is not set");
+    const raw = process.env.DATABASE_URL;
+    if (!raw) throw new Error("DATABASE_URL is not set");
     g.__osmanPrisma = new PrismaClient({
-      adapter: new PrismaPg({ connectionString }),
+      adapter: new PrismaPg({ connectionString: pgConnectionString(raw) }),
     });
   }
   return g.__osmanPrisma;

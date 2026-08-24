@@ -24,8 +24,19 @@ import {
 } from "../src/data/demo/content";
 
 async function main() {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) throw new Error("DATABASE_URL is required to seed");
+  // The seed runs as a plain tsx process — load .env explicitly (optional,
+  // so environments that inject real env vars need no file).
+  try {
+    process.loadEnvFile();
+  } catch {
+    /* no .env present — fine */
+  }
+  // Prefer the direct (unpooled) connection for seeding when available.
+  const raw = process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL;
+  if (!raw) throw new Error("DATABASE_URL is required to seed");
+  // sslmode=require → verify-full: same behaviour in node-postgres today,
+  // but explicit — avoids pg's SECURITY WARNING at startup.
+  const connectionString = raw.replace(/sslmode=require\b/, "sslmode=verify-full");
   const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
 
   const email = process.env.STUDIO_EMAIL;
