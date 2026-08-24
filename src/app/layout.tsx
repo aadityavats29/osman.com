@@ -5,21 +5,19 @@ import "./globals.css";
 /**
  * Self-hosted variable fonts (no Google Fonts request at runtime — faster and
  * GDPR-friendlier for an EU audience). Files vendored from Fontsource (OFL).
+ *
+ * Archivo variable carries both wght (100–900) and wdth (62–125) axes — the
+ * display voice of the site: strong, slightly condensed grotesk uppercase.
  */
-const fraunces = localFont({
+const archivo = localFont({
   src: [
     {
-      path: "../fonts/fraunces-latin-full-normal.woff2",
+      path: "../fonts/archivo-latin-standard-normal.woff2",
       style: "normal",
       weight: "100 900",
     },
-    {
-      path: "../fonts/fraunces-latin-full-italic.woff2",
-      style: "italic",
-      weight: "100 900",
-    },
   ],
-  variable: "--font-fraunces",
+  variable: "--font-archivo",
   display: "swap",
 });
 
@@ -59,26 +57,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    // suppressHydrationWarning: the inline script below adds a "js" class to
-    // <html> before React hydrates, so the className attribute intentionally
-    // differs from the server-rendered HTML. React would otherwise log a
-    // hydration-mismatch console error in development. Suppression is scoped
-    // to this element only — children are still fully checked.
-    <html
-      lang="en"
-      className={`${fraunces.variable} ${inter.variable}`}
-      suppressHydrationWarning
-    >
-      <body>
-        {/* Motion gate: mark JS availability before first paint so scroll-reveal
-            hiding never applies for no-JS visitors (progressive enhancement). */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `document.documentElement.classList.add("js");`,
-          }}
-        />
-        {children}
-      </body>
+    <html lang="en" className={`${archivo.variable} ${inter.variable}`}>
+      {/* No pre-hydration scripts needed: reveals arm themselves client-side
+          after hydration (content is visible by default for no-JS visitors),
+          and cursor/header states are only ever set by client components. */}
+      <body>{children}</body>
     </html>
   );
 }

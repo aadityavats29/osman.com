@@ -7,22 +7,24 @@
 */
 
 @theme {
-  /* Colour */
-  --color-canvas: #faf8f3;
-  --color-canvas-soft: #f2eee5;
-  --color-ink: #1a1712;
-  --color-ink-soft: #57503f;
-  --color-ink-faint: #8b8371;
-  --color-line: #e3ddcf;
-  --color-line-dark: #353026;
-  --color-accent: #9a5325;
-  --color-accent-strong: #7c3f18;
-  --color-ok: #3d6b35;
-  --color-warn: #8a6d1f;
-  --color-danger: #8c2f23;
+  /* Colour — bone / charcoal / tobacco. One accent, olive reserved for
+     free-entry states. Grounded and European, not pastel. */
+  --color-canvas: #f1efe8;
+  --color-canvas-soft: #e6e2d6;
+  --color-ink: #141310;
+  --color-ink-soft: #4a483e;
+  --color-ink-faint: #79766a;
+  --color-line: #d3cfc0;
+  --color-line-dark: #302e27;
+  --color-accent: #7a3e14;
+  --color-accent-strong: #5b2e0e;
+  --color-ok: #4c5530;
+  --color-warn: #7e621c;
+  --color-danger: #7e2a1e;
 
-  /* Type */
-  --font-display: var(--font-fraunces), "Fraunces", Georgia, serif;
+  /* Type — Archivo variable (wght 100–900, wdth 62–125): strong grotesk
+     display voice. Inter stays the quiet body/UI voice. */
+  --font-display: var(--font-archivo), "Archivo", "Helvetica Neue", Arial, sans-serif;
   --font-sans: var(--font-inter), "Inter", "Helvetica Neue", Arial, sans-serif;
 
   /* Motion — the site-wide timing system ("Listen Between the Notes").
@@ -68,17 +70,29 @@ body {
 /* Display type helpers */
 .font-display {
   font-family: var(--font-display);
-  font-variation-settings: "opsz" 72;
-  letter-spacing: -0.01em;
+  font-weight: 620;
+  font-variation-settings: "wdth" 87;
+  letter-spacing: -0.015em;
+  line-height: 1.04;
+}
+
+/* Big editorial moments: condensed uppercase display */
+.display-caps {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: "wdth" 76;
+  text-transform: uppercase;
+  letter-spacing: 0.005em;
+  line-height: 0.92;
 }
 
 .eyebrow {
   font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--color-ink-faint);
+  color: var(--color-ink-soft);
 }
 
 .tabular {
@@ -102,10 +116,10 @@ body {
 
 /* =========================================================================
    MOTION SYSTEM
-   - Hidden pre-reveal states apply ONLY under html.js (set by an inline
-     script before first paint), so content is never invisible without JS.
-   - Every reveal has a keyframe safety net: if hydration/IO never arrives,
-     elements force themselves visible after 2.4s.
+   - Content renders visible by default (no-JS and SEO safe); reveals arm
+     themselves client-side after hydration, only below the fold.
+   - Cursor/header enhancements are driven entirely by client components, so
+     no pre-hydration script is required anywhere.
    - prefers-reduced-motion strips transforms, marquees and parallax while
      preserving all content.
    ========================================================================= */
@@ -362,12 +376,12 @@ button:focus-visible .arrow-nudge {
 .site-header .header-inner {
   transition: height 320ms var(--ease-out-cubic);
 }
-.js .site-header[data-scrolled="true"] {
+.site-header[data-scrolled="true"] {
   background-color: color-mix(in srgb, var(--color-canvas) 88%, transparent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
-.js .site-header[data-scrolled="true"] .header-inner {
+.site-header[data-scrolled="true"] .header-inner {
   height: 3.25rem;
 }
 
@@ -470,5 +484,400 @@ button:hover .play-button,
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* =========================================================================
+   MOTION PASS V2 — signature interactions
+   ElectraJazz: pinned horizontal records + context cursor.
+   Westones: dotted-leader discography rows, text-roll hovers.
+   Headztones: image-led hero, variable-width type morphs.
+   ========================================================================= */
+
+/* ---- Variable-width morph (Headztones): text gains width on hover ---- */
+.morph-wide {
+  transition: font-variation-settings 480ms var(--ease-inout-cubic),
+    color var(--dur-micro) var(--ease-out-cubic);
+}
+a:hover .morph-wide,
+a:focus-visible .morph-wide,
+.morph-trigger:hover .morph-wide,
+.morph-trigger:focus-within .morph-wide {
+  font-variation-settings: "wdth" 100;
+}
+
+/* ---- Text roll (Westones): label rolls up, duplicate rolls in ---- */
+.text-roll {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.text-roll > span {
+  display: block;
+  transition: transform 420ms var(--ease-inout-cubic);
+}
+.text-roll > span:last-child {
+  position: absolute;
+  inset: 0;
+  transform: translateY(105%);
+}
+a:hover .text-roll > span:first-child,
+a:focus-visible .text-roll > span:first-child,
+.roll-trigger:hover .text-roll > span:first-child {
+  transform: translateY(-105%);
+}
+a:hover .text-roll > span:last-child,
+a:focus-visible .text-roll > span:last-child,
+.roll-trigger:hover .text-roll > span:last-child {
+  transform: translateY(0);
+}
+
+/* ---- Border draw (outline buttons): frame draws around on hover ---- */
+.border-draw {
+  position: relative;
+  border: 1px solid var(--color-line);
+  transition: color var(--dur-micro) var(--ease-out-cubic),
+    background-color var(--dur-micro) var(--ease-out-cubic);
+}
+.border-draw::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border: 1px solid currentColor;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 420ms var(--ease-out-cubic);
+  pointer-events: none;
+}
+.border-draw:hover::after,
+.border-draw:focus-visible::after {
+  clip-path: inset(0 0 0 0);
+}
+
+/* ---- Dotted leader (Westones rows) ---- */
+.dot-leader {
+  flex: 1;
+  min-width: 2rem;
+  height: 1px;
+  margin: 0 1rem;
+  background-image: radial-gradient(circle, currentColor 1px, transparent 1.2px);
+  background-size: 7px 2px;
+  background-position: bottom;
+  background-repeat: repeat-x;
+  opacity: 0.45;
+  align-self: center;
+}
+
+/* ---- Vinyl disc (pure CSS placeholder record) ---- */
+.vinyl {
+  position: relative;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, #17150f 0 26%, transparent 26.5%),
+    repeating-radial-gradient(circle at center, #1c1a14 0 2px, #221f18 2px 4px);
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.55);
+}
+/* On dark sections the record needs a rim and lighter grooves to read */
+.vinyl-dark {
+  background:
+    radial-gradient(circle at center, #201d16 0 26%, transparent 26.5%),
+    repeating-radial-gradient(circle at center, #262219 0 2px, #2e2a20 2px 4px);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.14),
+    0 0 0 1px rgb(255 255 255 / 0.07),
+    0 18px 50px rgb(0 0 0 / 0.5);
+}
+.vinyl::before {
+  /* label */
+  content: "";
+  position: absolute;
+  inset: 33%;
+  border-radius: 50%;
+  background: var(--vinyl-label, var(--color-accent));
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.25);
+}
+.vinyl::after {
+  /* spindle hole + light sweep */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, var(--color-canvas) 0 2.2%, transparent 2.6%),
+    conic-gradient(from 210deg, transparent 0 40%, rgb(255 255 255 / 0.07) 47% 53%, transparent 60%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .vinyl-spin {
+    animation: vinyl-spin var(--spin-duration, 14s) linear infinite;
+  }
+  @keyframes vinyl-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+/* ---- Records section (pinned horizontal) ---- */
+.records-viewport {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+.records-track {
+  display: flex;
+  align-items: center;
+  gap: clamp(3rem, 8vw, 7rem);
+  will-change: transform;
+  padding-inline: 8vw;
+}
+.records-bgtype {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-size: clamp(9rem, 26vw, 22rem);
+  color: transparent;
+  -webkit-text-stroke: 1px var(--color-line-dark);
+  opacity: 0.5;
+  pointer-events: none;
+  will-change: transform;
+  user-select: none;
+}
+.record-card {
+  flex-shrink: 0;
+  width: clamp(240px, 34vw, 420px);
+  will-change: transform;
+}
+/* Mobile / reduced-motion fallback: native horizontal swipe */
+.records-swipe {
+  display: flex;
+  gap: 2rem;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding: 1rem 1.25rem 1.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+.records-swipe > * {
+  scroll-snap-align: center;
+  flex-shrink: 0;
+  width: min(72vw, 320px);
+}
+
+/* ---- Custom cursor (desktop fine-pointer only) ---- */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  body.cursor-active,
+  body.cursor-active a,
+  body.cursor-active button,
+  body.cursor-active [role="button"],
+  body.cursor-active summary {
+    cursor: none;
+  }
+  /* Native pointer stays for anything typed or accessibility-critical */
+  body.cursor-active input,
+  body.cursor-active textarea,
+  body.cursor-active select,
+  body.cursor-active label,
+  body.cursor-active [data-native-cursor] {
+    cursor: auto;
+  }
+}
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 90;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  background: var(--color-ink);
+  mix-blend-mode: difference;
+  filter: invert(1);
+  pointer-events: none;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: width 260ms var(--ease-out-cubic), height 260ms var(--ease-out-cubic),
+    margin 260ms var(--ease-out-cubic), background-color 260ms var(--ease-out-cubic),
+    opacity 200ms var(--ease-out-cubic);
+  will-change: transform;
+}
+.cursor-dot .cursor-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: "wdth" 84;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  opacity: 0;
+  transition: opacity 180ms var(--ease-out-cubic) 80ms;
+  user-select: none;
+  white-space: nowrap;
+}
+/* Labelled states drop the blend trick: legibility beats elegance. */
+.cursor-dot[data-state] {
+  mix-blend-mode: normal;
+  filter: none;
+}
+.cursor-dot[data-state="label"] {
+  width: 74px;
+  height: 74px;
+  margin: -37px 0 0 -37px;
+  background: var(--color-accent);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 0.25);
+}
+.cursor-dot[data-state="label"] .cursor-label {
+  opacity: 1;
+  color: var(--color-canvas);
+}
+.cursor-dot[data-state="disc"] {
+  width: 58px;
+  height: 58px;
+  margin: -29px 0 0 -29px;
+  background:
+    radial-gradient(circle at center, white 0 8%, transparent 9%),
+    radial-gradient(circle at center, transparent 0 30%, rgb(255 255 255 / 0.16) 31% 33%, transparent 34%),
+    repeating-radial-gradient(circle at center, rgb(255 255 255 / 0.9) 0 1.5px, rgb(255 255 255 / 0.75) 1.5px 3px);
+}
+.cursor-dot[data-state="disc"] .cursor-label {
+  opacity: 1;
+  mix-blend-mode: normal;
+  color: #141310;
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .cursor-dot {
+    display: flex;
+  }
+}
+
+/* ---- Hero V2 (Headztones): split composition, segmented type ---- */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-line {
+    display: block;
+    /* Mask only above/below the line so the rise-from-below reveal works while
+       the oversized name may still overlap the image column horizontally. */
+    clip-path: inset(-12% -100vw 0 -100vw);
+  }
+  .hero-line > span {
+    display: block;
+    transform: translateY(110%);
+    animation: hero-line-in 780ms var(--ease-out-cubic) forwards;
+  }
+  .hero-line:nth-child(1) > span { animation-delay: 240ms; }
+  .hero-line:nth-child(2) > span { animation-delay: 360ms; }
+  @keyframes hero-line-in {
+    to {
+      transform: translateY(0);
+    }
+  }
+  .hero-image-mask {
+    clip-path: inset(0 0 100% 0);
+    animation: hero-image-open 1050ms var(--ease-out-cubic) 120ms forwards;
+    overflow: hidden;
+  }
+  @keyframes hero-image-open {
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  .hero-image-inner {
+    transform: scale(1.12);
+    animation: hero-image-settle 1600ms var(--ease-out-soft) 120ms forwards;
+  }
+  @keyframes hero-image-settle {
+    to {
+      transform: scale(1);
+    }
+  }
+  /* ambient drift after intro */
+  .hero-ambient {
+    animation: hero-ambient 14s ease-in-out 2s infinite alternate;
+  }
+  @keyframes hero-ambient {
+    from {
+      transform: scale(1) translateY(0);
+    }
+    to {
+      transform: scale(1.045) translateY(-8px);
+    }
+  }
+  .hero-meta-in {
+    opacity: 0;
+    animation: hero-rise 640ms var(--ease-out-cubic) 620ms forwards;
+  }
+}
+
+/* ---- Service rows: oversized index + morphing name ---- */
+.service-index {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: "wdth" 70;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--color-ink-faint);
+  transition: color 360ms var(--ease-out-cubic), transform 360ms var(--ease-out-cubic);
+}
+.morph-trigger:hover .service-index,
+.morph-trigger:focus-within .service-index {
+  color: var(--color-accent);
+  -webkit-text-stroke: 1px var(--color-accent);
+  transform: translateX(6px);
+}
+
+/* ---- Discography rows (Westones) ---- */
+.disco-row {
+  transition: opacity 320ms var(--ease-out-cubic), background-color 320ms var(--ease-out-cubic);
+}
+.disco-list:hover .disco-row:not(:hover) {
+  opacity: 0.45;
+}
+.disco-art {
+  clip-path: inset(0 0 0 100%);
+  transition: clip-path 520ms var(--ease-out-cubic);
+}
+.disco-row:hover .disco-art,
+.disco-row:focus-within .disco-art {
+  clip-path: inset(0 0 0 0);
+}
+.disco-vinyl {
+  transform: translateX(-38%);
+  transition: transform 620ms var(--ease-out-cubic) 120ms;
+}
+.disco-row:hover .disco-vinyl,
+.disco-row:focus-within .disco-vinyl {
+  transform: translateX(6%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .disco-art {
+    clip-path: none;
+    transition: none;
+  }
+  .disco-vinyl {
+    transform: translateX(-20%);
+    transition: none;
+  }
+  .disco-list:hover .disco-row:not(:hover) {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-line > span,
+  .hero-image-mask,
+  .hero-image-inner,
+  .hero-ambient,
+  .hero-meta-in {
+    animation: none;
+    transform: none;
+    clip-path: none;
+    opacity: 1;
+  }
+  .cursor-dot {
+    display: none !important;
+  }
+  .records-bgtype {
+    display: none;
   }
 }

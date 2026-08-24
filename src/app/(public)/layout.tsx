@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { getRepos } from "@/server/repositories";
 import { SiteHeader } from "@/components/public/SiteHeader";
 import { SiteFooter } from "@/components/public/SiteFooter";
+import { Cursor } from "@/components/motion/Cursor";
 
 // Settings (footer socials, contact email) are editable in the Studio and must
 // appear without a rebuild.
@@ -21,6 +22,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
       <SiteHeader />
       <main id="main">{children}</main>
       <SiteFooter settings={settings} />
+      <Cursor />
     </>
   );
 }

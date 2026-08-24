@@ -4,12 +4,14 @@ import { getRepos } from "@/server/repositories";
 import { upcomingPublished } from "@/lib/events";
 import { JsonLd, personJsonLd } from "@/lib/seo";
 import { Container } from "@/components/shared/Container";
-import { PlaceholderImage } from "@/components/shared/PlaceholderImage";
 import { EventList } from "@/components/public/EventList";
 import { VideoEmbed } from "@/components/public/VideoEmbed";
 import { TrackedLink } from "@/components/public/TrackedLink";
+import { HeroArt } from "@/components/public/HeroArt";
+import { RecordSleeve } from "@/components/public/RecordSleeve";
 import { Reveal } from "@/components/motion/Reveal";
 import { Marquee } from "@/components/motion/Marquee";
+import { RecordsScroller } from "@/components/motion/RecordsScroller";
 
 const INSTRUMENTS = [
   "Bass guitar",
@@ -104,38 +106,62 @@ export default async function HomePage() {
         </div>
       )}
 
-      {/* Hero — first-load sequence: eyebrow → name → tagline → CTAs, then the
-          media opens through a clip mask while settling from a slight scale. */}
-      <section className="py-20 sm:py-28">
-        <Container wide>
-          <div className="hero-seq max-w-3xl">
-            <p className="eyebrow">Amsterdam — Netherlands · Italy · Europe</p>
-            <h1 className="font-display mt-5 text-6xl leading-[0.95] tracking-tight sm:text-7xl lg:text-8xl">
-              Osman Meyredi
-            </h1>
-            <p className="mt-7 max-w-xl text-lg leading-relaxed text-ink-soft">
-              {settings.heroTagline}
-            </p>
-            <div className="mt-9 flex flex-wrap items-center gap-6">
-              <Link
-                href="/shows"
-                className="btn-motion inline-block bg-ink px-6 py-3 text-sm font-medium tracking-wide text-canvas uppercase"
+      {/* Hero V2 (Headztones direction): image and type as one composition.
+          Sequence: image opens through a mask & settles from a tight crop →
+          OSMAN / MEYREDI enter as separate masked lines → metadata + CTAs →
+          ambient image drift remains after the intro. */}
+      <section className="border-b border-line">
+        <Container wide className="relative">
+          <div className="grid items-end gap-x-10 py-14 sm:py-16 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:py-0">
+            <div className="relative z-10 lg:py-24">
+              <p className="hero-meta-in eyebrow">
+                Amsterdam — Netherlands · Italy · Europe
+              </p>
+              <h1
+                className="display-caps mt-6 text-[19vw] sm:text-8xl lg:text-[9.5rem] xl:text-[11rem]"
+                aria-label="Osman Meyredi"
               >
-                See dates <span className="arrow-nudge ml-1" aria-hidden="true">→</span>
-              </Link>
-              <Link href="/contact" className="u-link text-sm">
-                Booking &amp; inquiries
-              </Link>
+                <span className="hero-line" aria-hidden="true">
+                  <span>Osman</span>
+                </span>
+                <span className="hero-line lg:ml-[0.8em]" aria-hidden="true">
+                  <span>Meyredi</span>
+                </span>
+              </h1>
+              <div className="hero-meta-in mt-8 grid max-w-xl gap-6 sm:grid-cols-[1fr_auto] sm:items-end">
+                <p className="text-base leading-relaxed text-ink-soft">
+                  {settings.heroTagline}
+                </p>
+              </div>
+              <div className="hero-meta-in mt-9 flex flex-wrap items-center gap-6">
+                <Link
+                  href="/shows"
+                  data-cursor="DATES"
+                  className="btn-motion inline-block bg-ink px-6 py-3 text-sm font-medium tracking-wide text-canvas uppercase"
+                >
+                  See dates <span className="arrow-nudge ml-1" aria-hidden="true">→</span>
+                </Link>
+                <Link href="/contact" data-cursor="BOOK" className="u-link text-sm">
+                  Booking &amp; inquiries
+                </Link>
+              </div>
             </div>
-          </div>
-          <div className="hero-media mt-16">
-            <PlaceholderImage label="Hero — performance photo or film still" ratio="16/9" />
+            {/* Image column: bleeds to the top edge, overlapped by the name */}
+            <div className="relative -order-1 lg:order-none">
+              <div className="hero-image-mask lg:-ml-16">
+                <div className="hero-image-inner">
+                  <div className="hero-ambient">
+                    <HeroArt />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </Container>
       </section>
 
       {/* Instruments strip — one quiet marquee, part of the composition */}
-      <div className="border-t border-line py-5">
+      <div className="border-b border-line py-5">
         <Marquee duration={56} label="Instruments and disciplines">
           {INSTRUMENTS.map((label) => (
             <span key={label} className="flex items-center text-sm tracking-[0.18em] text-ink-faint uppercase">
@@ -182,30 +208,37 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* Featured release */}
+      {/* Featured music (Headztones direction): one release dominates —
+          sticky oversized sleeve, condensed display title, vinyl slides out
+          on hover, listen platforms as drawn-border actions. */}
       {featuredRelease && (
-        <section className="border-t border-line py-24">
+        <section className="border-t border-line bg-canvas-soft py-24">
           <Container wide>
             <Reveal variant="text">
-              <p className="eyebrow">Latest release</p>
+              <p className="eyebrow">Featured release</p>
             </Reveal>
-            <div className="mt-10 grid items-start gap-10 md:grid-cols-[minmax(0,320px)_1fr]">
-              <Reveal variant="mask">
-                <PlaceholderImage
-                  label={`Album artwork — ${featuredRelease.title}`}
-                  ratio="1/1"
+            <div className="mt-12 grid items-start gap-x-14 gap-y-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+              <div className="roll-trigger group lg:sticky lg:top-24">
+                <RecordSleeve
+                  title={featuredRelease.title}
+                  year={featuredRelease.year}
+                  tone="#7a3e14"
+                  artworkUrl={featuredRelease.artworkUrl}
+                  withVinyl
+                  vinylClassName="transition-transform duration-700 ease-(--ease-out-cubic) group-hover:translate-x-[16%]"
+                  className="pr-[14%]"
                 />
-              </Reveal>
-              <Reveal variant="text" delay={140}>
-                <h2 className="font-display text-3xl leading-tight sm:text-4xl">
+              </div>
+              <div>
+                <h2 className="display-caps text-5xl sm:text-6xl xl:text-7xl">
                   {featuredRelease.title}
                 </h2>
-                <p className="tabular mt-2 text-sm text-ink-faint">
+                <p className="tabular mt-4 text-sm tracking-wide text-ink-faint uppercase">
                   {RELEASE_TYPE_LABELS[featuredRelease.releaseType]}
                   {featuredRelease.year ? ` · ${featuredRelease.year}` : ""}
                 </p>
                 {featuredRelease.description && (
-                  <p className="mt-5 max-w-xl leading-relaxed text-ink-soft">
+                  <p className="mt-6 max-w-xl leading-relaxed text-ink-soft">
                     {featuredRelease.description}
                   </p>
                 )}
@@ -213,7 +246,7 @@ export default async function HomePage() {
                   <p className="mt-3 text-sm text-ink-faint">{featuredRelease.credits}</p>
                 )}
                 {listenLinks.length > 0 && (
-                  <ul className="mt-7 flex flex-wrap gap-3">
+                  <ul className="mt-9 flex flex-wrap gap-3">
                     {listenLinks.map((l) => (
                       <li key={l.label}>
                         <TrackedLink
@@ -221,7 +254,9 @@ export default async function HomePage() {
                           external
                           event="listen_click"
                           eventProps={{ platform: l.label, release: featuredRelease.slug }}
-                          className="inline-block border border-ink px-4 py-2 text-sm font-medium tracking-wide uppercase transition-colors hover:bg-ink hover:text-canvas"
+                          data-cursor="LISTEN"
+                          data-cursor-style="disc"
+                          className="border-draw inline-block px-5 py-2.5 text-sm font-medium tracking-wide uppercase hover:bg-ink hover:text-canvas"
                         >
                           {l.label}
                         </TrackedLink>
@@ -229,12 +264,12 @@ export default async function HomePage() {
                     ))}
                   </ul>
                 )}
-                <p className="mt-6">
-                  <Link href="/music" className="u-link text-sm hover:text-accent-strong">
-                    All releases
+                <p className="mt-8">
+                  <Link href="/music" data-cursor="VIEW" className="u-link text-sm hover:text-accent-strong">
+                    The full discography <span className="arrow-nudge" aria-hidden="true">→</span>
                   </Link>
                 </p>
-              </Reveal>
+              </div>
             </div>
           </Container>
         </section>
@@ -250,34 +285,38 @@ export default async function HomePage() {
                 Concerts, coaching, workshops
               </h2>
             </Reveal>
-            <div className="mt-12 grid gap-x-10 gap-y-12 md:grid-cols-3">
+            {/* Distinct identities per service: outlined index numerals fill
+                with the accent on hover, names widen (variable wdth axis). */}
+            <div className="mt-12">
               {services.map((service, i) => (
-                <Reveal
+                <div
                   key={service.id}
-                  variant="card"
-                  delay={i * 90}
-                  className="group border-t border-line pt-6 transition-colors duration-300 hover:border-ink"
+                  className="morph-trigger group border-t border-line py-8 transition-colors duration-300 last:border-b hover:border-ink"
                 >
-                  <h3 className="font-display text-2xl">
-                    <Link
-                      href={`/services/${service.slug}`}
-                      className="inline-block transition-transform duration-300 ease-(--ease-out-cubic) group-hover:translate-x-1 hover:text-accent-strong"
-                    >
-                      {service.title}
-                    </Link>
-                  </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-ink-soft">
-                    {service.shortDescription}
-                  </p>
-                  <p className="mt-4">
-                    <Link
-                      href={`/services/${service.slug}`}
-                      className="u-link text-sm hover:text-accent-strong"
-                    >
+                  <Link
+                    href={`/services/${service.slug}`}
+                    data-cursor="VIEW"
+                    className="grid items-baseline gap-x-8 gap-y-3 sm:grid-cols-[5rem_1fr_auto]"
+                  >
+                    <span className="service-index text-5xl sm:text-6xl" aria-hidden="true">
+                      0{i + 1}
+                    </span>
+                    <span>
+                      <span
+                        className="font-display morph-wide block text-3xl sm:text-4xl"
+                        style={{ fontVariationSettings: '"wdth" 80' }}
+                      >
+                        {service.title}
+                      </span>
+                      <span className="mt-2 block max-w-xl text-sm leading-relaxed text-ink-soft">
+                        {service.shortDescription}
+                      </span>
+                    </span>
+                    <span className="u-link hidden text-sm sm:inline">
                       Read more <span className="arrow-nudge" aria-hidden="true">→</span>
-                    </Link>
-                  </p>
-                </Reveal>
+                    </span>
+                  </Link>
+                </div>
               ))}
             </div>
           </Container>
@@ -303,6 +342,27 @@ export default async function HomePage() {
           </Reveal>
         </Container>
       </section>
+
+      {/* RECORDS — ElectraJazz-inspired pinned horizontal section. Vertical
+          scroll drives the discs across the viewport; outlined typography
+          drifts behind at a slower rate; discs spin continuously and react to
+          scroll velocity. Mobile & reduced-motion get a native swipe strip. */}
+      {releases.length > 0 && (
+        /* NOTE: no overflow-hidden here — it would re-parent position:sticky
+           and break the pinned viewport. Horizontal overflow is contained by
+           .records-viewport itself. */
+        <section className="border-t border-line bg-ink text-canvas">
+          <Container wide className="pt-20 pb-4">
+            <p className="eyebrow" style={{ color: "var(--color-ink-faint)" }}>
+              The records
+            </p>
+            <h2 className="display-caps mt-3 text-4xl sm:text-5xl">
+              Spin through the shelf
+            </h2>
+          </Container>
+          <RecordsScroller releases={releases} />
+        </section>
+      )}
 
       {/* Featured live video — dark band */}
       {featuredVideo && (
