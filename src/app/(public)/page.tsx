@@ -13,7 +13,6 @@ import { RecordSleeve } from "@/components/public/RecordSleeve";
 import { Reveal } from "@/components/motion/Reveal";
 import { Marquee } from "@/components/motion/Marquee";
 import { RecordsScroller } from "@/components/motion/RecordsScroller";
-import { PauseWhenHidden } from "@/components/motion/PauseWhenHidden";
 
 const INSTRUMENTS = [
   "Bass guitar",
@@ -214,23 +213,23 @@ export default async function HomePage() {
           sticky oversized sleeve, condensed display title, vinyl slides out
           on hover, listen platforms as drawn-border actions. */}
       {featuredRelease && (
-        <section className="border-t border-line bg-canvas-soft py-24">
+        <section className="feat-hover group/feat border-t border-line bg-canvas-soft py-24">
           <Container wide>
             <Reveal variant="text">
               <p className="eyebrow">Featured release</p>
             </Reveal>
             <div className="mt-12 grid items-start gap-x-14 gap-y-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-              <PauseWhenHidden className="roll-trigger group lg:sticky lg:top-24">
+              <div className="lg:sticky lg:top-24">
                 <RecordSleeve
                   title={featuredRelease.title}
                   year={featuredRelease.year}
                   tone="#a34a45"
                   artworkUrl={featuredRelease.artworkUrl}
                   withVinyl
-                  vinylClassName="transition-transform duration-700 ease-(--ease-out-cubic) group-hover:translate-x-[16%]"
+                  vinylClassName="transition-transform duration-500 ease-(--ease-out-cubic) group-hover/feat:translate-x-[16%]"
                   className="pr-[14%]"
                 />
-              </PauseWhenHidden>
+              </div>
               <div>
                 <h2 className="display-caps text-5xl sm:text-6xl xl:text-7xl">
                   {featuredRelease.title}
