@@ -635,6 +635,11 @@ a:focus-visible .text-roll > span:last-child,
 .disco-row:not(:hover):not(:focus-within) .vinyl-spin {
   animation-play-state: paused;
 }
+/* Featured-release section (home): the record wakes the moment the pointer
+   enters the SECTION — same behaviour as the discography rows. */
+.feat-hover:not(:hover):not(:focus-within) .vinyl-spin {
+  animation-play-state: paused;
+}
 
 /* ---- Records section (pinned horizontal) ---- */
 .records-viewport {
@@ -924,12 +929,29 @@ a:focus-visible .text-roll > span:last-child,
   height: 46px;
   flex-shrink: 0;
   border-radius: 50%;
-  transition: transform 280ms var(--ease-out-cubic);
+  /* Width/height ride the same 320ms curve as .header-inner so the record
+     compacts in step with the bar. */
+  transition: transform 280ms var(--ease-out-cubic),
+    width 320ms var(--ease-out-cubic), height 320ms var(--ease-out-cubic);
   will-change: transform;
 }
 .vinyl-toggle:hover,
 .vinyl-toggle:focus-visible {
   transform: scale(1.1);
+}
+/* Compacted bar: the 46px record was sized for the 64px header (9px
+   clearance). In the 3.25rem bar it kept only 3px — 0.7px hovered, with the
+   rim ring past the viewport edge — so its top arc read as cut. Scale the
+   record with the bar (38/52 ≈ the resting 46/64 proportion): 7px clearance
+   at rest, 5.1px hovered, ring fully on screen. Applies with the menu open
+   too — data-scrolled persists, and 46px over the veil would sit 3px from
+   the screen edge again. */
+.site-header[data-scrolled="true"] .vinyl-toggle {
+  width: 38px;
+  height: 38px;
+}
+.site-header[data-scrolled="true"] .vinyl-toggle .vinyl-label-mark {
+  font-size: 0.46rem;
 }
 .vinyl-toggle .vinyl-face {
   position: absolute;
@@ -950,6 +972,7 @@ a:focus-visible .text-roll > span:last-child,
   letter-spacing: 0.08em;
   color: #ffffff;
   pointer-events: none;
+  transition: font-size 320ms var(--ease-out-cubic);
 }
 /* Menu open: the record eases into a slow constant spin on top of its
    scroll rotation (JS composes both) and the label mark swaps color. */
