@@ -33,23 +33,9 @@ const inter = localFont({
   display: "swap",
 });
 
-/**
- * Gilroy — the logotype's face, applied site-wide per the brand direction.
- * Only Regular (400) was supplied, so heavier weights are browser-synthesized;
- * drop real Medium/Bold files here later for true weights. Archivo and Inter
- * stay in the stacks behind it as fallbacks.
- */
-const gilroy = localFont({
-  src: [
-    {
-      path: "../fonts/gilroy-regular.woff2",
-      style: "normal",
-      weight: "400",
-    },
-  ],
-  variable: "--font-gilroy",
-  display: "swap",
-});
+// Gilroy lives on only inside the logotype artwork (a traced SVG) and the
+// favicon; it is not registered as a webfont. Its woff2 remains in src/fonts
+// for an easy re-enable if the brand direction changes again.
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.osmanmeyredi.com";
 
@@ -75,7 +61,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${gilroy.variable} ${archivo.variable} ${inter.variable}`}>
+    <html lang="en" className={`${archivo.variable} ${inter.variable}`}>
       {/* No pre-hydration scripts needed: reveals arm themselves client-side
           after hydration (content is visible by default for no-JS visitors),
           and cursor/header states are only ever set by client components. */}
