@@ -26,10 +26,11 @@
   --color-warn: #c49a3d;
   --color-danger: #cf6257;
 
-  /* Type — Archivo variable (wght 100–900, wdth 62–125): strong grotesk
-     display voice. Inter stays the quiet body/UI voice. */
-  --font-display: var(--font-archivo), "Archivo", "Helvetica Neue", Arial, sans-serif;
-  --font-sans: var(--font-inter), "Inter", "Helvetica Neue", Arial, sans-serif;
+  /* Type — Gilroy (the logotype's face) leads both voices site-wide; only
+     Regular is vendored, so bolder weights are synthesized until real files
+     arrive. Archivo (variable grotesk) and Inter remain as fallbacks. */
+  --font-display: var(--font-gilroy), var(--font-archivo), "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-sans: var(--font-gilroy), var(--font-inter), "Inter", "Helvetica Neue", Arial, sans-serif;
 
   /* Motion — the site-wide timing system ("Listen Between the Notes").
      micro: links/buttons/icons · entrance: headings/cards/rows ·
@@ -388,6 +389,21 @@ button:focus-visible .arrow-nudge {
 }
 .site-header[data-scrolled="true"] .header-inner {
   height: 3.25rem;
+}
+
+/* ---- Brand wordmark ----
+   The traced logotype (public/images/logo.svg) applied as a mask so it takes
+   any text color via currentColor — one cached asset, crisp at every size.
+   Size it with a height utility; width follows the logo's aspect ratio. */
+.logo-mark {
+  /* Block, not inline-block: an inline-block rides the parent's text
+     baseline, which adds strut descender space below the mark and floats it
+     a few px above true center in flex-centered bars (the header). */
+  display: block;
+  aspect-ratio: 1586 / 776;
+  background-color: currentColor;
+  -webkit-mask: url("/images/logo.svg") center / contain no-repeat;
+  mask: url("/images/logo.svg") center / contain no-repeat;
 }
 
 /* ---- Nav links: underline draws in ---- */

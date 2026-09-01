@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { SiteSettings } from "@/lib/types";
 import { HeaderScroll } from "./HeaderScroll";
 import { FullscreenMenu } from "./FullscreenMenu";
+import { LogoWordmark } from "@/components/LogoWordmark";
 
 /**
  * Minimal header: wordmark left, vinyl navigation trigger right — the record
@@ -14,11 +15,14 @@ export function SiteHeader({ settings }: { settings: SiteSettings }) {
     <header className="site-header sticky top-0 z-70 border-b border-line bg-canvas">
       <HeaderScroll />
       <div className="header-inner mx-auto flex h-16 w-full max-w-(--container-site) items-center justify-between px-5 sm:px-8">
+        {/* relative z-80 keeps the logotype floating crisp above the menu
+            veil (z-60), same layer as the vinyl close control. */}
         <Link
           href="/"
-          className="font-display text-lg tracking-tight transition-opacity duration-200 hover:opacity-70"
+          aria-label="Osman Meyredi — home"
+          className="relative z-80 transition-opacity duration-200 hover:opacity-70"
         >
-          Osman Meyredi
+          <LogoWordmark className="h-9" />
         </Link>
         <FullscreenMenu settings={settings} />
       </div>

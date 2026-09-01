@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { SiteSettings } from "@/lib/types";
+import { LogoWordmark } from "@/components/LogoWordmark";
 
 /**
  * Vinyl-triggered fullscreen navigation (Private Mansions direction).
@@ -260,7 +261,7 @@ export function FullscreenMenu({ settings }: { settings: SiteSettings }) {
                       <Link
                         href={item.href}
                         onClick={closeMenu}
-                        className="fs-link display-caps py-1 text-5xl sm:text-6xl lg:text-7xl"
+                        className="fs-link display-caps py-1 text-5xl sm:text-6xl lg:text-[4rem]"
                       >
                         <span className="fs-index" aria-hidden="true">
                           0{i + 1}
@@ -295,7 +296,7 @@ export function FullscreenMenu({ settings }: { settings: SiteSettings }) {
             {/* Meta column */}
             <div className="fs-meta flex flex-col justify-end gap-8 border-line lg:border-l lg:pl-10">
               <div>
-                <p className="display-caps text-xl text-ink">Osman Meyredi</p>
+                <LogoWordmark label="Osman Meyredi" className="h-9 text-ink" />
                 <p className="mt-2 text-sm leading-relaxed text-ink-soft">
                   Multi-instrumentalist · bassist · composer
                   <br />
