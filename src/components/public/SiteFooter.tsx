@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { SiteSettings } from "@/lib/types";
 import { Reveal } from "@/components/motion/Reveal";
 import { Marquee } from "@/components/motion/Marquee";
+import { LogoWordmark } from "@/components/LogoWordmark";
 
 const FOOTER_GROUPS: { heading: string; links: { label: string; href: string }[] }[] = [
   {
@@ -111,12 +112,10 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
       <div className="pb-6" aria-hidden="true">
         <Marquee duration={70} label="Osman Meyredi">
           {Array.from({ length: 6 }, (_, i) => (
-            <span
+            <LogoWordmark
               key={i}
-              className="font-display px-8 text-2xl whitespace-nowrap text-ink-faint/40"
-            >
-              Osman Meyredi
-            </span>
+              className="mx-8 h-8 shrink-0 text-ink-faint/40"
+            />
           ))}
         </Marquee>
       </div>

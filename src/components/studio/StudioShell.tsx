@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logoutAction } from "@/server/actions/auth";
+import { LogoWordmark } from "@/components/LogoWordmark";
 
 const NAV = [
   { href: "/studio", label: "Dashboard", exact: true },
@@ -84,8 +85,14 @@ export function StudioShell({
     <div className="min-h-screen bg-canvas text-ink">
       {/* Mobile topbar */}
       <header className="flex items-center justify-between border-b border-line px-5 py-3 lg:hidden">
-        <Link href="/studio" className="font-display text-lg" onClick={() => setMenuOpen(false)}>
-          Osman Studio
+        <Link
+          href="/studio"
+          aria-label="Osman Studio"
+          className="flex items-baseline gap-2.5"
+          onClick={() => setMenuOpen(false)}
+        >
+          <LogoWordmark className="h-6" />
+          <span className="eyebrow">Studio</span>
         </Link>
         <button
           type="button"
@@ -111,8 +118,9 @@ export function StudioShell({
         <aside className="sticky top-0 hidden h-screen w-56 shrink-0 flex-col justify-between border-r border-line px-3 py-6 lg:flex">
           <div className="space-y-6">
             <div className="px-3">
-              <Link href="/studio" className="font-display text-xl text-ink">
-                Osman Studio
+              <Link href="/studio" aria-label="Osman Studio" className="block text-ink">
+                <LogoWordmark className="h-7" />
+                <span className="eyebrow mt-1.5 block">Studio</span>
               </Link>
               <p className="mt-1 truncate text-xs text-ink-faint">{userName}</p>
             </div>

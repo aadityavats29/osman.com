@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
  */
 
 export const inputClass =
-  "w-full rounded-md border border-line bg-white/60 px-3 py-2 text-[15px] text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none";
+  "w-full rounded-md border border-line-dark bg-canvas px-3 py-2 text-[15px] text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none";
 
 export const primaryButtonClass =
   "inline-flex items-center justify-center rounded-md bg-accent px-4 py-2 text-sm font-medium text-canvas transition-colors hover:bg-accent-strong disabled:opacity-60";
