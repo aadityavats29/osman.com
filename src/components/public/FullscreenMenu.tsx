@@ -261,7 +261,7 @@ export function FullscreenMenu({ settings }: { settings: SiteSettings }) {
                       <Link
                         href={item.href}
                         onClick={closeMenu}
-                        className="fs-link display-caps py-1 text-5xl sm:text-6xl lg:text-[4rem]"
+                        className="fs-link display-caps py-1 text-5xl sm:text-6xl lg:text-7xl"
                       >
                         <span className="fs-index" aria-hidden="true">
                           0{i + 1}
