@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { SiteSettings } from "@/lib/types";
 import { Reveal } from "@/components/motion/Reveal";
 import { Marquee } from "@/components/motion/Marquee";
-import { LogoWordmark } from "@/components/LogoWordmark";
 
 const FOOTER_GROUPS: { heading: string; links: { label: string; href: string }[] }[] = [
   {
@@ -17,19 +16,33 @@ const FOOTER_GROUPS: { heading: string; links: { label: string; href: string }[]
   {
     heading: "Services",
     links: [
-      { label: "Concerts", href: "/services/concerts" },
-      { label: "Coaching", href: "/services/coaching" },
-      { label: "Workshops", href: "/services/workshops" },
+      { label: "Concerts & Live Performances", href: "/services/concerts" },
+      { label: "Live Piano for Events", href: "/services/piano-for-events" },
+      { label: "Music Production", href: "/services/music-production" },
+      { label: "Music Library", href: "/services/music-library" },
     ],
   },
   {
     heading: "Shows",
     links: [
       { label: "Concerts", href: "/shows/concerts" },
-      { label: "Upcoming Gigs", href: "/shows/gigs" },
-      { label: "Live Videos", href: "/shows/live-videos" },
+      { label: "Upcoming gigs", href: "/shows/gigs" },
+      { label: "Tickets", href: "/shows/tickets" },
+      { label: "Live videos", href: "/shows/live-videos" },
     ],
   },
+];
+
+/** Keynote 02-09, slide 2: the footer marquee spells out the instruments. */
+const FOOTER_INSTRUMENTS = [
+  "Double bass",
+  "Bass guitar",
+  "Piano",
+  "Keyboard",
+  "Synthesiser",
+  "Guitar",
+  "Drums",
+  "Percussion",
 ];
 
 export function SiteFooter({ settings }: { settings: SiteSettings }) {
@@ -108,14 +121,18 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
         </Reveal>
       </div>
 
-      {/* Quiet wordmark — the site's one other marquee, drifting very slowly */}
+      {/* Instrument marquee (Keynote slide 2) — the words replace the
+          repeated wordmark, drifting very slowly */}
       <div className="pb-6" aria-hidden="true">
-        <Marquee duration={70} label="Osman Meyredi">
-          {Array.from({ length: 6 }, (_, i) => (
-            <LogoWordmark
-              key={i}
-              className="mx-8 h-8 shrink-0 text-ink-faint/40"
-            />
+        <Marquee duration={70} label="Instruments">
+          {FOOTER_INSTRUMENTS.map((label) => (
+            <span
+              key={label}
+              className="flex items-center text-xl tracking-[0.14em] whitespace-nowrap text-ink-faint/50 uppercase"
+            >
+              <span className="px-7">{label}</span>
+              <span aria-hidden="true" className="text-line-dark">·</span>
+            </span>
           ))}
         </Marquee>
       </div>

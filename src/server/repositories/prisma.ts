@@ -2,7 +2,9 @@ import "server-only";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, Prisma } from "@/generated/prisma/client";
 import type {
+  CollaborationRecord,
   EventRecord,
+  LibraryTrackRecord,
   LiveVideoRecord,
   MediaItemRecord,
   ProductRecord,
@@ -66,10 +68,16 @@ function eventFromDb(e: DbEvent): EventRecord {
     city: e.city,
     country: e.country,
     imageUrl: e.imageUrl,
+    imageAlt: e.imageAlt,
+    imageCredit: e.imageCredit,
     ticketUrl: e.ticketUrl,
     venueUrl: e.venueUrl,
     priceText: e.priceText,
     collaborators: e.collaborators,
+    ticketingType: e.ticketingType,
+    ctaLabel: e.ctaLabel,
+    timezone: e.timezone,
+    isDemo: e.isDemo,
     status: e.status,
     eventState: e.eventState,
     featured: e.featured,
@@ -221,6 +229,100 @@ const releasesRepo: CollectionRepo<ReleaseRecord> = {
   },
   async remove(id) {
     await client().release.delete({ where: { id } });
+  },
+};
+
+type DbCollaboration = Prisma.CollaborationGetPayload<Record<string, never>>;
+function collaborationFromDb(v: DbCollaboration): CollaborationRecord {
+  return {
+    ...v,
+    createdAt: iso(v.createdAt),
+    updatedAt: iso(v.updatedAt),
+  };
+}
+function collaborationToDb(r: Partial<CollaborationRecord>): Record<string, unknown> {
+  const out: Record<string, unknown> = { ...r };
+  delete out.id;
+  delete out.createdAt;
+  delete out.updatedAt;
+  return out;
+}
+
+const collaborationsRepo: CollectionRepo<CollaborationRecord> = {
+  async list() {
+    const rows = await client().collaboration.findMany({ orderBy: { sortOrder: "asc" } });
+    return rows.map(collaborationFromDb);
+  },
+  async get(id) {
+    const row = await client().collaboration.findUnique({ where: { id } });
+    return row ? collaborationFromDb(row) : null;
+  },
+  async getBySlug(slug) {
+    const row = await client().collaboration.findUnique({ where: { slug } });
+    return row ? collaborationFromDb(row) : null;
+  },
+  async create(data) {
+    const row = await client().collaboration.create({
+      data: collaborationToDb(data as Partial<CollaborationRecord>) as unknown as Prisma.CollaborationUncheckedCreateInput,
+    });
+    return collaborationFromDb(row);
+  },
+  async update(id, patch) {
+    const row = await client().collaboration.update({
+      where: { id },
+      data: collaborationToDb(patch) as unknown as Prisma.CollaborationUncheckedUpdateInput,
+    });
+    return collaborationFromDb(row);
+  },
+  async remove(id) {
+    await client().collaboration.delete({ where: { id } });
+  },
+};
+
+type DbLibraryTrack = Prisma.LibraryTrackGetPayload<Record<string, never>>;
+function libraryTrackFromDb(v: DbLibraryTrack): LibraryTrackRecord {
+  return {
+    ...v,
+    createdAt: iso(v.createdAt),
+    updatedAt: iso(v.updatedAt),
+  };
+}
+function libraryTrackToDb(r: Partial<LibraryTrackRecord>): Record<string, unknown> {
+  const out: Record<string, unknown> = { ...r };
+  delete out.id;
+  delete out.createdAt;
+  delete out.updatedAt;
+  return out;
+}
+
+const libraryTracksRepo: CollectionRepo<LibraryTrackRecord> = {
+  async list() {
+    const rows = await client().libraryTrack.findMany({ orderBy: { sortOrder: "asc" } });
+    return rows.map(libraryTrackFromDb);
+  },
+  async get(id) {
+    const row = await client().libraryTrack.findUnique({ where: { id } });
+    return row ? libraryTrackFromDb(row) : null;
+  },
+  async getBySlug(slug) {
+    const row = await client().libraryTrack.findUnique({ where: { slug } });
+    return row ? libraryTrackFromDb(row) : null;
+  },
+  async create(data) {
+    const row = await client().libraryTrack.create({
+      data: libraryTrackToDb(data as Partial<LibraryTrackRecord>) as unknown as Prisma.LibraryTrackUncheckedCreateInput,
+    });
+    return libraryTrackFromDb(row);
+  },
+  async update(id, patch) {
+    const row = await client().libraryTrack.update({
+      where: { id },
+      data: libraryTrackToDb(patch) as unknown as Prisma.LibraryTrackUncheckedUpdateInput,
+    });
+    return libraryTrackFromDb(row);
+  },
+  async remove(id) {
+    await client().libraryTrack.delete({ where: { id } });
   },
 };
 
@@ -416,6 +518,8 @@ export function createPrismaRepos(): Repos {
     events: eventsRepo,
     videos: videosRepo,
     releases: releasesRepo,
+    libraryTracks: libraryTracksRepo,
+    collaborations: collaborationsRepo,
     media: mediaRepo,
     services: servicesRepo,
     products: productsRepo,

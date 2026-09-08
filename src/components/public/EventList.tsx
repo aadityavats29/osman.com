@@ -1,6 +1,26 @@
 import type { EventRecord } from "@/lib/types";
 import { eventCta, formatEventDate } from "@/lib/events";
+import { eventIcsDataUrl } from "@/lib/calendar";
 import { TrackedLink } from "./TrackedLink";
+
+/**
+ * "Remind me" — saves the show to the visitor's calendar (.ics). The
+ * practical answer to the Xavier Rudd RSVP reference (Keynote slide 17):
+ * a commitment device that needs no account and works on every platform.
+ */
+function RemindMe({ event }: { event: EventRecord }) {
+  return (
+    <a
+      href={eventIcsDataUrl(event)}
+      download={`osman-meyredi-${event.slug}.ics`}
+      className="u-link text-sm text-ink-soft hover:text-accent-strong"
+      aria-label={`Add ${event.title} to your calendar`}
+      data-cursor="SAVE"
+    >
+      Remind me <span aria-hidden="true">↓</span>
+    </a>
+  );
+}
 
 /**
  * Typographic event listing — hairline rows, no cards.
@@ -88,13 +108,14 @@ function EventRowCta({ event }: { event: EventRecord }) {
   switch (cta.kind) {
     case "tickets":
       return (
-        <div className="shrink-0 sm:text-right">
+        <div className="flex shrink-0 flex-wrap items-center gap-4 sm:justify-end">
+          <RemindMe event={event} />
           <TrackedLink
             href={cta.href}
             external
             event="ticket_click"
             eventProps={{ event: event.slug }}
-            className="btn-motion inline-block bg-ink px-5 py-2.5 text-sm font-medium tracking-wide text-canvas uppercase"
+            className="btn-pill btn-pill-sm"
             aria-label={`Tickets for ${event.title}`}
             data-cursor="TICKETS"
           >
@@ -104,7 +125,7 @@ function EventRowCta({ event }: { event: EventRecord }) {
       );
     case "free":
       return (
-        <div className="flex shrink-0 items-center gap-4 sm:justify-end">
+        <div className="flex shrink-0 flex-wrap items-center gap-4 sm:justify-end">
           <span className="inline-block border border-ok px-3 py-1 text-xs font-medium tracking-wide text-ok uppercase">
             Free entry
           </span>
@@ -115,12 +136,30 @@ function EventRowCta({ event }: { event: EventRecord }) {
               event="gig_details_click"
               eventProps={{ event: event.slug }}
               className="u-link text-sm hover:text-accent-strong"
-              aria-label={`Details for ${event.title}`}
-              data-cursor="DETAILS"
+              aria-label={`Event info for ${event.title}`}
+              data-cursor="INFO"
             >
-              Details <span className="arrow-nudge" aria-hidden="true">→</span>
+              Event info <span className="arrow-nudge" aria-hidden="true">→</span>
             </TrackedLink>
           )}
+          <RemindMe event={event} />
+        </div>
+      );
+    case "info":
+      return (
+        <div className="flex shrink-0 flex-wrap items-center gap-4 sm:justify-end">
+          <TrackedLink
+            href={cta.href}
+            external
+            event="gig_details_click"
+            eventProps={{ event: event.slug }}
+            className="u-link text-sm hover:text-accent-strong"
+            aria-label={`Info for ${event.title}`}
+            data-cursor="OPEN"
+          >
+            Event info <span className="arrow-nudge" aria-hidden="true">→</span>
+          </TrackedLink>
+          <RemindMe event={event} />
         </div>
       );
     case "sold_out":

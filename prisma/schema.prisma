@@ -19,6 +19,38 @@ enum Role {
 enum EventType {
   TICKETED_CONCERT
   FREE_GIG
+  FESTIVAL
+  PRIVATE_EVENT
+  OTHER
+}
+
+/// How a visitor gets in / what the event link means (precision pack 01 §10).
+enum TicketingType {
+  TICKETED
+  FREE
+  INFO_ONLY
+  NONE
+}
+
+/// Ownership relationship of a release to Osman (precision pack 02 §13).
+enum RelationshipType {
+  OWN_RELEASE
+  CONTRIBUTING_ARTIST
+  COLLABORATION_RELEASE
+}
+
+/// Rights/attribution state for imagery and releases (pack 03 §11).
+enum RightsStatus {
+  VERIFIED
+  PENDING
+  DO_NOT_PUBLISH
+}
+
+/// Verification state for cultural claims (pack 02 §10) — PENDING never renders.
+enum VerificationStatus {
+  VERIFIED
+  PENDING
+  REJECTED
 }
 
 enum ContentStatus {
@@ -84,10 +116,18 @@ model Event {
   city          String
   country       String
   imageUrl      String?
+  imageAlt      String?
+  imageCredit   String?
   ticketUrl     String?
   venueUrl      String?
   priceText     String?
   collaborators String?
+  /// Explicit link semantics; when null the public site derives it from eventType.
+  ticketingType TicketingType?
+  ctaLabel      String?
+  timezone      String        @default("Europe/Amsterdam")
+  /// Demo fixtures are flagged so they can be found and removed before launch.
+  isDemo        Boolean       @default(false)
   status        ContentStatus @default(DRAFT)
   eventState    EventState    @default(SCHEDULED)
   featured      Boolean       @default(false)
@@ -125,6 +165,19 @@ model Release {
   slug         String        @unique
   title        String
   releaseType  ReleaseType
+  /// Ownership context (pack 02): own release / appears on / collaboration.
+  relationshipType RelationshipType @default(OWN_RELEASE)
+  /// Actual primary artist/band billing — required for non-own releases.
+  primaryArtistName String?
+  /// Osman's exact credited role, e.g. "Osman Meyredi — keyboards".
+  osmanCredit  String?
+  labelName    String?
+  catalogNumber String?
+  artworkCredit String?
+  rightsStatus RightsStatus  @default(PENDING)
+  sourceUrl    String?
+  /// Links the release to a Collaboration record by slug (e.g. "zappatika").
+  collaborationSlug String?
   artworkUrl   String?
   releaseDate  DateTime?
   year         Int?
@@ -160,6 +213,65 @@ model MediaItem {
   updatedAt   DateTime      @updatedAt
 
   @@index([status, date])
+}
+
+/// Collaborations & band projects (precision pack 02 §4, 03 §9) — ZAPPATiKA
+/// and future projects. Carries verification + rights states so unverified
+/// claims and uncredited imagery can never publish, plus restrained memorial
+/// fields (02 §6).
+model Collaboration {
+  id                 String             @id @default(cuid())
+  slug               String             @unique
+  name               String
+  role               String?
+  startYear          Int?
+  endYear            Int?
+  ongoing            Boolean            @default(false)
+  shortDescription   String?
+  longDescription    String?
+  heroImageUrl       String?
+  heroImageAlt       String?
+  heroImageCredit    String?
+  heroImageRights    RightsStatus       @default(PENDING)
+  collaborators      String?
+  externalUrl        String?
+  memorialTitle      String?
+  memorialName       String?
+  memorialYears      String?
+  memorialText       String?
+  showMemorial       Boolean            @default(false)
+  publicCulturalNote String?
+  culturalNoteStatus VerificationStatus @default(PENDING)
+  internalNotes      String?
+  status             ContentStatus      @default(DRAFT)
+  sortOrder          Int                @default(0)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  @@index([status, sortOrder])
+}
+
+/// Music Library — original tracks ready to license (Keynote 02-09-2026,
+/// slides 14/21/22). Managed from the Studio so the catalogue can grow and
+/// change over time; audio is referenced by URL (uploaded wherever the
+/// team hosts files) so no binary storage is required here.
+model LibraryTrack {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  title       String
+  genre       String?
+  moods       String[]      @default([])
+  useCases    String[]      @default([])
+  durationSec Int?
+  audioUrl    String?
+  description String?
+  status      ContentStatus @default(DRAFT)
+  featured    Boolean       @default(false)
+  sortOrder   Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([status, sortOrder])
 }
 
 model Service {

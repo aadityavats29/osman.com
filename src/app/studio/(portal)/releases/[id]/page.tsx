@@ -13,13 +13,17 @@ export default async function EditReleasePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const release = await getRepos().releases.get(id);
+  const repos = getRepos();
+  const [release, collaborations] = await Promise.all([
+    repos.releases.get(id),
+    repos.collaborations.list(),
+  ]);
   if (!release) notFound();
 
   return (
     <div>
       <PageHeader title={release.title} intro="Changes go live as soon as you publish." />
-      <ReleaseForm release={release} />
+      <ReleaseForm release={release} collaborations={collaborations} />
     </div>
   );
 }

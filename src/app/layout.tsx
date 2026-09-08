@@ -42,11 +42,11 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.osmanmeyredi.co
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Osman Meyredi — Multi-instrumentalist, bassist & composer",
+    default: "Osman Meyredi — Artist, multi-instrumentalist & producer",
     template: "%s — Osman Meyredi",
   },
   description:
-    "Osman Meyredi is a multi-instrumentalist, bassist and composer performing, coaching and facilitating workshops across the Netherlands, Italy and Europe.",
+    "Osman Meyredi — artist, multi-instrumentalist, producer, music director, composer, songwriter and singer. Live shows, piano for events, music production and a licensing library across the Netherlands, Italy and Europe.",
   openGraph: {
     type: "website",
     siteName: "Osman Meyredi",

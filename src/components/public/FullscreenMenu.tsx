@@ -34,17 +34,22 @@ const PRIMARY: {
     label: "Services",
     href: "/services",
     children: [
-      { label: "Concerts", href: "/services/concerts" },
-      { label: "Coaching", href: "/services/coaching" },
-      { label: "Workshops", href: "/services/workshops" },
+      // Keynote slide 7 wording ("Live Bookings") + the deck's final service
+      // names from slides 8/12/14, so the menu never disagrees with the pages.
+      { label: "Live Bookings", href: "/services/concerts" },
+      { label: "Piano for Events", href: "/services/piano-for-events" },
+      { label: "Music Production", href: "/services/music-production" },
+      { label: "Music Library", href: "/services/music-library" },
     ],
   },
   {
     label: "Shows",
     href: "/shows",
     children: [
+      // Keynote slide 15: Concerts · Upcoming Shows · Tickets · Live Videos
       { label: "Concerts", href: "/shows/concerts" },
       { label: "Upcoming Gigs", href: "/shows/gigs" },
+      { label: "Tickets", href: "/shows/tickets" },
       { label: "Live Videos", href: "/shows/live-videos" },
     ],
   },

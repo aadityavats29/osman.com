@@ -296,31 +296,246 @@ body {
   background-position: 0% calc(100% - 0.1em);
 }
 
-/* ---- Buttons: sliding fill + soft press ---- */
-.btn-motion {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
+/* ---- Buttons (Keynote 02-09 pass): outlined pill, no full-colour fill.
+   Default: quiet hairline pill with ink label. Hover / keyboard focus: the
+   word and the outline turn red. Touch gets the same visible outline at rest
+   plus a red :active flash, so the affordance never depends on hover. ---- */
+.btn-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--color-line-dark);
+  border-radius: 999px;
+  padding: 0.8rem 1.7rem;
+  background: transparent;
+  color: var(--color-ink);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   transition: color var(--dur-micro) var(--ease-out-cubic),
     border-color var(--dur-micro) var(--ease-out-cubic),
     transform 120ms var(--ease-out-cubic);
 }
-.btn-motion::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: var(--btn-fill, var(--color-accent-strong));
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform calc(var(--dur-micro) + 120ms) var(--ease-out-cubic);
+.btn-pill:hover,
+.btn-pill:focus-visible {
+  color: var(--color-accent-strong);
+  border-color: var(--color-accent-strong);
 }
-.btn-motion:hover::before,
-.btn-motion:focus-visible::before {
-  transform: scaleX(1);
-}
-.btn-motion:active {
+.btn-pill:active {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
   transform: scale(0.98);
+}
+.btn-pill[disabled],
+.btn-pill:disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
+.btn-pill-sm {
+  padding: 0.55rem 1.2rem;
+  font-size: 0.72rem;
+}
+
+/* ---- Contact honeypot: visually hidden, still in the DOM for bots ---- */
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* ---- Agenda wall (precision pack 01): typographic gig poster ----
+   Composition after the Black Star reference: oversized dates, grey venue
+   line, right-aligned blocks, past events struck + muted. The fixed photo
+   preview only exists for hover-capable pointers; touch/small screens get
+   an always-visible inline image instead — nobody has to guess at a hover. */
+.agenda-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.75rem 4rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+@media (min-width: 768px) {
+  /* Asymmetric editorial placement: the wall sits right, the photo preview
+     lives in the negative space on the left. */
+  .agenda-grid {
+    grid-template-columns: 1fr;
+    gap: 3.6rem;
+    width: min(58%, 44rem);
+    margin-left: auto;
+  }
+}
+.agenda-item {
+  min-width: 0;
+}
+.agenda-row {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+}
+@media (min-width: 768px) {
+  .agenda-row {
+    display: block;
+    text-align: right;
+  }
+}
+.agenda-date {
+  font-size: clamp(2rem, 6.5vw, 4.6rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+  transition: color var(--dur-micro) var(--ease-out-cubic);
+}
+.agenda-venue {
+  margin-top: 0.35rem;
+  font-size: clamp(1rem, 2.4vw, 1.7rem);
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  transition: color var(--dur-micro) var(--ease-out-cubic);
+}
+.agenda-city {
+  margin-top: 0.3rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.agenda-struck {
+  text-decoration: line-through;
+  text-decoration-thickness: 0.06em;
+}
+a.agenda-row:hover .agenda-date,
+a.agenda-row:focus-visible .agenda-date {
+  color: var(--color-accent-strong);
+}
+a.agenda-row:hover .agenda-venue,
+a.agenda-row:focus-visible .agenda-venue {
+  color: var(--color-ink);
+}
+
+/* Inline image: the touch adaptation. Hidden when a fine hover pointer is
+   available (the fixed preview takes over). */
+.agenda-inline-img {
+  display: block;
+  width: 7rem;
+  flex: 0 0 auto;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+}
+@media (hover: hover) and (pointer: fine) and (min-width: 768px) {
+  .agenda-inline-img {
+    display: none;
+  }
+}
+
+/* Fixed image-led preview layer */
+.agenda-preview {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) and (min-width: 768px) {
+  .agenda-preview {
+    display: block;
+    position: fixed;
+    left: 6vw;
+    top: 50%;
+    z-index: 30;
+    width: min(30vw, 460px);
+    pointer-events: none;
+  }
+}
+.agenda-preview-inner {
+  opacity: 0;
+  translate: 0 -50%;
+  scale: 0.97;
+  transition:
+    opacity 320ms var(--ease-out-cubic),
+    scale 420ms var(--ease-out-cubic),
+    transform 600ms var(--ease-out-cubic);
+  will-change: transform, opacity;
+}
+.agenda-preview-inner.is-visible {
+  opacity: 1;
+  scale: 1;
+}
+.agenda-preview-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 1px solid var(--color-line-dark);
+}
+.agenda-preview-credit {
+  margin-top: 0.4rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  text-align: left;
+}
+@media (prefers-reduced-motion: reduce) {
+  .agenda-preview-inner {
+    transition: opacity 200ms linear;
+    scale: 1;
+  }
+}
+
+/* ---- Library seek bar: thin editorial range input ---- */
+.track-seek {
+  width: 100%;
+  height: 4px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--color-line);
+  border-radius: 999px;
+  outline-offset: 6px;
+  cursor: pointer;
+}
+.track-seek::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-accent-strong);
+  border: none;
+}
+.track-seek::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-accent-strong);
+  border: none;
+}
+.track-seek::-moz-range-progress {
+  background: var(--color-accent);
+  height: 4px;
+  border-radius: 999px;
+}
+
+/* ---- Read more (services): accessible <details> disclosure ---- */
+.read-more > summary::-webkit-details-marker {
+  display: none;
+}
+.read-more .read-more-open {
+  display: none;
+}
+.read-more[open] .read-more-open {
+  display: inline;
+}
+.read-more[open] .read-more-closed {
+  display: none;
 }
 
 /* ---- Arrow nudge (used inside links/buttons) ---- */

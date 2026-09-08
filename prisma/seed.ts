@@ -14,7 +14,10 @@ import bcrypt from "bcryptjs";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
 import {
+  agendaDemoEvents,
+  demoCollaborations,
   demoEvents,
+  realEvents,
   demoMedia,
   demoProducts,
   demoReleases,
@@ -79,7 +82,9 @@ async function main() {
   for (const v of demoVideos) {
     await prisma.liveVideo.upsert({
       where: { slug: v.slug },
-      update: {},
+      // Keynote 02-09 slide 18 fixed the running order (Zappatika first);
+      // re-seeding pushes the approved order to existing rows.
+      update: { sortOrder: v.sortOrder },
       create: {
         id: v.id,
         slug: v.slug,
@@ -102,12 +107,29 @@ async function main() {
   for (const r of demoReleases) {
     await prisma.release.upsert({
       where: { slug: r.slug },
-      update: {},
+      update: {
+        relationshipType: r.relationshipType,
+        primaryArtistName: r.primaryArtistName,
+        osmanCredit: r.osmanCredit,
+        rightsStatus: r.rightsStatus,
+        sourceUrl: r.sourceUrl,
+        collaborationSlug: r.collaborationSlug,
+        credits: r.credits,
+      },
       create: {
         id: r.id,
         slug: r.slug,
         title: r.title,
         releaseType: r.releaseType,
+        relationshipType: r.relationshipType,
+        primaryArtistName: r.primaryArtistName,
+        osmanCredit: r.osmanCredit,
+        labelName: r.labelName,
+        catalogNumber: r.catalogNumber,
+        artworkCredit: r.artworkCredit,
+        rightsStatus: r.rightsStatus,
+        sourceUrl: r.sourceUrl,
+        collaborationSlug: r.collaborationSlug,
         artworkUrl: r.artworkUrl,
         releaseDate: r.releaseDate ? new Date(r.releaseDate) : null,
         year: r.year,
@@ -166,11 +188,21 @@ async function main() {
     });
   }
 
-  if (process.env.SEED_DEMO_EVENTS !== "false") {
-    for (const e of demoEvents) {
+  // Real events from the Keynote (02-09-2026) — seeded in every mode.
+  const eventRows = [
+    ...realEvents,
+    ...(process.env.SEED_DEMO_EVENTS !== "false" ? [...demoEvents, ...agendaDemoEvents] : []),
+  ];
+  {
+    for (const e of eventRows) {
       await prisma.event.upsert({
         where: { slug: e.slug },
-        update: {},
+        // Existing rows pick up the precision-pack metadata on re-seed.
+        update: {
+          ticketingType: e.ticketingType,
+          timezone: e.timezone,
+          isDemo: e.isDemo,
+        },
         create: {
           id: e.id,
           slug: e.slug,
@@ -185,10 +217,16 @@ async function main() {
           city: e.city,
           country: e.country,
           imageUrl: e.imageUrl,
+          imageAlt: e.imageAlt,
+          imageCredit: e.imageCredit,
           ticketUrl: e.ticketUrl,
           venueUrl: e.venueUrl,
           priceText: e.priceText,
           collaborators: e.collaborators,
+          ticketingType: e.ticketingType,
+          ctaLabel: e.ctaLabel,
+          timezone: e.timezone,
+          isDemo: e.isDemo,
           status: e.status,
           eventState: e.eventState,
           featured: e.featured,
@@ -196,6 +234,48 @@ async function main() {
         },
       });
     }
+  }
+
+  for (const c of demoCollaborations) {
+    await prisma.collaboration.upsert({
+      where: { slug: c.slug },
+      // Verified facts + memorial refresh on re-seed; internal notes preserved.
+      update: {
+        role: c.role,
+        collaborators: c.collaborators,
+        memorialTitle: c.memorialTitle,
+        memorialName: c.memorialName,
+        memorialYears: c.memorialYears,
+        showMemorial: c.showMemorial,
+      },
+      create: {
+        id: c.id,
+        slug: c.slug,
+        name: c.name,
+        role: c.role,
+        startYear: c.startYear,
+        endYear: c.endYear,
+        ongoing: c.ongoing,
+        shortDescription: c.shortDescription,
+        longDescription: c.longDescription,
+        heroImageUrl: c.heroImageUrl,
+        heroImageAlt: c.heroImageAlt,
+        heroImageCredit: c.heroImageCredit,
+        heroImageRights: c.heroImageRights,
+        collaborators: c.collaborators,
+        externalUrl: c.externalUrl,
+        memorialTitle: c.memorialTitle,
+        memorialName: c.memorialName,
+        memorialYears: c.memorialYears,
+        memorialText: c.memorialText,
+        showMemorial: c.showMemorial,
+        publicCulturalNote: c.publicCulturalNote,
+        culturalNoteStatus: c.culturalNoteStatus,
+        internalNotes: c.internalNotes,
+        status: c.status,
+        sortOrder: c.sortOrder,
+      },
+    });
   }
 
   const settingsEntries = Object.entries(demoSettings).filter(

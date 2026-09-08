@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getRepos } from "@/server/repositories";
+import { CONTACT_TOPICS } from "@/lib/validation/schemas";
 import { Container } from "@/components/shared/Container";
 import { ContactForm } from "@/components/public/ContactForm";
 import { Reveal } from "@/components/motion/Reveal";
@@ -9,18 +10,25 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Contact & Booking",
   description:
-    "Book Osman Meyredi for a concert, coaching or a workshop — or get in touch about press, collaborations and sessions. Replies come from Osman himself.",
+    "Tell Osman Meyredi about it — bookings, live piano, production, licensing, collaborations and press. Direct contacts for management and bookings, or one structured form for everything else.",
   alternates: { canonical: "/contact" },
 };
 
-const VALID_TYPES = new Set([
-  "PERFORMANCE_BOOKING",
-  "COACHING",
-  "WORKSHOP",
-  "PRESS_MEDIA",
-  "COLLABORATION_SESSION",
-  "GENERAL",
-]);
+/**
+ * Contact — precision pack 04 + technical brief + mockup.
+ *
+ * Two complementary ways in, never merged: role-based direct addresses for
+ * people who already know whom they need (management / bookings / general /
+ * Osman direct — the Xavier Rudd reference translated into this dark
+ * system), and one structured form for everyone else. info@ is displayed
+ * publicly (04 §5). Routing happens server-side from the selected topic.
+ */
+const DIRECT_CONTACTS: Array<{ role: string; person?: string; email: string }> = [
+  { role: "Management", person: "Jolene Prins", email: "jolene@osmanmeyredi.com" },
+  { role: "Bookings", email: "bookings@osmanmeyredi.com" },
+  { role: "General", email: "info@osmanmeyredi.com" },
+  { role: "Osman (direct)", email: "osman@osmanmeyredi.com" },
+];
 
 export default async function ContactPage({
   searchParams,
@@ -29,7 +37,9 @@ export default async function ContactPage({
 }) {
   const params = await searchParams;
   const typeParam = Array.isArray(params.type) ? params.type[0] : params.type;
-  const initialType = typeParam && VALID_TYPES.has(typeParam) ? typeParam : undefined;
+  const initialTopic = (CONTACT_TOPICS as readonly string[]).includes(typeParam ?? "")
+    ? typeParam
+    : undefined;
 
   const settings = await getRepos().settings.get();
   const socials = [
@@ -42,40 +52,46 @@ export default async function ContactPage({
   return (
     <section className="py-24 sm:py-32">
       <Container wide>
-        <div className="grid gap-16 lg:grid-cols-[2fr_1fr]">
-          <div>
-            <Reveal variant="text">
-              <p className="eyebrow">Contact</p>
-              <h1 className="font-display mt-4 text-4xl leading-tight sm:text-5xl">
-                Tell Osman about it
-              </h1>
-              <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft">
-                A concert to book, a band to coach, a team to bring together, an article to write
-                — start here. A few honest sentences beat a perfect brief.
-              </p>
-            </Reveal>
-            <Reveal variant="text" delay={120}>
-              <div className="mt-12">
-                <ContactForm initialType={initialType} contactEmail={settings.contactEmail} />
-              </div>
-            </Reveal>
-          </div>
+        <Reveal variant="text">
+          <p className="eyebrow">Contact</p>
+          <h1 className="font-display mt-4 max-w-3xl text-4xl leading-tight sm:text-5xl">
+            Tell Osman Meyredi about it
+          </h1>
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-soft">
+            A concert to book, a festival to organise, an event to dress, an article to write,
+            a radio programme to fill? A few honest sentences beat a perfect brief.
+          </p>
+        </Reveal>
 
-          <aside className="lg:border-l lg:border-line lg:pl-10">
-            <Reveal variant="card" delay={90}>
-              <h2 className="eyebrow">Prefer email?</h2>
-              <p className="mt-4 text-sm leading-relaxed text-ink-soft">
-                Write directly, in English, Italian or Dutch:
+        <div className="mt-14 grid gap-16 lg:grid-cols-[1fr_2.2fr]">
+          {/* Direct contacts — for people who already know whom they need. */}
+          <Reveal variant="card" delay={90}>
+            <aside aria-label="Direct contacts">
+              <h2 className="eyebrow">Straight to the right person</h2>
+              <ul className="mt-5">
+                {DIRECT_CONTACTS.map((c) => (
+                  <li key={c.email} className="border-t border-line py-4 last:border-b">
+                    <p className="tabular text-xs tracking-[0.16em] text-ink-faint uppercase">
+                      {c.role}
+                    </p>
+                    {c.person && <p className="mt-1 text-sm text-ink">{c.person}</p>}
+                    <p className="mt-0.5">
+                      <a
+                        href={`mailto:${c.email}`}
+                        className="u-link text-sm text-ink-soft hover:text-accent-strong"
+                        data-cursor="MAIL"
+                      >
+                        {c.email}
+                      </a>
+                    </p>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-4 text-xs leading-relaxed text-ink-faint">
+                Write in English, Italian or Dutch.
               </p>
-              <p className="mt-2">
-                <a href={`mailto:${settings.contactEmail}`} className="u-link text-sm">
-                  {settings.contactEmail}
-                </a>
-              </p>
-            </Reveal>
 
-            {socials.length > 0 && (
-              <Reveal variant="card" delay={170}>
+              {socials.length > 0 && (
                 <div className="mt-10">
                   <h2 className="eyebrow">Elsewhere</h2>
                   <ul className="mt-4 space-y-2.5">
@@ -93,9 +109,14 @@ export default async function ContactPage({
                     ))}
                   </ul>
                 </div>
-              </Reveal>
-            )}
-          </aside>
+              )}
+            </aside>
+          </Reveal>
+
+          {/* The form — for everyone else. */}
+          <Reveal variant="text" delay={130}>
+            <ContactForm initialTopic={initialTopic} />
+          </Reveal>
         </div>
       </Container>
     </section>

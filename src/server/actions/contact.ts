@@ -35,14 +35,19 @@ export async function submitContact(
     };
   }
 
+  // Oversized bodies are rejected before parsing (pack 05 §13).
+  const rawMessage = formData.get("message");
+  if (typeof rawMessage === "string" && rawMessage.length > 20000) {
+    return { ok: false, message: "That message is too long to send." };
+  }
+
   const parsed = contactInput.safeParse({
+    topic: formData.get("topic") ?? "",
+    role: formData.get("role") ?? "",
     name: formData.get("name") ?? "",
     email: formData.get("email") ?? "",
-    organisation: formData.get("organisation") ?? "",
-    inquiryType: formData.get("inquiryType") ?? "",
-    eventDate: formData.get("eventDate") ?? "",
-    location: formData.get("location") ?? "",
     message: formData.get("message") ?? "",
+    pageUrl: (formData.get("pageUrl") ?? "").toString().slice(0, 2000),
     website: "",
   });
 
@@ -60,7 +65,7 @@ export async function submitContact(
     return {
       ok: false,
       message:
-        "Something went wrong sending your message. Please try again in a moment, or email Osman directly.",
+        "Something went wrong while sending your message. Your text is still here — please try again.",
     };
   }
 

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getRepos } from "@/server/repositories";
-import { upcomingPublished, pastPublished } from "@/lib/events";
+import { effectiveTicketing, upcomingPublished, pastPublished } from "@/lib/events";
 import { JsonLd, musicEventJsonLd } from "@/lib/seo";
 import { Container } from "@/components/shared/Container";
 import { EventList } from "@/components/public/EventList";
+import { ShowsSubnav } from "@/components/public/ShowsSubnav";
 import { Reveal } from "@/components/motion/Reveal";
 
 export const dynamic = "force-dynamic";
@@ -19,15 +20,17 @@ export const metadata: Metadata = {
 export default async function ShowsConcertsPage() {
   const allEvents = await getRepos().events.list();
   const upcoming = upcomingPublished(allEvents).filter(
-    (e) => e.eventType === "TICKETED_CONCERT"
+    (e) => effectiveTicketing(e) === "TICKETED"
   );
   const past = pastPublished(allEvents)
-    .filter((e) => e.eventType === "TICKETED_CONCERT")
+    .filter((e) => effectiveTicketing(e) === "TICKETED")
     .slice(0, 10);
 
   return (
-    <section className="py-24 sm:py-32">
-      <Container wide>
+    <>
+      <ShowsSubnav current="/shows/concerts" />
+      <section className="py-20 sm:py-28">
+        <Container wide>
         {upcoming.map((event) => (
           <JsonLd key={event.id} data={musicEventJsonLd(event)} />
         ))}
@@ -48,9 +51,14 @@ export default async function ShowsConcertsPage() {
           ) : (
             <Reveal variant="text" delay={120}>
               <div className="border-t border-line pt-8">
+                {/* Keynote slide 16: lead with the positive — first sentence removed. */}
                 <p className="max-w-xl leading-relaxed text-ink-soft">
-                  No ticketed concerts are on the calendar right now. New dates appear here as
-                  soon as they are confirmed — in the meantime, there are{" "}
+                  New dates appear here as soon as they are confirmed. In the meantime, there
+                  are{" "}
+                  <Link href="/shows/gigs" className="u-link">
+                    live gigs
+                  </Link>
+                  ,{" "}
                   <Link href="/shows/live-videos" className="u-link">
                     live videos
                   </Link>{" "}
@@ -58,8 +66,8 @@ export default async function ShowsConcertsPage() {
                   <Link href="/music" className="u-link">
                     releases
                   </Link>{" "}
-                  to hear, and announcements land on Osman&rsquo;s social channels first — links
-                  are in the footer.
+                  to hear, and announcements on Osman&rsquo;s social channels — links are in
+                  the footer.
                 </p>
               </div>
             </Reveal>
@@ -77,6 +85,7 @@ export default async function ShowsConcertsPage() {
           </div>
         )}
       </Container>
-    </section>
+      </section>
+    </>
   );
 }

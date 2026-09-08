@@ -3,7 +3,9 @@ import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
 import type {
+  CollaborationRecord,
   EventRecord,
+  LibraryTrackRecord,
   LiveVideoRecord,
   MediaItemRecord,
   ProductRecord,
@@ -13,7 +15,11 @@ import type {
   UserRecord,
 } from "@/lib/types";
 import {
+  agendaDemoEvents,
+  demoCollaborations,
   demoEvents,
+  demoLibraryTracks,
+  realEvents,
   demoMedia,
   demoProducts,
   demoReleases,
@@ -37,6 +43,8 @@ interface DemoState {
   events: EventRecord[];
   videos: LiveVideoRecord[];
   releases: ReleaseRecord[];
+  libraryTracks: LibraryTrackRecord[];
+  collaborations: CollaborationRecord[];
   media: MediaItemRecord[];
   services: ServiceRecord[];
   products: ProductRecord[];
@@ -50,9 +58,11 @@ const g = globalThis as typeof globalThis & { __osmanDemoState?: DemoState };
 
 function seedState(): DemoState {
   return {
-    events: structuredClone(demoEvents),
+    events: structuredClone([...realEvents, ...demoEvents, ...agendaDemoEvents]),
     videos: structuredClone(demoVideos),
     releases: structuredClone(demoReleases),
+    libraryTracks: structuredClone(demoLibraryTracks),
+    collaborations: structuredClone(demoCollaborations),
     media: structuredClone(demoMedia),
     services: structuredClone(demoServices),
     products: structuredClone(demoProducts),
@@ -91,7 +101,15 @@ async function persist(state: DemoState): Promise<void> {
 }
 
 function makeCollection<T extends { id: string; slug: string }>(
-  key: "events" | "videos" | "releases" | "media" | "services" | "products"
+  key:
+    | "events"
+    | "videos"
+    | "releases"
+    | "libraryTracks"
+    | "collaborations"
+    | "media"
+    | "services"
+    | "products"
 ): CollectionRepo<T> {
   const rows = async (): Promise<T[]> => {
     const state = await getState();
@@ -188,6 +206,8 @@ export function createDemoRepos(): Repos {
     events: makeCollection<EventRecord>("events"),
     videos: makeCollection<LiveVideoRecord>("videos"),
     releases: makeCollection<ReleaseRecord>("releases"),
+    libraryTracks: makeCollection<LibraryTrackRecord>("libraryTracks"),
+    collaborations: makeCollection<CollaborationRecord>("collaborations"),
     media: makeCollection<MediaItemRecord>("media"),
     services: makeCollection<ServiceRecord>("services"),
     products: makeCollection<ProductRecord>("products"),

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { eventInput } from "@/lib/validation/schemas";
-import { publishWarnings } from "@/lib/events";
+import { effectiveTicketing, publishWarnings } from "@/lib/events";
 import { uniqueSlug } from "@/lib/slug";
 import { getRepos } from "@/server/repositories";
 import type { ActionState } from "@/components/studio/actionState";
@@ -36,8 +36,8 @@ export async function saveEventAction(
   }
 
   const data = parsed.data;
-  // A free gig never carries a ticket link, whatever was submitted.
-  if (data.eventType === "FREE_GIG") data.ticketUrl = null;
+  // A free-entry event never carries a ticket link, whatever was submitted.
+  if (effectiveTicketing(data) === "FREE") data.ticketUrl = null;
 
   if (data.status === "PUBLISHED" && !acknowledgedWarnings(formData)) {
     const warnings = publishWarnings(data);

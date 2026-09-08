@@ -100,9 +100,10 @@ export function TextField(
     placeholder?: string;
     autoComplete?: string;
     required?: boolean;
+    onChange?: React.ChangeEventHandler<HTMLInputElement>;
   }
 ) {
-  const { label, name, help, errors, optional, type = "text", defaultValue, placeholder, autoComplete, required } = props;
+  const { label, name, help, errors, optional, type = "text", defaultValue, placeholder, autoComplete, required, onChange } = props;
   return (
     <FieldShell label={label} name={name} help={help} errors={errors} optional={optional}>
       <input
@@ -113,6 +114,7 @@ export function TextField(
         placeholder={placeholder}
         autoComplete={autoComplete}
         required={required}
+        onChange={onChange}
         aria-invalid={errors && errors.length > 0 ? true : undefined}
         aria-describedby={describedBy(name, help, errors)}
         className={inputClass}
