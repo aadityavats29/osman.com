@@ -491,6 +491,7 @@ const settingsRepo: SettingsRepo = {
       instagramUrl: read("instagramUrl"),
       youtubeUrl: read("youtubeUrl"),
       tiktokUrl: read("tiktokUrl"),
+      linkedinUrl: read("linkedinUrl"),
       facebookUrl: read("facebookUrl"),
       shopMode: (read("shopMode") as SiteSettings["shopMode"]) ?? "concept",
       shopUrl: read("shopUrl"),

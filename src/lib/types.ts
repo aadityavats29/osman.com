@@ -226,6 +226,7 @@ export interface SiteSettings {
   instagramUrl: string | null;
   youtubeUrl: string | null;
   tiktokUrl: string | null;
+  linkedinUrl: string | null;
   facebookUrl: string | null;
   shopMode: ShopMode;
   shopUrl: string | null;

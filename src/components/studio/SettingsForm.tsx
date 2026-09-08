@@ -106,6 +106,15 @@ export function SettingsForm({ settings }: { settings: SiteSettings }) {
             defaultValue={v("tiktokUrl", settings.tiktokUrl)}
             errors={state.errors?.tiktokUrl}
           />
+
+          <TextField
+            label="LinkedIn"
+            name="linkedinUrl"
+            type="url"
+            optional
+            defaultValue={v("linkedinUrl", settings.linkedinUrl)}
+            errors={state.errors?.linkedinUrl}
+          />
           <TextField
             label="Facebook"
             name="facebookUrl"

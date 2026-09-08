@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { SiteSettings } from "@/lib/types";
 import { Reveal } from "@/components/motion/Reveal";
 import { Marquee } from "@/components/motion/Marquee";
+import { SocialIconLinks, socialLinks } from "@/components/public/SocialIcons";
 
 const FOOTER_GROUPS: { heading: string; links: { label: string; href: string }[] }[] = [
   {
@@ -46,12 +47,7 @@ const FOOTER_INSTRUMENTS = [
 ];
 
 export function SiteFooter({ settings }: { settings: SiteSettings }) {
-  const socials = [
-    { label: "Instagram", href: settings.instagramUrl },
-    { label: "YouTube", href: settings.youtubeUrl },
-    { label: "TikTok", href: settings.tiktokUrl },
-    { label: "Facebook", href: settings.facebookUrl },
-  ].filter((s): s is { label: string; href: string } => Boolean(s.href));
+  const socials = socialLinks(settings);
 
   return (
     <footer className="border-t border-line bg-canvas">
@@ -96,22 +92,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
                   </Link>
                 </li>
               </ul>
-              {socials.length > 0 && (
-                <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2" aria-label="Social profiles">
-                  {socials.map((s) => (
-                    <li key={s.label}>
-                      <a
-                        href={s.href}
-                        target="_blank"
-                        rel="noopener"
-                        className="u-link text-sm text-ink-soft hover:text-ink"
-                      >
-                        {s.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              )}
+              <SocialIconLinks links={socials} className="mt-6" />
             </div>
           </div>
 

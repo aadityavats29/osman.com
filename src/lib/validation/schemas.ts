@@ -297,6 +297,7 @@ export const siteSettingsInput = z.object({
   instagramUrl: optionalUrl,
   youtubeUrl: optionalUrl,
   tiktokUrl: optionalUrl,
+  linkedinUrl: optionalUrl,
   facebookUrl: optionalUrl,
   shopMode: z.enum(["concept", "external", "storefront"]).default("concept"),
   shopUrl: optionalUrl,

@@ -85,6 +85,7 @@ export default async function HomePage() {
     settings.instagramUrl,
     settings.youtubeUrl,
     settings.tiktokUrl,
+    settings.linkedinUrl,
     settings.facebookUrl,
   ].filter((u): u is string => Boolean(u));
 
