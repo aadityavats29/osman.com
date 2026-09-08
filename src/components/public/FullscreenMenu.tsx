@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { SiteSettings } from "@/lib/types";
 import { LogoWordmark } from "@/components/LogoWordmark";
+import { SocialIconLinks, socialLinks } from "@/components/public/SocialIcons";
 
 /**
  * Vinyl-triggered fullscreen navigation (Private Mansions direction).
@@ -206,12 +207,7 @@ export function FullscreenMenu({ settings }: { settings: SiteSettings }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  const socials = [
-    { label: "Instagram", href: settings.instagramUrl },
-    { label: "YouTube", href: settings.youtubeUrl },
-    { label: "TikTok", href: settings.tiktokUrl },
-    { label: "Facebook", href: settings.facebookUrl },
-  ].filter((s): s is { label: string; href: string } => Boolean(s.href));
+  const socials = socialLinks(settings);
 
   let linkIndex = 0;
 
@@ -311,20 +307,7 @@ export function FullscreenMenu({ settings }: { settings: SiteSettings }) {
               {socials.length > 0 && (
                 <div>
                   <p className="eyebrow mb-3">Elsewhere</p>
-                  <ul className="flex flex-wrap gap-x-5 gap-y-2">
-                    {socials.map((s) => (
-                      <li key={s.label}>
-                        <a
-                          href={s.href}
-                          target="_blank"
-                          rel="noopener"
-                          className="u-link text-sm text-ink-soft hover:text-ink"
-                        >
-                          {s.label}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
+                  <SocialIconLinks links={socials} />
                 </div>
               )}
               <div>

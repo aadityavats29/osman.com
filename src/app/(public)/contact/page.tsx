@@ -3,6 +3,7 @@ import { getRepos } from "@/server/repositories";
 import { CONTACT_TOPICS } from "@/lib/validation/schemas";
 import { Container } from "@/components/shared/Container";
 import { ContactForm } from "@/components/public/ContactForm";
+import { SocialIconLinks, socialLinks } from "@/components/public/SocialIcons";
 import { Reveal } from "@/components/motion/Reveal";
 
 export const dynamic = "force-dynamic";
@@ -42,12 +43,7 @@ export default async function ContactPage({
     : undefined;
 
   const settings = await getRepos().settings.get();
-  const socials = [
-    { label: "Instagram", href: settings.instagramUrl },
-    { label: "YouTube", href: settings.youtubeUrl },
-    { label: "TikTok", href: settings.tiktokUrl },
-    { label: "Facebook", href: settings.facebookUrl },
-  ].filter((s): s is { label: string; href: string } => Boolean(s.href));
+  const socials = socialLinks(settings);
 
   return (
     <section className="py-24 sm:py-32">
@@ -94,20 +90,7 @@ export default async function ContactPage({
               {socials.length > 0 && (
                 <div className="mt-10">
                   <h2 className="eyebrow">Elsewhere</h2>
-                  <ul className="mt-4 space-y-2.5">
-                    {socials.map((s) => (
-                      <li key={s.label}>
-                        <a
-                          href={s.href}
-                          target="_blank"
-                          rel="noopener"
-                          className="u-link text-sm text-ink-soft hover:text-ink"
-                        >
-                          {s.label}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
+                  <SocialIconLinks links={socials} className="mt-4" />
                 </div>
               )}
             </aside>
