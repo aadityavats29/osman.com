@@ -1,4 +1,5 @@
 import type { ReleaseRecord } from "@/lib/types";
+import { relationshipPublicLabels } from "@/components/studio/labels";
 import { TrackedLink } from "./TrackedLink";
 import { RecordSleeve } from "./RecordSleeve";
 
@@ -50,6 +51,11 @@ export function Discography({ releases }: { releases: ReleaseRecord[] }) {
                     0{i + 1}
                   </span>
                   <h2 className="font-display min-w-0 text-3xl leading-tight sm:text-4xl">
+                    {release.relationshipType !== "OWN_RELEASE" && release.primaryArtistName && (
+                      <span className="tabular mb-1 block text-sm tracking-[0.16em] text-ink-soft uppercase">
+                        {release.primaryArtistName}
+                      </span>
+                    )}
                     <span className="text-roll">
                       <span>{release.title}</span>
                       <span aria-hidden="true" className="text-accent">
@@ -62,16 +68,32 @@ export function Discography({ releases }: { releases: ReleaseRecord[] }) {
                     {release.year ?? "—"}
                   </span>
                 </div>
-                <p className="tabular mt-3 text-sm text-ink-faint sm:ml-[5.5rem]">
-                  {RELEASE_TYPE_LABELS[release.releaseType]}
-                  <span className="sm:hidden">{release.year ? ` · ${release.year}` : ""}</span>
+                <p className="tabular mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-faint sm:ml-[5.5rem]">
+                  <span
+                    className={`inline-block border px-2 py-0.5 text-[11px] tracking-[0.14em] uppercase ${
+                      release.relationshipType === "OWN_RELEASE"
+                        ? "border-accent-strong text-accent-strong"
+                        : "border-line-dark text-ink-soft"
+                    }`}
+                  >
+                    {relationshipPublicLabels[release.relationshipType]}
+                  </span>
+                  <span>
+                    {RELEASE_TYPE_LABELS[release.releaseType]}
+                    <span className="sm:hidden">{release.year ? ` · ${release.year}` : ""}</span>
+                  </span>
                 </p>
+                {release.osmanCredit && (
+                  <p className="mt-2 text-sm text-ink-soft sm:ml-[5.5rem]">
+                    {release.osmanCredit}
+                  </p>
+                )}
                 {release.description && (
                   <p className="mt-4 max-w-xl leading-relaxed text-ink-soft sm:ml-[5.5rem]">
                     {release.description}
                   </p>
                 )}
-                {release.credits && (
+                {release.credits && !release.osmanCredit && (
                   <p className="mt-2 text-sm text-ink-faint sm:ml-[5.5rem]">
                     {release.credits}
                   </p>

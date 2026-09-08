@@ -1,3 +1,4 @@
+import { getRepos } from "@/server/repositories";
 import { ReleaseForm } from "@/components/studio/ReleaseForm";
 import { PageHeader } from "@/components/studio/PageHeader";
 
@@ -5,14 +6,15 @@ export const dynamic = "force-dynamic";
 
 export const metadata = { title: "Add release" };
 
-export default function NewReleasePage() {
+export default async function NewReleasePage() {
+  const collaborations = await getRepos().collaborations.list();
   return (
     <div>
       <PageHeader
         title="Add release"
-        intro="Add the music and the links where people can listen."
+        intro="Start with the relationship to Osman — it decides how the release is billed."
       />
-      <ReleaseForm />
+      <ReleaseForm collaborations={collaborations} />
     </div>
   );
 }

@@ -35,6 +35,23 @@ export async function saveReleaseAction(
   }
   const data = parsed.data;
 
+  // Final factual check (pack 03 §14): a non-own release only publishes after
+  // the billing summary has been explicitly confirmed in the form.
+  if (
+    data.status === "PUBLISHED" &&
+    data.relationshipType !== "OWN_RELEASE" &&
+    formData.get("billingConfirmed") !== "true"
+  ) {
+    return {
+      errors: {
+        _form: [
+          "Please tick “The billing above is correct” to confirm the primary artist and Osman's role before publishing.",
+        ],
+      },
+      values: formValues(formData),
+    };
+  }
+
   const repos = getRepos();
   if (id) {
     const existing = await repos.releases.get(id);

@@ -18,7 +18,7 @@ import {
 const TYPE_TILES: Array<{ value: EventType; title: string; help: string }> = [
   {
     value: "TICKETED_CONCERT",
-    title: "Ticketed concert",
+    title: "Concert",
     help: "People buy a ticket.",
   },
   {
@@ -26,6 +26,39 @@ const TYPE_TILES: Array<{ value: EventType; title: string; help: string }> = [
     title: "Free gig",
     help: "Free entry, e.g. a café or bar.",
   },
+  {
+    value: "FESTIVAL",
+    title: "Festival",
+    help: "Part of a festival programme.",
+  },
+  {
+    value: "PRIVATE_EVENT",
+    title: "Private event",
+    help: "Closed booking — usually no public link.",
+  },
+  {
+    value: "OTHER",
+    title: "Other",
+    help: "Anything that doesn't fit the above.",
+  },
+];
+
+const EVENT_TYPE_VALUES: EventType[] = [
+  "TICKETED_CONCERT",
+  "FREE_GIG",
+  "FESTIVAL",
+  "PRIVATE_EVENT",
+  "OTHER",
+];
+
+const TIMEZONES = [
+  "Europe/Amsterdam",
+  "Europe/Rome",
+  "Europe/London",
+  "Europe/Paris",
+  "Europe/Berlin",
+  "Europe/Madrid",
+  "UTC",
 ];
 
 export function EventForm({
@@ -44,8 +77,8 @@ export function EventForm({
     state.values ? state.values[name] === "true" : fallback;
 
   const [eventType, setEventType] = useState<EventType>(() => {
-    const submitted = state.values?.eventType;
-    if (submitted === "TICKETED_CONCERT" || submitted === "FREE_GIG") return submitted;
+    const submitted = state.values?.eventType as EventType | undefined;
+    if (submitted && EVENT_TYPE_VALUES.includes(submitted)) return submitted;
     return event?.eventType ?? initialType ?? "TICKETED_CONCERT";
   });
 
@@ -67,7 +100,7 @@ export function EventForm({
 
         <fieldset>
           <legend className="text-sm font-medium text-ink">Kind of event</legend>
-          <div className="mt-2 grid gap-3 sm:grid-cols-2">
+          <div className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {TYPE_TILES.map((tile) => (
               <label
                 key={tile.value}
@@ -138,15 +171,34 @@ export function EventForm({
           />
         </div>
 
-        <TextField
-          label="Poster or photo (link)"
-          name="imageUrl"
-          type="url"
-          optional
-          help="Leave empty to use a neutral placeholder."
-          defaultValue={v("imageUrl", event?.imageUrl)}
-          errors={state.errors?.imageUrl}
-        />
+        <div className="space-y-4 rounded-md border border-line p-4">
+          <TextField
+            label="Event photo (link)"
+            name="imageUrl"
+            type="text"
+            optional
+            help="Shown when visitors hover or tap the event on the agenda."
+            defaultValue={v("imageUrl", event?.imageUrl)}
+            errors={state.errors?.imageUrl}
+          />
+          <TextField
+            label="What's in the photo?"
+            name="imageAlt"
+            optional
+            help="A short description for people using screen readers. Needed before publishing with a photo."
+            defaultValue={v("imageAlt", event?.imageAlt)}
+            errors={state.errors?.imageAlt}
+          />
+          <TextField
+            label="Photo credit"
+            name="imageCredit"
+            optional
+            placeholder="e.g. Photo: Jane Smith"
+            help="Shown next to the photo. Needed before publishing — credit Osman for his own photos."
+            defaultValue={v("imageCredit", event?.imageCredit)}
+            errors={state.errors?.imageCredit}
+          />
+        </div>
 
         <TextareaField
           label="Short description"
@@ -158,27 +210,49 @@ export function EventForm({
           errors={state.errors?.description}
         />
 
-        {eventType === "TICKETED_CONCERT" ? (
+        <div className="space-y-4 rounded-md border border-line p-4">
+          <SelectField
+            label="How do people get in?"
+            name="ticketingType"
+            help="Decides what the event links to and what the little cursor label says. “Automatic” follows the kind of event."
+            defaultValue={v("ticketingType", event?.ticketingType ?? "")}
+            errors={state.errors?.ticketingType}
+            options={[
+              { value: "", label: "Automatic (from the kind of event)" },
+              { value: "TICKETED", label: "Ticketed — people buy a ticket" },
+              { value: "FREE", label: "Free entry" },
+              { value: "INFO_ONLY", label: "Information only — link to a festival or venue page" },
+              { value: "NONE", label: "No public link" },
+            ]}
+          />
           <TextField
             label="Ticket link"
             name="ticketUrl"
             type="url"
             optional
-            help="Where people buy tickets."
+            help="Where people buy tickets (used for ticketed events)."
             defaultValue={v("ticketUrl", event?.ticketUrl)}
             errors={state.errors?.ticketUrl}
           />
-        ) : (
           <TextField
-            label="Venue or reservation link"
+            label="Venue / info link"
             name="venueUrl"
             type="url"
             optional
-            help="Where people find the venue or reserve a table."
+            help="Venue, reservation or festival page."
             defaultValue={v("venueUrl", event?.venueUrl)}
             errors={state.errors?.venueUrl}
           />
-        )}
+          <TextField
+            label="Button wording (optional)"
+            name="ctaLabel"
+            optional
+            placeholder="e.g. Reserve a table"
+            help="Only if the standard wording (Tickets / Details / Info) doesn't fit."
+            defaultValue={v("ctaLabel", event?.ctaLabel)}
+            errors={state.errors?.ctaLabel}
+          />
+        </div>
 
         <details className="rounded-md border border-line" open={detailsOpen}>
           <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-ink-soft select-none">
@@ -218,10 +292,24 @@ export function EventForm({
               defaultValue={v("collaborators", event?.collaborators)}
               errors={state.errors?.collaborators}
             />
+            <SelectField
+              label="Venue timezone"
+              name="timezone"
+              help="Times above are local to the venue. Only change this for shows outside the Netherlands."
+              defaultValue={v("timezone", event?.timezone ?? "Europe/Amsterdam")}
+              errors={state.errors?.timezone}
+              options={TIMEZONES.map((z) => ({ value: z, label: z }))}
+            />
             <CheckboxField
               label="Highlight on the homepage"
               name="featured"
               defaultChecked={checked("featured", event?.featured ?? false)}
+            />
+            <CheckboxField
+              label="Demo record"
+              name="isDemo"
+              help="Placeholder for layout testing — remove or untick before the real launch. Publishing a demo shows a warning."
+              defaultChecked={checked("isDemo", event?.isDemo ?? false)}
             />
             {event ? (
               <SelectField

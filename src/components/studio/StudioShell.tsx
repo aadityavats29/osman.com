@@ -11,8 +11,9 @@ const NAV = [
   { href: "/studio/events", label: "Shows" },
   { href: "/studio/videos", label: "Live videos" },
   { href: "/studio/releases", label: "Releases" },
+  { href: "/studio/collaborations", label: "Collaborations" },
+  { href: "/studio/library", label: "Music library" },
   { href: "/studio/media", label: "Media" },
-  { href: "/studio/services", label: "Services" },
   { href: "/studio/shop", label: "Shop" },
   { href: "/studio/settings", label: "Site settings" },
 ] as const;

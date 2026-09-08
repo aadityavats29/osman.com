@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  agendaLink,
   eventCta,
+  formatAgendaDate,
   formatEventDate,
   isPast,
   isUpcoming,
@@ -25,10 +27,16 @@ function makeEvent(overrides: Partial<EventRecord> = {}): EventRecord {
     city: "Amsterdam",
     country: "Netherlands",
     imageUrl: null,
+    imageAlt: null,
+    imageCredit: null,
     ticketUrl: "https://example.com/tickets",
     venueUrl: null,
     priceText: null,
     collaborators: null,
+    ticketingType: null,
+    ctaLabel: null,
+    timezone: "Europe/Amsterdam",
+    isDemo: false,
     status: "PUBLISHED",
     eventState: "SCHEDULED",
     featured: false,
@@ -45,14 +53,33 @@ describe("upcoming/past classification", () => {
     expect(isUpcoming(makeEvent({ date: "2026-09-18" }), now)).toBe(true);
   });
 
-  it("keeps a same-day event upcoming for the whole day (no mid-afternoon flip)", () => {
-    const now = new Date("2026-09-18T22:00:00Z");
+  it("keeps a same-day event without an end time upcoming until the venue-local day ends", () => {
+    // 21:00 UTC on 18 Sep = 23:00 in Amsterdam (CEST) — still the event day.
+    const now = new Date("2026-09-18T20:59:00Z");
     expect(isUpcoming(makeEvent({ date: "2026-09-18" }), now)).toBe(true);
+    // 22:30 UTC = 00:30 on 19 Sep in Amsterdam — the day is over.
+    const after = new Date("2026-09-18T22:30:00Z");
+    expect(isPast(makeEvent({ date: "2026-09-18" }), after)).toBe(true);
   });
 
-  it("moves an event to past after its day has fully ended everywhere", () => {
-    const now = new Date("2026-09-20T15:00:00Z");
-    expect(isPast(makeEvent({ date: "2026-09-18" }), now)).toBe(true);
+  it("moves an event to past right after its configured end time (pack 01 §5)", () => {
+    const e = makeEvent({ date: "2026-09-18", startTime: "20:30", endTime: "22:30" });
+    // 22:30 Amsterdam = 20:30 UTC in September (CEST)
+    expect(isUpcoming(e, new Date("2026-09-18T20:29:00Z"))).toBe(true);
+    expect(isPast(e, new Date("2026-09-18T20:31:00Z"))).toBe(true);
+  });
+
+  it("handles an end time past midnight as ending on the next day", () => {
+    const e = makeEvent({ date: "2026-09-18", startTime: "22:00", endTime: "01:00" });
+    // 23:30 UTC on the 18th = 01:30 Amsterdam on the 19th — wait, that is past 01:00.
+    expect(isPast(e, new Date("2026-09-18T23:30:00Z"))).toBe(true);
+    // 22:30 UTC = 00:30 Amsterdam on the 19th — still before the 01:00 end.
+    expect(isUpcoming(e, new Date("2026-09-18T22:30:00Z"))).toBe(true);
+  });
+
+  it("falls back to Europe/Amsterdam when the stored timezone is invalid", () => {
+    const e = makeEvent({ date: "2026-09-18", timezone: "Not/AZone" });
+    expect(isUpcoming(e, new Date("2026-09-18T20:00:00Z"))).toBe(true);
   });
 
   it("excludes drafts and archived events from the public upcoming list", () => {
@@ -117,6 +144,42 @@ describe("event CTA rules", () => {
   it("ticketed concert without a link shows no CTA rather than a broken one", () => {
     expect(eventCta(makeEvent({ ticketUrl: null })).kind).toBe("none");
   });
+
+  it("festival defaults to info-only and links out with OPEN semantics", () => {
+    const e = makeEvent({
+      eventType: "FESTIVAL",
+      ticketUrl: null,
+      venueUrl: "https://festival.example",
+    });
+    expect(eventCta(e)).toEqual({ kind: "info", href: "https://festival.example" });
+    expect(agendaLink(e)).toEqual({
+      href: "https://festival.example",
+      external: true,
+      cursor: "OPEN",
+      label: "Info",
+    });
+  });
+
+  it("an explicit ticketingType overrides the event-type default", () => {
+    const e = makeEvent({ eventType: "FREE_GIG", ticketingType: "TICKETED" });
+    expect(eventCta(e).kind).toBe("tickets");
+  });
+
+  it("an event with no destination never implies clickability", () => {
+    const e = makeEvent({ ticketingType: "NONE", ticketUrl: null, venueUrl: null });
+    expect(eventCta(e).kind).toBe("none");
+    expect(agendaLink(e)).toBeNull();
+  });
+
+  it("agenda link uses TICKETS/DETAILS cursor labels per link type", () => {
+    expect(agendaLink(makeEvent())?.cursor).toBe("TICKETS");
+    const free = makeEvent({
+      eventType: "FREE_GIG",
+      ticketUrl: null,
+      venueUrl: "https://venue.example",
+    });
+    expect(agendaLink(free)?.cursor).toBe("DETAILS");
+  });
 });
 
 describe("publish warnings", () => {
@@ -143,6 +206,18 @@ describe("publish warnings", () => {
   });
 });
 
+describe("publish warnings for demo records", () => {
+  it("flags demo records so they are not published as real bookings", () => {
+    const w = publishWarnings({
+      eventType: "FREE_GIG",
+      ticketUrl: null,
+      eventState: "SCHEDULED",
+      isDemo: true,
+    });
+    expect(w.some((x) => x.includes("demo"))).toBe(true);
+  });
+});
+
 describe("date formatting", () => {
   it("formats a date without timezone drift", () => {
     const f = formatEventDate("2026-09-18");
@@ -151,5 +226,9 @@ describe("date formatting", () => {
     expect(f.year).toBe("2026");
     expect(f.weekday).toBe("Fri");
     expect(f.full).toBe("18 September 2026");
+  });
+
+  it("formats agenda dates as DD/MM/YYYY like the reference", () => {
+    expect(formatAgendaDate("2027-07-10")).toBe("10/07/2027");
   });
 });

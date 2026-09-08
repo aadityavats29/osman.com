@@ -13,7 +13,7 @@ const QUICK_ACTIONS = [
   { href: "/studio/videos/new", label: "Add live video" },
   { href: "/studio/releases/new", label: "Add release" },
   { href: "/studio/media/new", label: "Add media article" },
-  { href: "/studio/services", label: "Manage services" },
+  { href: "/studio/library/new", label: "Add library track" },
   { href: "/studio/shop", label: "Manage shop" },
 ] as const;
 
@@ -32,12 +32,12 @@ export default async function DashboardPage() {
   if (!user) redirect("/studio/login");
 
   const repos = getRepos();
-  const [events, videos, releases, media, services, products] = await Promise.all([
+  const [events, videos, releases, media, libraryTracks, products] = await Promise.all([
     repos.events.list(),
     repos.videos.list(),
     repos.releases.list(),
     repos.media.list(),
-    repos.services.list(),
+    repos.libraryTracks.list(),
     repos.products.list(),
   ]);
 
@@ -76,13 +76,13 @@ export default async function DashboardPage() {
       updatedAt: m.updatedAt,
       status: m.status,
     })),
-    ...services.map((s) => ({
-      key: `service-${s.id}`,
-      typeLabel: "Service",
-      title: s.title,
-      href: `/studio/services/${s.id}`,
-      updatedAt: s.updatedAt,
-      status: s.status,
+    ...libraryTracks.map((t) => ({
+      key: `track-${t.id}`,
+      typeLabel: "Library track",
+      title: t.title,
+      href: `/studio/library/${t.id}`,
+      updatedAt: t.updatedAt,
+      status: t.status,
     })),
     ...products.map((p) => ({
       key: `product-${p.id}`,

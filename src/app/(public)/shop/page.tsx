@@ -50,7 +50,7 @@ export default async function ShopPage() {
                 external
                 event="shop_click"
                 eventProps={{ source: "shop_page" }}
-                className="btn-motion inline-block bg-ink px-7 py-3 text-sm font-medium tracking-wide text-canvas uppercase"
+                className="btn-pill"
               >
                 Visit the shop <span className="arrow-nudge ml-1" aria-hidden="true">→</span>
               </TrackedLink>

@@ -2,8 +2,9 @@ import Link from "next/link";
 import type { EventRecord } from "@/lib/types";
 import { getRepos } from "@/server/repositories";
 import { byDateAsc, formatEventDate, isUpcoming } from "@/lib/events";
-import { eventTypeLabels } from "@/components/studio/labels";
-import { EventStateChip, StatusChip } from "@/components/studio/StatusChip";
+import { eventTypeLabels, ticketingTypeLabels } from "@/components/studio/labels";
+import { effectiveTicketing } from "@/lib/events";
+import { Chip, EventStateChip, StatusChip } from "@/components/studio/StatusChip";
 import { EmptyState, PageHeader } from "@/components/studio/PageHeader";
 import { RowAction } from "@/components/studio/rowActions";
 import {
@@ -19,6 +20,16 @@ export const metadata = { title: "Shows" };
 function EventRow({ event }: { event: EventRecord }) {
   return (
     <li className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
+      {/* Image thumbnail (pack 01 §11) */}
+      <span
+        aria-hidden="true"
+        className="h-9 w-12 shrink-0 overflow-hidden rounded-[2px] border border-line bg-canvas-soft"
+      >
+        {event.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={event.imageUrl} alt="" className="h-full w-full object-cover" />
+        ) : null}
+      </span>
       <span className="tabular w-32 shrink-0 text-sm text-ink-soft">
         {formatEventDate(event.date).full}
       </span>
@@ -30,12 +41,14 @@ function EventRow({ event }: { event: EventRecord }) {
           {event.title}
         </Link>
         <span className="block truncate text-xs text-ink-faint">
-          {event.venue}, {event.city} · {eventTypeLabels[event.eventType]}
+          {event.venue}, {event.city} · {eventTypeLabels[event.eventType]} ·{" "}
+          {ticketingTypeLabels[effectiveTicketing(event)]}
         </span>
       </span>
       <span className="flex items-center gap-2">
         <StatusChip status={event.status} />
         <EventStateChip state={event.eventState} />
+        {event.isDemo ? <Chip tone="warn">Demo</Chip> : null}
       </span>
       <span className="flex items-center gap-3">
         <Link

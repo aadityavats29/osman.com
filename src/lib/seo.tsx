@@ -66,12 +66,22 @@ export function musicAlbumJsonLd(release: ReleaseRecord): Record<string, unknown
     release.bandcampUrl,
     release.otherUrl,
   ].filter((u): u is string => Boolean(u));
+  // Structured data must never imply Osman owns another artist's record
+  // (precision pack 02): non-own releases are billed to their real primary
+  // artist, with Osman attached as a contributor.
+  const ownRelease = release.relationshipType === "OWN_RELEASE";
+  const primary = !ownRelease && release.primaryArtistName
+    ? { "@type": "MusicGroup", name: release.primaryArtistName }
+    : { "@type": "Person", name: "Osman Meyredi" };
   return {
     "@context": "https://schema.org",
     "@type": "MusicAlbum",
     name: release.title,
     ...(release.year ? { datePublished: String(release.year) } : {}),
-    byArtist: { "@type": "Person", name: "Osman Meyredi" },
+    byArtist: primary,
+    ...(!ownRelease
+      ? { contributor: { "@type": "Person", name: "Osman Meyredi" } }
+      : {}),
     ...(sameAs.length ? { sameAs } : {}),
   };
 }

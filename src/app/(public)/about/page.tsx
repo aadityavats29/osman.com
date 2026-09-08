@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/shared/Container";
 import { PlaceholderImage } from "@/components/shared/PlaceholderImage";
@@ -8,7 +9,7 @@ import { Parallax } from "@/components/motion/Parallax";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Osman Meyredi — Italian multi-instrumentalist based in Amsterdam. Piano, keyboards, bass guitar, guitar, double bass, drums and vocals; performing, coaching and teaching across Europe.",
+    "Osman Meyredi — Italian multi-instrumentalist based in Amsterdam. Double bass, guitar, piano, keyboards, bass guitar and drums; artist, producer, music director, composer, songwriter and singer performing across Europe.",
   alternates: { canonical: "/about" },
 };
 
@@ -37,7 +38,17 @@ export default function AboutPage() {
       <Container wide>
         <Parallax speed={0.1}>
           <Reveal variant="mask" className="mx-auto max-w-xl">
-            <PlaceholderImage label="Portrait — Osman with double bass" ratio="3/4" />
+            {/* Keynote slide 5 asset — the historical double-bass photograph */}
+            <div className="media-zoom border border-line">
+              <Image
+                src="/images/about-osman.jpg"
+                alt="Osman Meyredi playing the double bass on stage, early days"
+                width={600}
+                height={861}
+                sizes="(min-width: 640px) 36rem, 92vw"
+                className="h-auto w-full"
+              />
+            </div>
           </Reveal>
         </Parallax>
       </Container>
@@ -157,19 +168,19 @@ export default function AboutPage() {
             <h2 className="font-display text-3xl">Languages &amp; availability</h2>
             <p className="mt-6 leading-relaxed">
               Osman works in English, Italian and Dutch. He is based in Amsterdam, performs
-              regularly in the Netherlands and Italy, and travels for concerts, coaching and
-              workshops across Europe.
+              regularly in the Netherlands and Italy, and travels for concerts, events and
+              productions across Europe.
             </p>
             <div className="mt-10 flex flex-wrap gap-6">
               <Link
                 href="/shows/concerts"
-                className="btn-motion inline-block bg-ink px-6 py-3 text-sm font-medium tracking-wide text-canvas uppercase"
+                className="btn-pill"
               >
                 Upcoming concerts <span className="arrow-nudge ml-1" aria-hidden="true">→</span>
               </Link>
               <Link
                 href="/contact"
-                className="inline-block border border-ink px-6 py-3 text-sm font-medium tracking-wide uppercase transition-colors hover:bg-ink hover:text-canvas"
+                className="btn-pill"
               >
                 Get in touch
               </Link>

@@ -1,37 +1,48 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { getRepos } from "@/server/repositories";
 import { upcomingPublished } from "@/lib/events";
 import { JsonLd, personJsonLd } from "@/lib/seo";
+import { SERVICES } from "@/data/services";
 import { Container } from "@/components/shared/Container";
 import { EventList } from "@/components/public/EventList";
 import { VideoEmbed } from "@/components/public/VideoEmbed";
 import { TrackedLink } from "@/components/public/TrackedLink";
-import { HeroArt } from "@/components/public/HeroArt";
-import { AboutArt } from "@/components/public/AboutArt";
 import { RecordSleeve } from "@/components/public/RecordSleeve";
 import { Reveal } from "@/components/motion/Reveal";
 import { Marquee } from "@/components/motion/Marquee";
 import { RecordsScroller } from "@/components/motion/RecordsScroller";
 
+/** Keynote slide 1: professional roles replace the location line. */
+const ROLES = [
+  "Artist",
+  "Multi-instrumentalist",
+  "Producer",
+  "Music Director",
+  "Composer",
+  "Songwriter",
+  "Singer",
+];
+
+/** Keynote slides 2/23: the approved instrument list. */
 const INSTRUMENTS = [
-  "Bass guitar",
   "Double bass",
-  "Keyboards",
+  "Bass guitar",
   "Piano",
+  "Keyboard",
+  "Synthesiser",
   "Guitar",
   "Drums",
-  "Voice",
-  "Composition",
-  "Arrangement",
+  "Percussion",
 ];
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: { absolute: "Osman Meyredi — Multi-instrumentalist, bassist & composer" },
+  title: { absolute: "Osman Meyredi — Artist, multi-instrumentalist & producer" },
   description:
-    "Osman Meyredi is an Amsterdam-based multi-instrumentalist, bassist and composer. Concerts, band coaching and listening workshops across the Netherlands, Italy and Europe.",
+    "Osman Meyredi — artist, multi-instrumentalist, producer, music director, composer, songwriter and singer. Live shows, piano for events, music production and a licensing library.",
   alternates: { canonical: "/" },
 };
 
@@ -44,23 +55,25 @@ const RELEASE_TYPE_LABELS = {
 
 export default async function HomePage() {
   const repos = getRepos();
-  const [settings, allEvents, allReleases, allServices, allVideos, allMedia] = await Promise.all([
-    repos.settings.get(),
-    repos.events.list(),
-    repos.releases.list(),
-    repos.services.list(),
-    repos.videos.list(),
-    repos.media.list(),
-  ]);
+  const [settings, allEvents, allReleases, allVideos, allMedia, allCollaborations] =
+    await Promise.all([
+      repos.settings.get(),
+      repos.events.list(),
+      repos.releases.list(),
+      repos.videos.list(),
+      repos.media.list(),
+      repos.collaborations.list(),
+    ]);
 
   const nextDates = upcomingPublished(allEvents).slice(0, 5);
   const releases = allReleases
-    .filter((r) => r.status === "PUBLISHED")
+    .filter((r) => r.status === "PUBLISHED" && r.rightsStatus !== "DO_NOT_PUBLISH")
     .sort((a, b) => a.sortOrder - b.sortOrder);
+  const collaborations = allCollaborations
+    .filter((c) => c.status === "PUBLISHED")
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .slice(0, 2);
   const featuredRelease = releases.find((r) => r.featured) ?? releases[0] ?? null;
-  const services = allServices
-    .filter((s) => s.status === "PUBLISHED")
-    .sort((a, b) => a.sortOrder - b.sortOrder);
   const videos = allVideos
     .filter((v) => v.status === "PUBLISHED")
     .sort((a, b) => a.sortOrder - b.sortOrder);
@@ -115,8 +128,10 @@ export default async function HomePage() {
         <Container wide className="relative">
           <div className="grid items-end gap-x-10 py-14 sm:py-16 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:py-0">
             <div className="relative z-10 lg:py-24">
-              <p className="hero-meta-in eyebrow">
-                Amsterdam — Netherlands · Italy · Europe
+              {/* Keynote slide 1: roles with dots, intro text removed —
+                  a clean adele.com-style landing. Bio lives on /about. */}
+              <p className="hero-meta-in eyebrow max-w-xl leading-relaxed">
+                {ROLES.join(" · ")}
               </p>
               <h1
                 className="display-caps mt-6 text-[19vw] sm:text-8xl lg:text-[9.5rem] xl:text-[11rem]"
@@ -129,30 +144,32 @@ export default async function HomePage() {
                   <span>Meyredi</span>
                 </span>
               </h1>
-              <div className="hero-meta-in mt-8 grid max-w-xl gap-6 sm:grid-cols-[1fr_auto] sm:items-end">
-                <p className="text-base leading-relaxed text-ink-soft">
-                  {settings.heroTagline}
-                </p>
-              </div>
-              <div className="hero-meta-in mt-9 flex flex-wrap items-center gap-6">
-                <Link
-                  href="/shows"
-                  data-cursor="DATES"
-                  className="btn-motion inline-block bg-ink px-6 py-3 text-sm font-medium tracking-wide text-canvas uppercase"
-                >
-                  See dates <span className="arrow-nudge ml-1" aria-hidden="true">→</span>
+              <div className="hero-meta-in mt-10 flex flex-wrap items-center gap-6">
+                <Link href="/shows" data-cursor="DATES" className="btn-pill">
+                  See dates <span className="arrow-nudge" aria-hidden="true">→</span>
                 </Link>
                 <Link href="/contact" data-cursor="BOOK" className="u-link text-sm">
                   Booking &amp; inquiries
                 </Link>
               </div>
             </div>
-            {/* Image column: bleeds to the top edge, overlapped by the name */}
+            {/* Image column: bleeds to the top edge, overlapped by the name.
+                Keynote slide 4: the supplied live shot replaces the notation
+                placeholder ("better than a template image"). */}
             <div className="relative -order-1 lg:order-none">
               <div className="hero-image-mask lg:-ml-16">
                 <div className="hero-image-inner">
                   <div className="hero-ambient">
-                    <HeroArt />
+                    <div className="relative" style={{ aspectRatio: "4/5" }}>
+                      <Image
+                        src="/images/home-hero.jpg"
+                        alt="Osman Meyredi live — singing at the keys in blue stage light"
+                        fill
+                        priority
+                        sizes="(min-width: 1024px) 40vw, 100vw"
+                        className="object-cover"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -231,19 +248,32 @@ export default async function HomePage() {
                 />
               </div>
               <div>
-                <h2 className="display-caps text-5xl sm:text-6xl xl:text-7xl">
+                {featuredRelease.relationshipType !== "OWN_RELEASE" &&
+                  featuredRelease.primaryArtistName && (
+                    <p className="tabular text-sm tracking-[0.18em] text-ink-soft uppercase">
+                      {featuredRelease.primaryArtistName}
+                    </p>
+                  )}
+                <h2 className="display-caps mt-2 text-5xl sm:text-6xl xl:text-7xl">
                   {featuredRelease.title}
                 </h2>
                 <p className="tabular mt-4 text-sm tracking-wide text-ink-faint uppercase">
-                  {RELEASE_TYPE_LABELS[featuredRelease.releaseType]}
+                  {featuredRelease.relationshipType === "COLLABORATION_RELEASE"
+                    ? "Collaboration / band project"
+                    : featuredRelease.relationshipType === "CONTRIBUTING_ARTIST"
+                      ? "Appears on"
+                      : RELEASE_TYPE_LABELS[featuredRelease.releaseType]}
                   {featuredRelease.year ? ` · ${featuredRelease.year}` : ""}
                 </p>
+                {featuredRelease.osmanCredit && (
+                  <p className="mt-2 text-sm text-ink-soft">{featuredRelease.osmanCredit}</p>
+                )}
                 {featuredRelease.description && (
                   <p className="mt-6 max-w-xl leading-relaxed text-ink-soft">
                     {featuredRelease.description}
                   </p>
                 )}
-                {featuredRelease.credits && (
+                {featuredRelease.credits && !featuredRelease.osmanCredit && (
                   <p className="mt-3 text-sm text-ink-faint">{featuredRelease.credits}</p>
                 )}
                 {listenLinks.length > 0 && (
@@ -257,7 +287,7 @@ export default async function HomePage() {
                           eventProps={{ platform: l.label, release: featuredRelease.slug }}
                           data-cursor="LISTEN"
                           data-cursor-style="disc"
-                          className="border-draw inline-block px-5 py-2.5 text-sm font-medium tracking-wide uppercase hover:bg-ink hover:text-canvas"
+                          className="border-draw inline-block px-5 py-2.5 text-sm font-medium tracking-wide uppercase transition-colors hover:text-accent-strong"
                         >
                           {l.label}
                         </TrackedLink>
@@ -276,76 +306,87 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Services overview */}
-      {services.length > 0 && (
-        <section className="border-t border-line py-24">
-          <Container wide>
-            <Reveal variant="text">
-              <p className="eyebrow">Working with Osman</p>
-              <h2 className="font-display mt-3 text-3xl sm:text-4xl">
-                Concerts, coaching, workshops
-              </h2>
-            </Reveal>
-            {/* Distinct identities per service: outlined index numerals fill
-                with the accent on hover, names widen (variable wdth axis). */}
-            <div className="mt-12">
-              {services.map((service, i) => (
-                <div
-                  key={service.id}
-                  className="morph-trigger group border-t border-line py-8 transition-colors duration-300 last:border-b hover:border-ink"
+      {/* Services overview — Keynote slide 8: the four ways to work with
+          Osman, fed by the client-approved services config. */}
+      <section className="border-t border-line py-24">
+        <Container wide>
+          <Reveal variant="text">
+            <p className="eyebrow">Working with Osman</p>
+            <h2 className="font-display mt-3 text-3xl sm:text-4xl">
+              Four ways to work with Osman
+            </h2>
+            <p className="mt-5 max-w-2xl leading-relaxed text-ink-soft">
+              Live performances built for festivals and venues, solo piano set to the tone of
+              your event, original productions shaped in the studio, or ready-to-license tracks
+              from his music library.
+            </p>
+          </Reveal>
+          {/* Distinct identities per service: outlined index numerals fill
+              with the accent on hover, names widen (variable wdth axis). */}
+          <div className="mt-12">
+            {SERVICES.map((service, i) => (
+              <div
+                key={service.slug}
+                className="morph-trigger group border-t border-line py-8 transition-colors duration-300 last:border-b hover:border-ink"
+              >
+                <Link
+                  href={service.href}
+                  data-cursor="VIEW"
+                  className="grid items-baseline gap-x-8 gap-y-3 sm:grid-cols-[5rem_1fr_auto]"
                 >
-                  <Link
-                    href={`/services/${service.slug}`}
-                    data-cursor="VIEW"
-                    className="grid items-baseline gap-x-8 gap-y-3 sm:grid-cols-[5rem_1fr_auto]"
-                  >
-                    <span className="service-index text-5xl sm:text-6xl" aria-hidden="true">
-                      0{i + 1}
+                  <span className="service-index text-5xl sm:text-6xl" aria-hidden="true">
+                    0{i + 1}
+                  </span>
+                  <span>
+                    <span
+                      className="font-display morph-wide block text-3xl sm:text-4xl"
+                      style={{ fontVariationSettings: '"wdth" 80' }}
+                    >
+                      {service.title}
                     </span>
-                    <span>
-                      <span
-                        className="font-display morph-wide block text-3xl sm:text-4xl"
-                        style={{ fontVariationSettings: '"wdth" 80' }}
-                      >
-                        {service.title}
-                      </span>
-                      <span className="mt-2 block max-w-xl text-sm leading-relaxed text-ink-soft">
-                        {service.shortDescription}
-                      </span>
+                    <span className="tabular mt-2 block text-xs tracking-[0.14em] text-ink-faint uppercase">
+                      {service.subtitle}
                     </span>
-                    <span className="u-link hidden text-sm sm:inline">
-                      Read more <span className="arrow-nudge" aria-hidden="true">→</span>
-                    </span>
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </Container>
-        </section>
-      )}
+                  </span>
+                  <span className="u-link hidden text-sm sm:inline">
+                    {service.cta} <span className="arrow-nudge" aria-hidden="true">→</span>
+                  </span>
+                </Link>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
 
-      {/* About moment — copy beside a dark instrument study (image change #2:
-          integrated into the composition, not a card bolted underneath) */}
+      {/* About moment — Keynote slide 5: revised copy, full name in the link,
+          and the supplied historical double-bass photograph. */}
       <section className="border-t border-line py-24">
         <Container wide>
           <div className="grid items-center gap-x-14 gap-y-10 md:grid-cols-[minmax(0,7fr)_minmax(0,4fr)]">
             <Reveal variant="text">
               <p className="eyebrow">About</p>
               <p className="font-display mt-6 text-2xl leading-snug sm:text-3xl">
-                It began at six, picking out a Christmas song on the piano with his uncle — and
-                finishing the tune by ear. Today Osman plays piano, keyboards, bass guitar,
-                guitar, double bass and drums, sings, and has toured the U.K. with Frank
-                Zappa&rsquo;s longtime vocalist Ike Willis.
+                It began at the age of six, picking out a Christmas song on the piano with his
+                uncle, and finishing the tune by ear himself. Today, Osman plays double bass,
+                guitar, piano, keyboards, bass guitar, drums, sings and has toured in the U.K.
+                with Frank Zappa&rsquo;s longtime vocalist Ike Willis.
               </p>
               <p className="mt-8">
                 <Link href="/about" className="u-link text-sm hover:text-accent-strong">
-                  More about Osman <span className="arrow-nudge" aria-hidden="true">→</span>
+                  More about Osman Meyredi <span className="arrow-nudge" aria-hidden="true">→</span>
                 </Link>
               </p>
             </Reveal>
             <Reveal variant="mask" delay={120} className="mx-auto w-full max-w-[300px] md:mx-0 md:justify-self-end">
               <div className="media-zoom border border-line">
-                <AboutArt />
+                <Image
+                  src="/images/about-osman.jpg"
+                  alt="Osman Meyredi playing the double bass on stage, early days"
+                  width={600}
+                  height={861}
+                  sizes="(min-width: 768px) 300px, 80vw"
+                  className="h-auto w-full"
+                />
               </div>
             </Reveal>
           </div>
@@ -370,6 +411,42 @@ export default async function HomePage() {
             </h2>
           </Container>
           <RecordsScroller releases={releases} />
+        </section>
+      )}
+
+      {/* Collaborations & projects teaser — pack 02 §2: small, editorial,
+          own music keeps the visual priority. */}
+      {collaborations.length > 0 && (
+        <section className="border-t border-line py-20">
+          <Container wide>
+            <Reveal variant="text">
+              <p className="eyebrow">Collaborations &amp; projects</p>
+            </Reveal>
+            <div className="mt-8 grid gap-10 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] md:items-end">
+              {collaborations.map((c) => (
+                <Reveal key={c.id} variant="text" delay={80}>
+                  <h2 className="font-display text-2xl leading-snug sm:text-3xl">
+                    <Link href="/music#collaborations" className="hover:text-accent-strong">
+                      {c.name}
+                    </Link>
+                  </h2>
+                  <p className="tabular mt-2 text-xs tracking-[0.14em] text-ink-faint uppercase">
+                    Collaboration / band project{c.role ? ` · ${c.role}` : ""}
+                  </p>
+                  {c.shortDescription && (
+                    <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-soft">
+                      {c.shortDescription}
+                    </p>
+                  )}
+                </Reveal>
+              ))}
+              <Reveal variant="text" delay={140} className="md:justify-self-end">
+                <Link href="/music#collaborations" className="u-link text-sm hover:text-accent-strong">
+                  All collaborations <span className="arrow-nudge" aria-hidden="true">→</span>
+                </Link>
+              </Reveal>
+            </div>
+          </Container>
         </section>
       )}
 
@@ -449,7 +526,7 @@ export default async function HomePage() {
         <Container wide>
           <Reveal variant="text">
             <h2 className="font-display max-w-2xl text-4xl leading-tight sm:text-5xl">
-              Book Osman for a concert, coaching or a workshop.
+              Book Osman for a live show, piano at your event, or a production.
             </h2>
           </Reveal>
           <Reveal variant="text" delay={130}>
@@ -457,11 +534,8 @@ export default async function HomePage() {
               Tell him about the occasion, the room and the people in it — he&rsquo;ll come back
               with a concrete proposal.
             </p>
-            <Link
-              href="/contact"
-              className="btn-motion mt-9 inline-block bg-accent px-7 py-3 text-sm font-medium tracking-wide text-white uppercase"
-            >
-              Get in touch <span className="arrow-nudge ml-1" aria-hidden="true">→</span>
+            <Link href="/contact" className="btn-pill mt-9">
+              Get in touch <span className="arrow-nudge" aria-hidden="true">→</span>
             </Link>
           </Reveal>
         </Container>

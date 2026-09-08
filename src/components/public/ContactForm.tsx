@@ -1,78 +1,221 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { startTransition, useActionState, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { submitContact, type ContactFormState } from "@/server/actions/contact";
-import { trackEvent } from "@/lib/analytics";
+import type { ContactTopic } from "@/lib/validation/schemas";
 
-const INQUIRY_OPTIONS: { value: string; label: string }[] = [
-  { value: "PERFORMANCE_BOOKING", label: "Performance booking" },
-  { value: "COACHING", label: "Coaching" },
-  { value: "WORKSHOP", label: "Workshop" },
-  { value: "PRESS_MEDIA", label: "Press & media" },
-  { value: "COLLABORATION_SESSION", label: "Collaboration & session" },
-  { value: "GENERAL", label: "General" },
+/**
+ * Contact form — precision pack 04 + supplied mockup, restyled into the dark
+ * system ("Ignore colors — look & feel according to the website").
+ *
+ * Structure follows the mockup exactly: What's this about? (7 editorial
+ * tiles) → Who are you? (8 optional pills) → Name → Email → Message →
+ * "Send to Osman Meyredi". Topic and role are real radio groups (keyboard
+ * and screen-reader operable); selection never depends on colour alone —
+ * the selected tile carries a filled marker and border change. Typed content
+ * survives failure: inputs are uncontrolled and never reset on error, and
+ * the server action returns field errors without clearing anything.
+ */
+const TOPICS: Array<{ value: ContactTopic; title: string; support?: string }> = [
+  {
+    value: "CONCERTS_LIVE",
+    title: "Concerts & live performances",
+    support: "Festivals · venues · events",
+  },
+  {
+    value: "LIVE_PIANO",
+    title: "Live piano for events",
+    support: "Corporate · receptions · private events",
+  },
+  {
+    value: "MUSIC_PRODUCTION",
+    title: "Music production",
+    support: "Production · arrangement · instrumentation · recording · mixing · mastering",
+  },
+  {
+    value: "ORIGINAL_TRACKS",
+    title: "Original tracks",
+    support: "Film · TV · documentary · events · online · series · adverts · radio",
+  },
+  { value: "COLLABORATION", title: "Collaboration" },
+  { value: "GENERAL", title: "General" },
+  { value: "SOMETHING_ELSE", title: "Something else" },
 ];
 
-const INITIAL_STATE: ContactFormState = { ok: false };
+const ROLES: Array<{ value: string; label: string }> = [
+  { value: "BOOKING_AGENT_PROMOTER", label: "Booking agent / promoter" },
+  { value: "FESTIVAL_EVENT_ORGANISER", label: "Festival / event organiser" },
+  { value: "VENUE_MANAGER", label: "Venue manager" },
+  { value: "BRAND_CORPORATE", label: "Brand / corporate" },
+  { value: "MEDIA_JOURNALIST", label: "Media / journalist" },
+  { value: "FELLOW_MUSICIAN", label: "Fellow musician" },
+  { value: "FAN_GENERAL_PUBLIC", label: "Fan / general public" },
+  { value: "SOMEONE_ELSE", label: "Someone else" },
+];
 
-const inputClass =
-  "w-full border border-line bg-canvas px-3.5 py-2.5 text-base text-ink placeholder:text-ink-faint focus:border-ink";
-const labelClass = "mb-1.5 block text-sm font-medium text-ink";
+const initialState: ContactFormState = { ok: false };
 
-function FieldError({ id, messages }: { id: string; messages?: string[] }) {
-  if (!messages || messages.length === 0) return null;
-  return (
-    <p id={id} className="mt-1.5 text-sm text-danger">
-      {messages[0]}
-    </p>
+export function ContactForm({ initialTopic }: { initialTopic?: string }) {
+  const [state, formAction, pending] = useActionState(submitContact, initialState);
+  const [topic, setTopic] = useState<string>(
+    TOPICS.some((t) => t.value === initialTopic) ? (initialTopic as string) : ""
   );
-}
+  const [role, setRole] = useState<string>("");
+  const pathname = usePathname();
+  const statusRef = useRef<HTMLDivElement | null>(null);
+  const formRef = useRef<HTMLFormElement | null>(null);
 
-export function ContactForm({
-  initialType,
-  contactEmail,
-}: {
-  initialType?: string;
-  contactEmail: string;
-}) {
-  const [state, formAction, pending] = useActionState(submitContact, INITIAL_STATE);
-  const [inquiryType, setInquiryType] = useState(
-    INQUIRY_OPTIONS.some((o) => o.value === initialType) ? (initialType as string) : "GENERAL"
-  );
+  // Success renders the confirmation panel (the form unmounts, so nothing
+  // needs resetting); errors keep everything exactly as typed.
+  useEffect(() => {
+    if (state.ok || state.message) statusRef.current?.focus();
+  }, [state]);
+
+  const fieldError = (name: string): string | undefined => state.errors?.[name]?.[0];
+
+  const labelClass = "mb-1.5 block text-sm font-medium text-ink";
+  const inputClass =
+    "w-full border border-line-dark bg-transparent px-3.5 py-2.5 text-ink placeholder:text-ink-faint focus:border-ink focus:outline-2 focus:outline-offset-2 focus:outline-accent";
 
   if (state.ok) {
     return (
-      <div role="status" className="border-t border-line pt-8">
-        <h2 className="font-display text-2xl">Thank you — your message is on its way.</h2>
-        <p className="mt-4 leading-relaxed text-ink-soft">
-          Osman reads every inquiry himself and will reply as soon as he can, usually within a
-          few days. If your date is close or something changes in the meantime, you can always
-          write directly to{" "}
-          <a href={`mailto:${contactEmail}`} className="u-link">
-            {contactEmail}
-          </a>
-          .
+      <div
+        ref={statusRef}
+        tabIndex={-1}
+        role="status"
+        className="border border-line p-6"
+      >
+        <p className="font-display text-xl">Thanks — your message has been sent.</p>
+        <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+          It has gone straight to the right inbox. Replies come from Osman or his team.
         </p>
       </div>
     );
   }
 
-  const errors = state.errors ?? {};
-  const detailsOpen = Boolean(errors.organisation || errors.eventDate || errors.location);
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    // Submitting through the transition (instead of the native form action)
+    // keeps React from resetting the fields — a failed send must leave the
+    // visitor's text exactly where they typed it.
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    startTransition(() => formAction(fd));
+  };
 
   return (
-    <form
-      action={formAction}
-      onSubmit={() => trackEvent("contact_submit", { type: inquiryType })}
-      noValidate={false}
-      className="space-y-6"
-    >
-      {!state.ok && state.message && (
-        <p role="alert" className="border border-line bg-canvas-soft px-4 py-3 text-sm text-danger">
+    <form ref={formRef} onSubmit={onSubmit} className="space-y-9" noValidate>
+      {/* Context for triage (pack 05 §20) — never used for routing. */}
+      <input type="hidden" name="pageUrl" value={pathname ?? ""} readOnly />
+      {/* Honeypot: visually hidden, still reachable by bots. */}
+      <div className="hp-field" aria-hidden="true">
+        <label htmlFor="contact-website">Website</label>
+        <input
+          id="contact-website"
+          type="text"
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
+
+      {state.message && (
+        <div
+          ref={statusRef}
+          tabIndex={-1}
+          role="alert"
+          className="border border-danger/50 bg-danger/5 p-4 text-sm leading-relaxed text-ink"
+        >
           {state.message}
-        </p>
+        </div>
       )}
 
+      {/* 1 — What's this about? */}
+      <fieldset>
+        <legend className="font-display text-xl">What&rsquo;s this about?</legend>
+        {fieldError("topic") && (
+          <p className="mt-2 text-sm text-danger" role="alert">
+            {fieldError("topic")}
+          </p>
+        )}
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {TOPICS.map((t) => {
+            const selected = topic === t.value;
+            return (
+              <label
+                key={t.value}
+                className={`cursor-pointer border p-4 transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent ${
+                  selected
+                    ? "border-accent-strong bg-accent/5"
+                    : "border-line-dark hover:border-ink-faint"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="topic"
+                  value={t.value}
+                  checked={selected}
+                  onChange={() => setTopic(t.value)}
+                  className="sr-only"
+                />
+                <span className="flex items-start justify-between gap-3">
+                  <span className="block text-sm font-semibold text-ink">{t.title}</span>
+                  <span
+                    aria-hidden="true"
+                    className={`mt-0.5 inline-block h-2.5 w-2.5 shrink-0 rounded-full border transition-colors ${
+                      selected ? "border-accent-strong bg-accent-strong" : "border-line-dark"
+                    }`}
+                  />
+                </span>
+                {t.support && (
+                  <span className="mt-1.5 block text-xs leading-relaxed text-ink-soft">
+                    {t.support}
+                  </span>
+                )}
+              </label>
+            );
+          })}
+        </div>
+      </fieldset>
+
+      {/* 2 — Who are you? (optional context, never routing) */}
+      <fieldset>
+        <legend className="font-display text-xl">
+          Who are you?{" "}
+          <span className="text-sm font-normal text-ink-faint">(optional)</span>
+        </legend>
+        <div className="mt-4 flex flex-wrap gap-2.5">
+          {ROLES.map((r) => {
+            const selected = role === r.value;
+            return (
+              <label
+                key={r.value}
+                className={`cursor-pointer rounded-full border px-4 py-2 text-sm transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent ${
+                  selected
+                    ? "border-accent-strong text-accent-strong"
+                    : "border-line-dark text-ink-soft hover:border-ink-faint hover:text-ink"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="role"
+                  value={r.value}
+                  checked={selected}
+                  onChange={() => setRole(r.value)}
+                  onClick={() => {
+                    // Second click on the same pill clears it — the field is optional.
+                    if (selected) setRole("");
+                  }}
+                  className="sr-only"
+                />
+                {r.label}
+              </label>
+            );
+          })}
+        </div>
+      </fieldset>
+
+      {/* 3/4 — Name + Email */}
       <div className="grid gap-6 sm:grid-cols-2">
         <div>
           <label htmlFor="contact-name" className={labelClass}>
@@ -82,13 +225,17 @@ export function ContactForm({
             id="contact-name"
             name="name"
             type="text"
-            required
             autoComplete="name"
+            placeholder="Your name"
+            aria-invalid={fieldError("name") ? true : undefined}
+            aria-describedby={fieldError("name") ? "contact-name-error" : undefined}
             className={inputClass}
-            aria-invalid={errors.name ? true : undefined}
-            aria-describedby={errors.name ? "contact-name-error" : undefined}
           />
-          <FieldError id="contact-name-error" messages={errors.name} />
+          {fieldError("name") && (
+            <p id="contact-name-error" className="mt-1.5 text-sm text-danger" role="alert">
+              {fieldError("name")}
+            </p>
+          )}
         </div>
         <div>
           <label htmlFor="contact-email" className={labelClass}>
@@ -98,38 +245,21 @@ export function ContactForm({
             id="contact-email"
             name="email"
             type="email"
-            required
             autoComplete="email"
+            placeholder="name@email.com"
+            aria-invalid={fieldError("email") ? true : undefined}
+            aria-describedby={fieldError("email") ? "contact-email-error" : undefined}
             className={inputClass}
-            aria-invalid={errors.email ? true : undefined}
-            aria-describedby={errors.email ? "contact-email-error" : undefined}
           />
-          <FieldError id="contact-email-error" messages={errors.email} />
+          {fieldError("email") && (
+            <p id="contact-email-error" className="mt-1.5 text-sm text-danger" role="alert">
+              {fieldError("email")}
+            </p>
+          )}
         </div>
       </div>
 
-      <div>
-        <label htmlFor="contact-type" className={labelClass}>
-          What is this about?
-        </label>
-        <select
-          id="contact-type"
-          name="inquiryType"
-          value={inquiryType}
-          onChange={(e) => setInquiryType(e.target.value)}
-          className={inputClass}
-          aria-invalid={errors.inquiryType ? true : undefined}
-          aria-describedby={errors.inquiryType ? "contact-type-error" : undefined}
-        >
-          {INQUIRY_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
-        <FieldError id="contact-type-error" messages={errors.inquiryType} />
-      </div>
-
+      {/* 5 — Message */}
       <div>
         <label htmlFor="contact-message" className={labelClass}>
           Message
@@ -138,89 +268,28 @@ export function ContactForm({
           id="contact-message"
           name="message"
           rows={6}
-          required
+          placeholder="Booking a show, asking a question, or just saying hi — tell us here."
+          aria-invalid={fieldError("message") ? true : undefined}
+          aria-describedby={fieldError("message") ? "contact-message-error" : undefined}
           className={inputClass}
-          placeholder="The occasion, the room, the atmosphere you have in mind — whatever you already know."
-          aria-invalid={errors.message ? true : undefined}
-          aria-describedby={errors.message ? "contact-message-error" : undefined}
         />
-        <FieldError id="contact-message-error" messages={errors.message} />
+        {fieldError("message") && (
+          <p id="contact-message-error" className="mt-1.5 text-sm text-danger" role="alert">
+            {fieldError("message")}
+          </p>
+        )}
       </div>
 
-      <details open={detailsOpen || undefined} className="border-t border-line pt-5">
-        <summary className="cursor-pointer text-sm font-medium underline underline-offset-4">
-          More about your event (optional)
-        </summary>
-        <div className="mt-5 grid gap-6 sm:grid-cols-3">
-          <div>
-            <label htmlFor="contact-organisation" className={labelClass}>
-              Organisation
-            </label>
-            <input
-              id="contact-organisation"
-              name="organisation"
-              type="text"
-              autoComplete="organization"
-              className={inputClass}
-              aria-invalid={errors.organisation ? true : undefined}
-              aria-describedby={errors.organisation ? "contact-organisation-error" : undefined}
-            />
-            <FieldError id="contact-organisation-error" messages={errors.organisation} />
-          </div>
-          <div>
-            <label htmlFor="contact-event-date" className={labelClass}>
-              Event date
-            </label>
-            <input
-              id="contact-event-date"
-              name="eventDate"
-              type="date"
-              className={inputClass}
-              aria-invalid={errors.eventDate ? true : undefined}
-              aria-describedby={errors.eventDate ? "contact-event-date-error" : undefined}
-            />
-            <FieldError id="contact-event-date-error" messages={errors.eventDate} />
-          </div>
-          <div>
-            <label htmlFor="contact-location" className={labelClass}>
-              Location
-            </label>
-            <input
-              id="contact-location"
-              name="location"
-              type="text"
-              className={inputClass}
-              aria-invalid={errors.location ? true : undefined}
-              aria-describedby={errors.location ? "contact-location-error" : undefined}
-            />
-            <FieldError id="contact-location-error" messages={errors.location} />
-          </div>
-        </div>
-      </details>
-
-      {/* Honeypot — hidden from real visitors, ignored by assistive technology. */}
-      <div
-        aria-hidden="true"
-        className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden"
-      >
-        <label htmlFor="contact-website">Website</label>
-        <input
-          id="contact-website"
-          name="website"
-          type="text"
-          tabIndex={-1}
-          autoComplete="off"
-        />
-      </div>
-
-      <div className="pt-2">
-        <button
-          type="submit"
-          disabled={pending}
-          className="inline-block bg-ink px-7 py-3 text-sm font-medium tracking-wide text-canvas uppercase transition-colors hover:bg-accent-strong disabled:opacity-60"
-        >
-          {pending ? "Sending…" : "Send message"}
+      {/* 6 — Submit */}
+      <div>
+        <button type="submit" disabled={pending} className="btn-pill" data-cursor="SEND">
+          {pending ? "Sending…" : "Send to Osman Meyredi"}
         </button>
+        {pending && (
+          <p className="mt-2 text-sm text-ink-faint" role="status">
+            Sending your message…
+          </p>
+        )}
       </div>
     </form>
   );

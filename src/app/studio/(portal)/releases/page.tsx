@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getRepos } from "@/server/repositories";
-import { releaseTypeLabels } from "@/components/studio/labels";
+import { relationshipPublicLabels, releaseTypeLabels } from "@/components/studio/labels";
 import { Chip, StatusChip } from "@/components/studio/StatusChip";
 import { EmptyState, PageHeader } from "@/components/studio/PageHeader";
 import { RowAction } from "@/components/studio/rowActions";
@@ -45,7 +45,11 @@ export default async function ReleasesPage() {
                   {release.title}
                 </Link>
                 <span className="block truncate text-xs text-ink-faint">
-                  {[releaseTypeLabels[release.releaseType], release.year]
+                  {[
+                    relationshipPublicLabels[release.relationshipType],
+                    releaseTypeLabels[release.releaseType],
+                    release.year,
+                  ]
                     .filter(Boolean)
                     .join(" · ")}
                 </span>

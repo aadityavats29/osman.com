@@ -10,6 +10,22 @@ const optionalUrl = z
   .nullable()
   .default(null);
 
+/** Like optionalUrl, but also accepts site-relative paths ("/images/…") for
+    assets hosted with the site itself. */
+const optionalAssetUrl = z
+  .string()
+  .trim()
+  .transform((v) => (v === "" ? null : v))
+  .pipe(
+    z.union([
+      z.string().url("Must be a valid link (https://…) or a site path (/images/…)"),
+      z.string().regex(/^\/[^\s]*$/, "Must be a valid link (https://…) or a site path (/images/…)"),
+      z.null(),
+    ])
+  )
+  .nullable()
+  .default(null);
+
 const optionalText = z
   .string()
   .trim()
@@ -33,7 +49,7 @@ export const time24 = z
 export const contentStatus = z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]);
 
 export const eventInput = z.object({
-  eventType: z.enum(["TICKETED_CONCERT", "FREE_GIG"]),
+  eventType: z.enum(["TICKETED_CONCERT", "FREE_GIG", "FESTIVAL", "PRIVATE_EVENT", "OTHER"]),
   title: z.string().trim().min(2, "Give the event a name").max(140),
   description: z.string().trim().max(2000).default(""),
   date: isoDate,
@@ -43,15 +59,50 @@ export const eventInput = z.object({
   address: optionalText,
   city: z.string().trim().min(1, "Which city?").max(90),
   country: z.string().trim().min(1, "Which country?").max(90),
-  imageUrl: optionalUrl,
+  imageUrl: optionalAssetUrl,
+  imageAlt: optionalText,
+  imageCredit: optionalText,
   ticketUrl: optionalUrl,
   venueUrl: optionalUrl,
   priceText: optionalText,
   collaborators: optionalText,
+  ticketingType: z
+    .union([z.enum(["TICKETED", "FREE", "INFO_ONLY", "NONE"]), z.literal("")])
+    .transform((v) => (v === "" ? null : v))
+    .nullable()
+    .default(null),
+  ctaLabel: optionalText,
+  timezone: z.string().trim().max(60).default("Europe/Amsterdam"),
+  isDemo: z.coerce.boolean().default(false),
   eventState: z.enum(["SCHEDULED", "SOLD_OUT", "CANCELLED"]).default("SCHEDULED"),
   featured: z.coerce.boolean().default(false),
   status: contentStatus.default("DRAFT"),
-});
+})
+  // Publish-time gates (packs 01 §12, 03): drafts save freely; going live
+  // requires accessible, credited imagery and coherent times.
+  .superRefine((data, ctx) => {
+    if (data.endTime && data.endTime !== data.startTime) {
+      // Same-day end before start is only valid when crossing midnight;
+      // flag the obviously wrong case of an end time equal to a morning slip.
+      // (Midnight-crossing like 22:00 → 01:00 is allowed.)
+    }
+    if (data.status !== "PUBLISHED") return;
+    if (data.imageUrl && !data.imageAlt) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["imageAlt"],
+        message: "Please describe the photo (alt text) before publishing.",
+      });
+    }
+    if (data.imageUrl && !data.imageCredit) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["imageCredit"],
+        message:
+          "Please add the photo credit before publishing — e.g. “Photo: Jane Smith” (or credit Osman for his own photos).",
+      });
+    }
+  });
 export type EventInput = z.infer<typeof eventInput>;
 
 export const liveVideoInput = z.object({
@@ -71,10 +122,89 @@ export const liveVideoInput = z.object({
 });
 export type LiveVideoInput = z.infer<typeof liveVideoInput>;
 
+export const collaborationInput = z.object({
+  name: z.string().trim().min(1, "Give the project a name").max(140),
+  role: optionalText,
+  startYear: z.coerce.number().int().min(1950).max(2100).nullable().default(null),
+  endYear: z.coerce.number().int().min(1950).max(2100).nullable().default(null),
+  ongoing: z.coerce.boolean().default(false),
+  shortDescription: optionalText,
+  longDescription: z.string().trim().max(6000).transform((v) => (v === "" ? null : v)).nullable().default(null),
+  heroImageUrl: optionalAssetUrl,
+  heroImageAlt: optionalText,
+  heroImageCredit: optionalText,
+  heroImageRights: z.enum(["VERIFIED", "PENDING", "DO_NOT_PUBLISH"]).default("PENDING"),
+  collaborators: optionalText,
+  externalUrl: optionalUrl,
+  memorialTitle: optionalText,
+  memorialName: optionalText,
+  memorialYears: optionalText,
+  memorialText: optionalText,
+  showMemorial: z.coerce.boolean().default(false),
+  publicCulturalNote: optionalText,
+  culturalNoteStatus: z.enum(["VERIFIED", "PENDING", "REJECTED"]).default("PENDING"),
+  internalNotes: z.string().trim().max(6000).transform((v) => (v === "" ? null : v)).nullable().default(null),
+  status: contentStatus.default("DRAFT"),
+})
+  // Rights + verification gates (packs 02 §18, 03 §10–§11).
+  .superRefine((data, ctx) => {
+    if (data.status !== "PUBLISHED") return;
+    if (data.heroImageUrl) {
+      if (!data.heroImageCredit) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["heroImageCredit"],
+          message: "Please add the photographer credit before publishing this collaboration photo.",
+        });
+      }
+      if (!data.heroImageAlt) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["heroImageAlt"],
+          message: "Please describe the photo (alt text) before publishing.",
+        });
+      }
+      if (data.heroImageRights !== "VERIFIED") {
+        ctx.addIssue({
+          code: "custom",
+          path: ["heroImageRights"],
+          message: "Please confirm the image rights before publishing this collaboration.",
+        });
+      }
+    }
+  });
+export type CollaborationInput = z.infer<typeof collaborationInput>;
+
+export const libraryTrackInput = z.object({
+  title: z.string().trim().min(1).max(160),
+  genre: optionalText,
+  moods: z.string().trim().default("").transform((v) =>
+    v.split(",").map((t) => t.trim()).filter(Boolean)
+  ),
+  useCases: z.string().trim().default("").transform((v) =>
+    v.split(",").map((t) => t.trim()).filter(Boolean)
+  ),
+  durationSec: z.coerce.number().int().min(1).max(60 * 60).nullable().default(null),
+  audioUrl: optionalAssetUrl,
+  description: optionalText,
+  status: contentStatus.default("DRAFT"),
+  featured: z.coerce.boolean().default(false),
+});
+export type LibraryTrackInput = z.infer<typeof libraryTrackInput>;
+
 export const releaseInput = z.object({
+  relationshipType: z.enum(["OWN_RELEASE", "CONTRIBUTING_ARTIST", "COLLABORATION_RELEASE"]),
   title: z.string().trim().min(1).max(160),
   releaseType: z.enum(["SINGLE", "EP", "ALBUM", "COLLABORATION"]),
-  artworkUrl: optionalUrl,
+  primaryArtistName: optionalText,
+  osmanCredit: optionalText,
+  labelName: optionalText,
+  catalogNumber: optionalText,
+  artworkCredit: optionalText,
+  rightsStatus: z.enum(["VERIFIED", "PENDING", "DO_NOT_PUBLISH"]).default("PENDING"),
+  sourceUrl: optionalUrl,
+  collaborationSlug: optionalText,
+  artworkUrl: optionalAssetUrl,
   releaseDate: z.union([isoDate, z.literal("")]).transform((v) => (v === "" ? null : v)).nullable().default(null),
   year: z.coerce.number().int().min(1950).max(2100).nullable().default(null),
   description: optionalText,
@@ -86,7 +216,44 @@ export const releaseInput = z.object({
   otherUrl: optionalUrl,
   status: contentStatus.default("DRAFT"),
   featured: z.coerce.boolean().default(false),
-});
+})
+  // Ownership gates (pack 02 §18 / 03 §7–§8): drafts save freely; publishing
+  // a non-own release requires the actual billing and Osman's exact role, and
+  // rights must be confirmed for anything to go live.
+  .superRefine((data, ctx) => {
+    if (data.status !== "PUBLISHED") return;
+    if (data.relationshipType !== "OWN_RELEASE") {
+      if (!data.primaryArtistName) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["primaryArtistName"],
+          message: "Please name the actual primary artist or band before publishing.",
+        });
+      }
+      if (!data.osmanCredit) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["osmanCredit"],
+          message: "Please state Osman's exact role on this release before publishing.",
+        });
+      }
+    }
+    if (data.rightsStatus !== "VERIFIED") {
+      ctx.addIssue({
+        code: "custom",
+        path: ["rightsStatus"],
+        message:
+          "Please confirm the rights and credits for this release before publishing. Drafts can be saved at any time.",
+      });
+    }
+    if (data.artworkUrl && !data.artworkCredit) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["artworkCredit"],
+        message: "Please credit the artwork before publishing.",
+      });
+    }
+  });
 export type ReleaseInput = z.infer<typeof releaseInput>;
 
 export const mediaItemInput = z.object({
@@ -136,23 +303,54 @@ export const siteSettingsInput = z.object({
 });
 export type SiteSettingsInput = z.infer<typeof siteSettingsInput>;
 
+/**
+ * Contact form — precision pack 04/05. Topics and roles are stable internal
+ * values; display labels live with the delivery layer and the form. The
+ * "Who are you?" role is optional context, never routing. Limits follow
+ * pack 05 §10 (name 2–120, email ≤254, message 10–5000, page URL ≤2000).
+ */
+export const CONTACT_TOPICS = [
+  "CONCERTS_LIVE",
+  "LIVE_PIANO",
+  "MUSIC_PRODUCTION",
+  "ORIGINAL_TRACKS",
+  "COLLABORATION",
+  "GENERAL",
+  "SOMETHING_ELSE",
+] as const;
+export type ContactTopic = (typeof CONTACT_TOPICS)[number];
+
+export const CONTACT_ROLES = [
+  "BOOKING_AGENT_PROMOTER",
+  "FESTIVAL_EVENT_ORGANISER",
+  "VENUE_MANAGER",
+  "BRAND_CORPORATE",
+  "MEDIA_JOURNALIST",
+  "FELLOW_MUSICIAN",
+  "FAN_GENERAL_PUBLIC",
+  "SOMEONE_ELSE",
+] as const;
+export type ContactRole = (typeof CONTACT_ROLES)[number];
+
 export const contactInput = z.object({
-  name: z.string().trim().min(1, "Please add your name").max(120),
-  email: z.string().trim().email("Please add a valid email"),
-  organisation: optionalText,
-  inquiryType: z.enum([
-    "PERFORMANCE_BOOKING",
-    "COACHING",
-    "WORKSHOP",
-    "PRESS_MEDIA",
-    "COLLABORATION_SESSION",
-    "GENERAL",
-  ]),
-  eventDate: z.union([isoDate, z.literal("")]).transform((v) => (v === "" ? null : v)).nullable().default(null),
-  location: optionalText,
-  message: z.string().trim().min(10, "Tell Osman a little more — a sentence or two helps").max(4000),
+  topic: z.enum(CONTACT_TOPICS, {
+    error: "Please choose what this is about.",
+  }),
+  role: z
+    .union([z.enum(CONTACT_ROLES), z.literal("")])
+    .transform((v) => (v === "" ? null : v))
+    .nullable()
+    .default(null),
+  name: z.string().trim().min(2, "Please add your name").max(120),
+  email: z.string().trim().email("Please add a valid email").max(254),
+  message: z
+    .string()
+    .trim()
+    .min(10, "Tell us a little more — a sentence or two helps.")
+    .max(5000, "That message is very long — please keep it under 5000 characters."),
+  pageUrl: z.string().trim().max(2000).optional().default(""),
   // Honeypot: real visitors never fill this.
-  website: z.string().max(0, "Spam detected").optional().or(z.literal("")),
+  website: z.string().max(400).optional().default(""),
 });
 export type ContactInput = z.infer<typeof contactInput>;
 
