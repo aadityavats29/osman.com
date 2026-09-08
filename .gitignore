@@ -46,3 +46,6 @@ next-env.d.ts
 
 # generated
 src/generated/
+
+# staging area for files Claude moves aside on your machine — never build input
+_to_delete/
