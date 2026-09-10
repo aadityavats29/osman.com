@@ -20,7 +20,7 @@ const FOOTER_GROUPS: { heading: string; links: { label: string; href: string }[]
       { label: "Concerts & Live Performances", href: "/services/concerts" },
       { label: "Live Piano for Events", href: "/services/piano-for-events" },
       { label: "Music Production", href: "/services/music-production" },
-      { label: "Music Library", href: "/services/music-library" },
+      { label: "Original Tracks & Music Library", href: "/services/music-library" },
     ],
   },
   {

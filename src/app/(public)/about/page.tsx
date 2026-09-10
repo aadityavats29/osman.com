@@ -2,50 +2,52 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/shared/Container";
-import { PlaceholderImage } from "@/components/shared/PlaceholderImage";
 import { Reveal } from "@/components/motion/Reveal";
 import { Parallax } from "@/components/motion/Parallax";
 
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Osman Meyredi — Italian multi-instrumentalist based in Amsterdam. Double bass, guitar, piano, keyboards, bass guitar and drums; artist, producer, music director, composer, songwriter and singer performing across Europe.",
+    "Osman Meyredi is an Italian-born artist, a multi-instrumentalist, songwriter, composer, singer, music director and producer, based in the Netherlands — performing across Europe and beyond.",
   alternates: { canonical: "/about" },
 };
 
+/**
+ * About — Round 2 Keynote slides 6–8. The entire page follows the client's
+ * Final About Content document (Website/02.About/Text/Final About
+ * Content.pages) verbatim: new introduction, "A little much of everything",
+ * the two-conservatories story, the Ike Willis tour section and Languages &
+ * availability (now "across Europe and beyond"). The two photographs are the
+ * approved files from Website/02.About/Images. One source typo ("Oman") is
+ * corrected to "Osman" — flagged in the implementation report.
+ */
 export default function AboutPage() {
   return (
     <article>
-      {/* Identity statement — the page's signature moment */}
+      {/* Identity statement — the approved opening sentence (Keynote slide 7). */}
       <section className="py-24 sm:py-32">
         <Container wide>
           <Reveal variant="text">
             <p className="eyebrow">About</p>
             <h1 className="font-display mt-6 max-w-4xl text-4xl leading-tight sm:text-5xl lg:text-6xl">
-              Osman Meyredi is a multi-instrumentalist who treats every instrument as a different
-              way of listening.
+              Osman Meyredi is an Italian-born artist, a multi-instrumentalist, songwriter,
+              composer, singer, music director and producer, based in the Netherlands.
             </h1>
-          </Reveal>
-          <Reveal variant="text" delay={140}>
-            <p className="mt-8 max-w-2xl text-lg leading-relaxed text-ink-soft">
-              Piano, keyboards, bass guitar, guitar, double bass, drums, vocals. Born in Italy in
-              1984, based in Amsterdam, at home on stages across Europe.
-            </p>
           </Reveal>
         </Container>
       </section>
 
       <Container wide>
         <Parallax speed={0.1}>
-          <Reveal variant="mask" className="mx-auto max-w-xl">
-            {/* Keynote slide 5 asset — the historical double-bass photograph */}
+          <Reveal variant="mask" className="mx-auto max-w-4xl">
+            {/* First approved About image — Website/02.About/Images. */}
             <div className="media-zoom border border-line">
               <Image
-                src="/images/about-osman.jpg"
-                alt="Osman Meyredi playing the double bass on stage, early days"
-                width={600}
-                height={861}
-                sizes="(min-width: 640px) 36rem, 92vw"
+                src="/images/about/about-performance-italy.jpg"
+                alt="Osman Meyredi performing live in Italy, black and white"
+                width={1920}
+                height={1071}
+                sizes="(min-width: 1024px) 56rem, 92vw"
                 className="h-auto w-full"
               />
             </div>
@@ -53,111 +55,88 @@ export default function AboutPage() {
         </Parallax>
       </Container>
 
-      {/* Origin */}
+      {/* A little much of everything */}
       <section className="py-24">
         <Container>
           <Reveal variant="text">
-            <h2 className="font-display text-3xl">It started with a Christmas song</h2>
+            <h2 className="font-display text-3xl">A little much of everything</h2>
             <p className="mt-6 leading-relaxed">
-              Osman was six when his uncle sat him at the piano and taught him a Christmas song.
-              The lesson stopped partway through; the tune didn&rsquo;t. He finished it himself,
-              by ear — finding the rest of the melody one note at a time. That instinct, working
-              out what the music wants next by listening rather than reading, has stayed at the
-              centre of everything since.
+              Osman Meyredi moves between instruments and genres with ease, combining different
+              influences into songs that feel personal, honest, and never quite predictable.
+              What makes his work distinctive is that he can take different styles, instruments,
+              and influences, and make them sound like they belong together.
             </p>
             <p className="mt-6 leading-relaxed">
-              One instrument became several. Over the years the piano was joined by keyboards,
-              bass guitar, guitar, double bass and drums — and by his voice. Not out of
-              restlessness, but out of curiosity: each instrument sits somewhere different in the
-              music, and each one teaches you to hear the others differently.
-            </p>
-          </Reveal>
-        </Container>
-      </section>
-
-      {/* Education */}
-      <section className="border-t border-line py-24">
-        <Container>
-          <Reveal variant="text" delay={90}>
-            <h2 className="font-display text-3xl">Two conservatories, two questions</h2>
-            <p className="mt-6 leading-relaxed">
-              In 2009 he completed a master&rsquo;s degree in double bass at the Trento
-              Conservatory in Italy — years spent deep inside one instrument, its repertoire and
-              its role in an ensemble.
-            </p>
-            <p className="mt-6 leading-relaxed">
-              A decade later came a different question: not how to play, but how people learn to
-              play together. In 2020 he finished a degree in Music Education at the Conservatory
-              of Amsterdam, studying pedagogy, arrangement, band coaching, vocal performance, jazz
-              piano and music production. The two degrees frame his working life: one rooted in
-              craft, the other in how craft is shared.
+              His story with music started before he had the language to explain it. When his
+              uncle taught him the beginning of a Christmas song, but had to leave before
+              finishing it, Osman completed the melody by ear, instinctively finding the missing
+              notes. That moment felt as if music already belonged to him. Since then he would
+              hear songs on the radio and find them back on the piano without reading a single
+              note. To him, music was something he recognised, absorbed, and translated
+              instinctively.
             </p>
           </Reveal>
         </Container>
       </section>
 
-      {/* Multi-instrumentalist perspective */}
+      {/* Two conservatories */}
       <section className="border-t border-line py-24">
         <Container>
           <Reveal variant="text" delay={90}>
-            <h2 className="font-display text-3xl">The view from every chair</h2>
+            <h2 className="font-display text-3xl">
+              Two conservatories, in Italy and in The Netherlands
+            </h2>
             <p className="mt-6 leading-relaxed">
-              Playing bass teaches you what the drummer needs. Playing drums teaches you what the
-              bass should leave out. Sitting at the piano, you hear how much space a singer
-              actually has. Having occupied nearly every chair on the bandstand, Osman arranges,
-              transcribes and composes with a working knowledge of how each part feels under the
-              hands — and writes parts musicians are glad to play.
+              In 2009 he finished a master&rsquo;s degree in double bass at the Trento
+              Conservatory in Italy, the formal proof of years spent inside classical training
+              and ensemble playing. But even then, the double bass was never the whole story. On
+              the side, almost as easily as breathing, he was picking up drums, percussion,
+              guitar, electric guitar, keyboards and synthesisers, absorbing instruments, the
+              way some kids pick up a second language just from being around it.
             </p>
             <p className="mt-6 leading-relaxed">
-              His work spans live performance, studio sessions, composition, transcription and
-              arrangement, in the Netherlands, Italy and across Europe.
+              A decade later he completed a degree in Music Education at the Conservatory of
+              Amsterdam, covering pedagogy, arrangement, band coaching, vocal performance, jazz
+              piano and music production. Between the two degrees is basically his whole working
+              life: one rooted in craft, the other in how craft gets passed on.
             </p>
           </Reveal>
         </Container>
       </section>
 
       <Container wide>
+        {/* Second About image — "Landscape black & white image with all
+            instruments" per the Final About document. */}
         <Reveal variant="mask">
-          <PlaceholderImage label="Performance — live on stage" ratio="3/2" />
+          <div className="media-zoom border border-line">
+            <Image
+              src="/images/about/about-multi-instrumentalist.jpg"
+              alt="Osman Meyredi on stage surrounded by his instruments, black and white"
+              width={1920}
+              height={1071}
+              sizes="(min-width: 1024px) 72rem, 96vw"
+              className="h-auto w-full"
+            />
+          </div>
         </Reveal>
       </Container>
 
-      {/* Touring & collaboration */}
+      {/* On tour with Ike Willis */}
       <section className="py-24">
         <Container>
           <Reveal variant="text" delay={90}>
-            <h2 className="font-display text-3xl">On the road</h2>
+            <h2 className="font-display text-3xl">
+              On tour with Ike Willis, Frank Zappa&rsquo;s band
+            </h2>
             <p className="mt-6 leading-relaxed">
-              Among the collaborations he values most: touring the U.K. multiple times with Ike
-              Willis — Frank Zappa&rsquo;s longtime vocalist — and the band Zappatika. Zappa&rsquo;s
-              music is unforgiving of half-listening; nights on that repertoire, with a singer who
-              lived inside it for decades, are a masterclass in precision and play at the same
-              time.
+              He&rsquo;s most proud of his collaboration with Frank Zappa&rsquo;s band, going
+              several times on tour with Ike Willis, Frank Zappa&rsquo;s longtime vocalist,
+              before Willis&rsquo;s passing on May 16, 2026. Zappa&rsquo;s music punishes
+              half-listening, and those nights, playing that repertoire alongside a singer
+              who&rsquo;d lived inside it for decades, were as much a lesson in precision as
+              they were in play.
             </p>
           </Reveal>
-        </Container>
-      </section>
-
-      {/* Philosophy — drifts a touch slower than the page around it */}
-      <section className="border-t border-line py-24">
-        <Container>
-          <Parallax speed={0.06}>
-            <Reveal variant="text">
-              <h2 className="font-display text-3xl">Listening between the notes</h2>
-              <p className="mt-6 leading-relaxed">
-                Ask Osman what he actually does on stage and the answer is simple: he listens. To
-                the room — every space carries sound its own way, and a set that works in a theatre
-                can smother a dinner. To the other musicians — who is stepping forward, who is
-                making space, where the groove wants to settle. And to what is not being heard yet:
-                the note nobody has played, the pause the song is asking for.
-              </p>
-              <p className="mt-6 leading-relaxed">
-                It is why his coaching starts from how a band listens rather than how it plays, and
-                why his workshops use music to let teams experience — not discuss — what attention
-                to each other actually feels like.
-              </p>
-            </Reveal>
-          </Parallax>
         </Container>
       </section>
 
@@ -167,21 +146,15 @@ export default function AboutPage() {
           <Reveal variant="text" delay={90}>
             <h2 className="font-display text-3xl">Languages &amp; availability</h2>
             <p className="mt-6 leading-relaxed">
-              Osman works in English, Italian and Dutch. He is based in Amsterdam, performs
-              regularly in the Netherlands and Italy, and travels for concerts, events and
-              productions across Europe.
+              Osman Meyredi works in English, Italian and Dutch. He&rsquo;s based in Amsterdam,
+              performs regularly in the Netherlands and Italy, and travels for concerts, events
+              and productions across Europe and beyond.
             </p>
             <div className="mt-10 flex flex-wrap gap-6">
-              <Link
-                href="/shows/concerts"
-                className="btn-pill"
-              >
+              <Link href="/shows/concerts" className="btn-pill">
                 Upcoming concerts <span className="arrow-nudge ml-1" aria-hidden="true">→</span>
               </Link>
-              <Link
-                href="/contact"
-                className="btn-pill"
-              >
+              <Link href="/contact" className="btn-pill">
                 Get in touch
               </Link>
             </div>

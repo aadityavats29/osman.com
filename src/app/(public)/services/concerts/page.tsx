@@ -4,38 +4,44 @@ import Image from "next/image";
 import { Container } from "@/components/shared/Container";
 import { Reveal } from "@/components/motion/Reveal";
 import { TrackedLink } from "@/components/public/TrackedLink";
+import { ServicesSubnav } from "@/components/public/ServicesSubnav";
 
 export const metadata: Metadata = {
-  title: "Concerts & Live Performances — Book Osman live",
+  title: "Concerts & Live Performances — Book Osman Meyredi live",
   description:
-    "Book Osman Meyredi for a full live show: a hybrid performance built from his own studio productions, multiple instruments and a stage presence that scales from intimate sets to headline shows.",
+    "Book Osman Meyredi for a full live show: his own studio productions come to life through multiple instruments and a stage presence that swings from intimate to full-on spectacle.",
   alternates: { canonical: "/services/concerts" },
 };
 
 /**
- * Concerts & Live Performances — Keynote 02-09-2026, slides 9–11.
- * Client-approved copy, the red-line callout kept by request, a read-more
- * fold to keep the page airy, the three booking options as an intentional
- * section, and the closing statement with its final line emphasised.
+ * Concerts & Live Performances — Round 2 Keynote slides 11–14. The entire
+ * copy follows the final content document ("Concerts & Live performances
+ * .pages" in Website/05. Services/Concert & Live Performances) verbatim:
+ * one red vertical text treatment (the tickets note, as the document marks
+ * it), the two new explanatory paragraphs replacing the old read-more block,
+ * and the three booking options with their full approved descriptions. The
+ * supplied black-and-white landscape image replaces the old crop; the colour
+ * version is still with Varsha (visible pending note by client request).
  */
 const OPTIONS = [
   {
     title: "Live multi-instrumental performance",
-    body: "Osman performs his music across several instruments, supported by his own produced tracks.",
+    body: "One person, an entire band's worth of sound. Osman switches between instruments in real time, sings, plays, and keeps the crowd with him the whole way, no backing musicians, no safety net, just him pulling off what usually takes five people. In a small theatre or an intimate event, watching one artist build a full, entertaining show from scratch in front of you is the whole draw.",
   },
   {
     title: "Visual production",
-    body: "Visuals, lighting and stage elements can be developed around the music.",
+    body: "Same artist, same solo performance, just with the stage built up around him: lighting, visuals, smoke, fire, the works. It's not a bigger band, it's a bigger frame around the same one-man show, scaled for festivals and larger crowds who want the full spectacle to match.",
   },
   {
     title: "Expanded live show",
-    body: "Additional musicians, dancers and production can be added when the stage or event calls for something bigger.",
+    body: "Additional musicians, dancers and production come in when the moment calls for a full band-sized sound and presence on stage.",
   },
 ];
 
 export default function ConcertsServicePage() {
   return (
     <article>
+      <ServicesSubnav current="/services/concerts" />
       <section className="py-24 sm:py-32">
         <Container>
           <Reveal variant="text">
@@ -47,17 +53,18 @@ export default function ConcertsServicePage() {
               Festivals · Venues · Events · Performances
             </p>
             <p className="mt-6 text-xl leading-relaxed text-ink-soft">
-              Book Osman for a full live show, a hybrid performance built from his own studio
-              productions, multiple instruments and a stage presence that moves between intimate
-              and large-scale. The result can be kept simple, or developed into a much larger
-              visual production, completely scaled to fit festivals, theatres, venues and
-              headline shows alike.
+              Want Osman on your stage? Think full live show: his own studio productions come to
+              life through multiple instruments and a stage presence that swings from intimate
+              to full-on spectacle. Keep it stripped back and raw, or go all in with a bigger
+              visual production, it scales to whatever the room calls for, festival, theatre,
+              club night, headline slot.
             </p>
-            {/* The red line — kept by explicit request (Keynote slide 9). */}
-            <p className="mt-6 border-l-2 border-accent pl-4 leading-relaxed text-ink-soft">
-              Available solo or with a hand-picked group of musicians, from shorter festival
-              sets to complete headline performances.
+            <p className="mt-6 leading-relaxed text-ink-soft">
+              Solo, or with a hand-picked band behind him, from a tight festival set to a full
+              headline show, Osman fits the slot.
             </p>
+            {/* The one red vertical text treatment (Keynote slide 11: "only 1
+                red vertical line with text, not two"). */}
             <p className="mt-6 border-l-2 border-accent pl-4 text-sm text-ink-soft">
               Looking for tickets to an upcoming show?{" "}
               <Link href="/shows/tickets" className="u-link">
@@ -79,70 +86,47 @@ export default function ConcertsServicePage() {
           </Reveal>
         </Container>
 
-        {/* Strong live-performance imagery (Keynote slide 10) — the supplied
-            live photograph in a wide stage crop. */}
+        {/* Round 2 slide 13: the supplied landscape image (black-and-white
+            version, as embedded on the slide). */}
         <Container wide className="mt-14">
           <Reveal variant="mask">
-            <div className="relative overflow-hidden border border-line" style={{ aspectRatio: "3/1" }}>
+            <div className="relative overflow-hidden border border-line" style={{ aspectRatio: "2400/1350" }}>
               <Image
-                src="/images/home-hero.jpg"
-                alt="Osman Meyredi mid-performance, singing at the keys in blue stage light"
+                src="/images/services/concerts-live-landscape.jpg"
+                alt="Osman Meyredi mid-performance at the keys, black and white, head tilted back"
                 fill
                 sizes="100vw"
-                className="object-cover object-[50%_22%]"
+                className="object-cover"
               />
             </div>
           </Reveal>
+          <p className="mt-3">
+            <span className="pending-note">Waiting for Varsha — colour version to follow</span>
+          </p>
         </Container>
 
+        {/* Final-content paragraphs (slide 14: old copy removed). */}
         <Container className="mt-14">
           <Reveal variant="text" delay={100}>
-            <p className="text-lg leading-relaxed text-ink">
-              Looking for a live performance for your festival, venue, corporate event or
-              special occasion?
+            <p className="leading-relaxed text-ink">
+              He&rsquo;s a proper multi-instrumentalist: singing, piano, synths, bass, guitar,
+              double bass, percussion, whatever the song needs. And the music doesn&rsquo;t sit
+              still either, it slides between rock, funk, electronic, cinematic and rhythmic
+              influences depending on where he takes it.
             </p>
             <p className="mt-6 leading-relaxed text-ink">
-              What makes Osman&rsquo;s work distinctive is that he can take different styles,
-              instruments and influences and make them sound like they belong together.
+              There&rsquo;s no standard band line-up on stage. Instead he moves between
+              instruments himself, layering them live with custom tracks and electronic
+              elements he&rsquo;s built in his own studio. One moment it&rsquo;s stripped back
+              and intimate, the next it fills the whole room.
             </p>
-            {/* "To avoid a lot of text, maybe use a read more?" — yes: the
-                deeper story folds behind an accessible disclosure. */}
-            <details className="read-more mt-6 group">
-              <summary className="u-link cursor-pointer list-none text-sm text-ink-soft hover:text-accent-strong">
-                <span className="read-more-closed">Read more <span aria-hidden="true">↓</span></span>
-                <span className="read-more-open">Read less <span aria-hidden="true">↑</span></span>
-              </summary>
-              <div className="mt-6 space-y-6">
-                <p className="leading-relaxed text-ink">
-                  He&rsquo;s a skilled multi-instrumentalist, he sings, plays piano, synths,
-                  bass, guitar, double bass, percussion and more, and his music moves between
-                  genres rather than staying neatly inside one of them, drawing on rock, funk,
-                  electronic, cinematic and rhythmic influences.
-                </p>
-                <p className="leading-relaxed text-ink">
-                  Rather than relying on a conventional band line-up, he moves between
-                  instruments live, combining them with custom-produced tracks and electronic
-                  elements from his own studio. The result is a hybrid performance that can feel
-                  intimate one moment and fill a large stage the next.
-                </p>
-                <p className="leading-relaxed text-ink">
-                  That flexibility makes the show especially suitable for festivals, theatres,
-                  music venues, clubs and cultural programmes looking for an artist who brings
-                  something different to the stage. Performances can range from shorter festival
-                  sets to complete headline shows, and productions can be kept simple or
-                  developed into a much larger visual experience — scaled to fit almost any
-                  venue, production or budget without losing musical impact.
-                </p>
-              </div>
-            </details>
           </Reveal>
         </Container>
 
-        {/* Three ways to book the show — an intentional section, not a
-            paragraph dump (Keynote slide 10). */}
+        {/* Three ways to book a show — full approved option copy. */}
         <Container className="mt-20">
           <Reveal variant="text">
-            <h2 className="eyebrow">Three ways to book the show</h2>
+            <h2 className="eyebrow">Three ways to book a show</h2>
           </Reveal>
           <div className="mt-8">
             {OPTIONS.map((option, i) => (
@@ -164,7 +148,7 @@ export default function ConcertsServicePage() {
           </div>
         </Container>
 
-        {/* Statement break — final line carries the emphasis (Keynote slide 10). */}
+        {/* Statement break — final line carries the emphasis. */}
         <Container className="mt-20">
           <Reveal variant="text">
             <p className="font-display text-2xl leading-snug text-ink-soft sm:text-3xl">

@@ -1,26 +1,30 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Container } from "@/components/shared/Container";
-import { PlaceholderImage } from "@/components/shared/PlaceholderImage";
 import { Reveal } from "@/components/motion/Reveal";
 import { TrackedLink } from "@/components/public/TrackedLink";
+import { ServicesSubnav } from "@/components/public/ServicesSubnav";
 
 export const metadata: Metadata = {
   title: "Live Piano for Events — Corporate, receptions & special occasions",
   description:
-    "Book Osman Meyredi for live piano at corporate events, receptions, conferences and special occasions — elegant solo piano, repertoire adapted to the room, with an optional vocalist on request.",
+    "Osman Meyredi performs live piano for company celebrations, brand launches, conferences, (wedding) receptions and other private and corporate occasions — repertoire and production adapted to the setting.",
   alternates: { canonical: "/services/piano-for-events" },
 };
 
 /**
- * Live Piano for Events — Keynote 02-09-2026, slide 12 (design template per
- * the concerts page, client-approved copy). The direct path to this service
- * exists from the menu, the services landing, the footer and the piano rail
- * on Live Videos — the deck's discoverability requirement.
+ * Live Piano for Events — Round 2 Keynote slide 15: the entire content was
+ * rewritten; this page follows "Live Piano for Events .pages" (Website/05.
+ * Services/Live Piano Concerts) verbatim, with the approved temporary image
+ * from the same folder ("Rome Airport Performance 2025.jpg" — to be swapped
+ * only when the client supplies a nicer one). One source typo ("what that
+ * sound like") is corrected to "sounds" — flagged in the report.
  */
 export default function PianoForEventsPage() {
   return (
     <article>
+      <ServicesSubnav current="/services/piano-for-events" />
       <section className="py-24 sm:py-32">
         <Container>
           <Reveal variant="text">
@@ -32,13 +36,9 @@ export default function PianoForEventsPage() {
               Corporate · Receptions · Conferences · Special Events
             </p>
             <p className="mt-6 text-xl leading-relaxed text-ink-soft">
-              Book Osman for corporate events, receptions or special events where the music
-              needs to support the atmosphere while still creating something memorable.
-            </p>
-            {/* The red line — same treatment the client asked to keep. */}
-            <p className="mt-6 border-l-2 border-accent pl-4 leading-relaxed text-ink-soft">
-              Available solo or with one hand-picked musician (percussion or guitar), from
-              smaller event sets to larger corporate or private events.
+              Osman Meyredi performs live piano for company celebrations, brand launches,
+              conferences, (wedding) receptions and other private and corporate occasions. The
+              performance, repertoire and production can all be adapted to the setting.
             </p>
             <p className="mt-9">
               <TrackedLink
@@ -54,59 +54,58 @@ export default function PianoForEventsPage() {
           </Reveal>
         </Container>
 
-        {/* Keynote: "add an image of Osman behind the piano (template image as
-            long as I can provide one)" — held by an honest placeholder at the
-            intended ratio until the photograph arrives. */}
+        {/* The approved image from the Live Piano folder (temporary until the
+            client supplies a nicer one — their instruction). */}
         <Container wide className="mt-14">
           <Reveal variant="mask">
-            <PlaceholderImage label="Osman at the piano — photo to come" ratio="3/1" />
+            <div className="relative overflow-hidden border border-line" style={{ aspectRatio: "1920/1081" }}>
+              <Image
+                src="/images/services/live-piano-rome-2025.jpg"
+                alt="Osman Meyredi performing at a grand piano in front of an audience, Rome, 2025"
+                fill
+                sizes="100vw"
+                className="object-cover"
+              />
+            </div>
           </Reveal>
         </Container>
 
         <Container className="mt-14">
           <Reveal variant="text" delay={100}>
             <p className="leading-relaxed text-ink">
-              Osman creates live piano music for corporate and private occasions, such as
-              company celebrations, brand launches, conferences, (wedding) receptions and other
-              moments where the music needs to support the atmosphere while still creating
-              something memorable. The performance, repertoire and production can all be adapted
-              to the setting.
+              For these occasions, he keeps things understated: solo piano, played live, present
+              in the room without ever taking it over. His repertoire blends his own
+              compositions with carefully chosen covers, drifting easily between light
+              classical, jazz, pop and film music depending on the mood he&rsquo;s reading in
+              the room. With his broad musical background and his ear for a room, he shapes the
+              set as he goes, rather than sticking to a fixed programme.
             </p>
             <p className="mt-6 leading-relaxed text-ink">
-              For these occasions, Osman prefers to keep things understated: solo piano, played
-              live, as elegant background music rather than a full stage production. His
-              repertoire can combine his own piano compositions with carefully selected covers,
-              moving easily between light classical, jazz, pop and film music. With his broad
-              musical background and ability to play by ear, Osman can adapt the repertoire to
-              the atmosphere, audience and occasion.
+              Want something with a bit more presence? A vocalist, male or female, can be added
+              on request.
             </p>
             <p className="mt-6 leading-relaxed text-ink">
-              For events that call for something more, a male or female vocalist can also be
-              added on request.
-            </p>
-            <p className="mt-6 leading-relaxed text-ink">
-              If the venue has its own grand piano, that&rsquo;s Osman&rsquo;s first choice. It
-              keeps the set-up simple and gives the performance an extra touch of class. If not,
-              Osman can bring his own electronic piano, discreetly built into a
-              grand-piano-style shell, so the elegance of a real piano is never lost.
+              If the venue has its own grand piano, that&rsquo;s always Osman&rsquo;s first
+              choice, it keeps the set-up simple and adds a natural touch of class. If not, he
+              brings his own electronic piano, built discreetly into a grand-piano-style shell,
+              so the elegance of a real piano is never lost, even without one in the room.
             </p>
           </Reveal>
         </Container>
 
-        {/* Hear it first — the piano rail on Live Videos answers "want to hear
-            what that sounds like?" (Keynote slides 12 + 18). */}
+        {/* Closing listen prompt from the final content document. */}
         <Container className="mt-16">
           <Reveal variant="text">
             <p className="font-display text-2xl leading-snug sm:text-3xl">
               Want to hear what that sounds like?
             </p>
             <p className="mt-3 max-w-xl leading-relaxed text-ink-soft">
-              Watch Osman at the piano, from intimate performances to jazz, pop and his own
-              compositions.
+              Watch Osman Meyredi at the piano, from intimate performance to jazz, pop and his
+              own compositions.
             </p>
             <p className="mt-7">
-              <Link href="/shows/live-videos#piano" className="btn-pill" data-cursor="WATCH">
-                Watch piano performances <span className="arrow-nudge" aria-hidden="true">→</span>
+              <Link href="/shows/live-videos" className="btn-pill" data-cursor="WATCH">
+                Watch the live videos <span className="arrow-nudge" aria-hidden="true">→</span>
               </Link>
             </p>
           </Reveal>

@@ -22,7 +22,7 @@ export function SiteHeader({ settings }: { settings: SiteSettings }) {
           aria-label="Osman Meyredi — home"
           className="relative z-80 transition-opacity duration-200 hover:opacity-70"
         >
-          <LogoWordmark className="h-9" />
+          <LogoWordmark className="h-5 sm:h-6" />
         </Link>
         <FullscreenMenu settings={settings} />
       </div>

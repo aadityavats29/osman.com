@@ -121,62 +121,48 @@ export default async function HomePage() {
         </div>
       )}
 
-      {/* Hero V2 (Headztones direction): image and type as one composition.
-          Sequence: image opens through a mask & settles from a tight crop →
-          OSMAN / MEYREDI enter as separate masked lines → metadata + CTAs →
-          ambient image drift remains after the intro. */}
+      {/* Hero V3 — Round 2 Keynote slide 2: landscape image-led landing in
+          the adele.com direction. No giant OSMAN MEYREDI repetition (the
+          header logotype carries the identity); the approved role list sits
+          top-left under the logo, wrapping over at most two rows; the
+          supplied landscape live shot leads. h1 stays for accessibility/SEO
+          but is visually hidden. */}
       <section className="border-b border-line">
         <Container wide className="relative">
-          <div className="grid items-end gap-x-10 py-14 sm:py-16 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:py-0">
-            <div className="relative z-10 lg:py-24">
-              {/* Keynote slide 1: roles with dots, intro text removed —
-                  a clean adele.com-style landing. Bio lives on /about. */}
-              <p className="hero-meta-in eyebrow max-w-xl leading-relaxed">
-                {ROLES.join(" · ")}
-              </p>
-              <h1
-                className="display-caps mt-6 text-[19vw] sm:text-8xl lg:text-[9.5rem] xl:text-[11rem]"
-                aria-label="Osman Meyredi"
-              >
-                <span className="hero-line" aria-hidden="true">
-                  <span>Osman</span>
-                </span>
-                <span className="hero-line lg:ml-[0.8em]" aria-hidden="true">
-                  <span>Meyredi</span>
-                </span>
-              </h1>
-              <div className="hero-meta-in mt-10 flex flex-wrap items-center gap-6">
-                <Link href="/shows" data-cursor="DATES" className="btn-pill">
-                  See dates <span className="arrow-nudge" aria-hidden="true">→</span>
-                </Link>
-                <Link href="/contact" data-cursor="BOOK" className="u-link text-sm">
-                  Booking &amp; inquiries
-                </Link>
-              </div>
-            </div>
-            {/* Image column: bleeds to the top edge, overlapped by the name.
-                Keynote slide 4: the supplied live shot replaces the notation
-                placeholder ("better than a template image"). */}
-            <div className="relative -order-1 lg:order-none">
-              <div className="hero-image-mask lg:-ml-16">
-                <div className="hero-image-inner">
-                  <div className="hero-ambient">
-                    <div className="relative" style={{ aspectRatio: "4/5" }}>
-                      <Image
-                        src="/images/home-hero.jpg"
-                        alt="Osman Meyredi live — singing at the keys in blue stage light"
-                        fill
-                        priority
-                        sizes="(min-width: 1024px) 40vw, 100vw"
-                        className="object-cover"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <h1 className="sr-only">Osman Meyredi</h1>
+          <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-6 pt-10 pb-8 sm:pt-12">
+            {/* Keynote slide 2 exact role wording, dots between roles. */}
+            <p className="hero-meta-in eyebrow max-w-2xl leading-relaxed">
+              {ROLES.join(" · ")}
+            </p>
+            <div className="hero-meta-in flex flex-wrap items-center gap-6">
+              <Link href="/shows" data-cursor="DATES" className="btn-pill">
+                See dates <span className="arrow-nudge" aria-hidden="true">→</span>
+              </Link>
+              <Link href="/contact" data-cursor="BOOK" className="u-link text-sm">
+                Booking &amp; inquiries
+              </Link>
             </div>
           </div>
         </Container>
+        {/* Landscape hero — Website/09. Images Osman/"Landingpage image.png".
+            Full-bleed width, masked reveal, quiet ambient drift retained. */}
+        <div className="hero-image-mask">
+          <div className="hero-image-inner">
+            <div className="hero-ambient">
+              <div className="relative" style={{ aspectRatio: "1672 / 941" }}>
+                <Image
+                  src="/images/home-hero-landscape.jpg"
+                  alt="Osman Meyredi live on stage with bass guitar, arm raised under warm stage light"
+                  fill
+                  priority
+                  sizes="100vw"
+                  className="object-cover"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Instruments strip — one quiet marquee, part of the composition */}
@@ -307,14 +293,14 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Services overview — Keynote slide 8: the four ways to work with
-          Osman, fed by the client-approved services config. */}
+      {/* Services overview — fed by the client-approved services config.
+          Round 2 slide 4: establish the full professional name here. */}
       <section className="border-t border-line py-24">
         <Container wide>
           <Reveal variant="text">
-            <p className="eyebrow">Working with Osman</p>
+            <p className="eyebrow">Working with Osman Meyredi</p>
             <h2 className="font-display mt-3 text-3xl sm:text-4xl">
-              Four ways to work with Osman
+              Four ways to work with Osman Meyredi
             </h2>
             <p className="mt-5 max-w-2xl leading-relaxed text-ink-soft">
               Live performances built for festivals and venues, solo piano set to the tone of
@@ -359,18 +345,21 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* About moment — Keynote slide 5: revised copy, full name in the link,
-          and the supplied historical double-bass photograph. */}
+      {/* About moment — Round 2 slide 8: the homepage About copy follows the
+          rewritten Final About Content document (02.About/Text), opening
+          sentence verbatim, with one of the two new About photographs. */}
       <section className="border-t border-line py-24">
         <Container wide>
-          <div className="grid items-center gap-x-14 gap-y-10 md:grid-cols-[minmax(0,7fr)_minmax(0,4fr)]">
+          <div className="grid items-center gap-x-14 gap-y-10 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
             <Reveal variant="text">
               <p className="eyebrow">About</p>
               <p className="font-display mt-6 text-2xl leading-snug sm:text-3xl">
-                It began at the age of six, picking out a Christmas song on the piano with his
-                uncle, and finishing the tune by ear himself. Today, Osman plays double bass,
-                guitar, piano, keyboards, bass guitar, drums, sings and has toured in the U.K.
-                with Frank Zappa&rsquo;s longtime vocalist Ike Willis.
+                Osman Meyredi is an Italian-born artist, a multi-instrumentalist, songwriter,
+                composer, singer, music director and producer, based in the Netherlands.
+              </p>
+              <p className="mt-6 max-w-xl leading-relaxed text-ink-soft">
+                He performs regularly in the Netherlands and Italy, and travels for concerts,
+                events and productions across Europe and beyond.
               </p>
               <p className="mt-8">
                 <Link href="/about" className="u-link text-sm hover:text-accent-strong">
@@ -378,14 +367,14 @@ export default async function HomePage() {
                 </Link>
               </p>
             </Reveal>
-            <Reveal variant="mask" delay={120} className="mx-auto w-full max-w-[300px] md:mx-0 md:justify-self-end">
+            <Reveal variant="mask" delay={120} className="mx-auto w-full max-w-[440px] md:mx-0 md:justify-self-end">
               <div className="media-zoom border border-line">
                 <Image
-                  src="/images/about-osman.jpg"
-                  alt="Osman Meyredi playing the double bass on stage, early days"
-                  width={600}
-                  height={861}
-                  sizes="(min-width: 768px) 300px, 80vw"
+                  src="/images/about/about-performance-italy.jpg"
+                  alt="Osman Meyredi performing in Italy, black and white"
+                  width={1920}
+                  height={1071}
+                  sizes="(min-width: 768px) 440px, 92vw"
                   className="h-auto w-full"
                 />
               </div>
@@ -527,7 +516,7 @@ export default async function HomePage() {
         <Container wide>
           <Reveal variant="text">
             <h2 className="font-display max-w-2xl text-4xl leading-tight sm:text-5xl">
-              Book Osman for a live show, piano at your event, or a production.
+              Book Osman Meyredi for a live show, piano at your event, or a production.
             </h2>
           </Reveal>
           <Reveal variant="text" delay={130}>

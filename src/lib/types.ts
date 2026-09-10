@@ -81,7 +81,7 @@ export interface LiveVideoRecord {
   slug: string;
   title: string;
   description: string | null;
-  platform: "youtube" | "vimeo";
+  platform: "youtube" | "vimeo" | "file";
   videoUrl: string;
   thumbnailUrl: string | null;
   venue: string | null;

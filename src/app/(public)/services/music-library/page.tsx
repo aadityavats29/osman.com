@@ -3,24 +3,25 @@ import { getRepos } from "@/server/repositories";
 import { Container } from "@/components/shared/Container";
 import { Reveal } from "@/components/motion/Reveal";
 import { TrackedLink } from "@/components/public/TrackedLink";
+import { ServicesSubnav } from "@/components/public/ServicesSubnav";
 import { LibraryPlayer, type PlayableTrack } from "@/components/public/LibraryPlayer";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Music Library — Original tracks, ready to license",
+  title: "Original Tracks & Music Library — Ready to license, or made just for you",
   description:
-    "Every track in Osman Meyredi's library is composed, produced and performed by him personally — cleared for licensing across film, TV, series, adverts, online content and events, with bespoke composition on request.",
+    "Every track in Osman Meyredi's library is composed, produced and performed by him personally, ready to license, with all copyright matters already sorted — and custom tracks on request.",
   alternates: { canonical: "/services/music-library" },
 };
 
 /**
- * Music Library — Keynote 02-09-2026, slides 14/21/22. The deck asked how
- * licensing music should be displayed; instead of the stock image it
- * tentatively suggested, the catalogue itself is the visual: playable rows
- * in the pattern of the referenced libraries, adapted to this site.
- * Tracks are managed in the Studio (answering "can we change the music
- * later and add more?" — yes, at any time).
+ * Original Tracks & Music Library — Round 2 Keynote slides 10/17/31: the
+ * service's final name, with all content replaced by "Original Tracks &
+ * Music Library.pages" (Website/05. Services/Original Tracks & Music
+ * Library) verbatim. The route keeps its existing URL so nothing breaks;
+ * only the public naming changes. One source typo ("good change") is
+ * corrected to "chance" — flagged in the report.
  */
 export default async function MusicLibraryPage() {
   const tracks = (await getRepos().libraryTracks.list())
@@ -40,12 +41,13 @@ export default async function MusicLibraryPage() {
 
   return (
     <article>
+      <ServicesSubnav current="/services/music-library" />
       <section className="py-24 sm:py-32">
         <Container>
           <Reveal variant="text">
             <p className="eyebrow">Services</p>
             <h1 className="font-display mt-4 text-4xl leading-tight sm:text-5xl">
-              Music Library
+              Original Tracks &amp; Music Library
             </h1>
             <p className="tabular mt-4 text-sm tracking-[0.14em] text-ink-faint uppercase">
               Film · TV · Documentary · Events · Online · Series · Adverts · Radio
@@ -54,11 +56,11 @@ export default async function MusicLibraryPage() {
               Every track in Osman&rsquo;s library is composed, produced and performed by him
               personally, ready to license, with all copyright matters already sorted.
             </p>
-            {/* The red line */}
+            {/* The red line — the document's marked text. */}
             <p className="mt-6 border-l-2 border-accent pl-4 leading-relaxed text-ink-soft">
-              All tracks are fully cleared for licensing, with no copyright complications to
-              resolve afterwards. Custom compositions are available on request if the library
-              doesn&rsquo;t have what you need.
+              Know exactly what you need? Get in touch and there&rsquo;s a good chance it can
+              be made. The library itself is still being stocked, the first tracks land here
+              shortly.
             </p>
           </Reveal>
         </Container>
@@ -89,22 +91,27 @@ export default async function MusicLibraryPage() {
         <Container className="mt-16">
           <Reveal variant="text" delay={100}>
             <p className="leading-relaxed text-ink">
-              What makes Osman&rsquo;s work distinctive is that he can take different styles,
-              instruments and influences and make them sound as though they belong together.
-              That range is exactly what fills his library: high-quality tracks in every genre
-              and mood, suited to films, series, TV programmes, adverts, YouTube content, event
-              openings, weddings and more.
+              What makes Osman Meyredi&rsquo;s work distinctive is that he can take different
+              styles, instruments and influences and make them sound as though they belong
+              together. That&rsquo;s exactly why writing something new is where the real work
+              happens, especially for films, series and TV, where music isn&rsquo;t decoration,
+              it&rsquo;s part of how a story is told. It needs to carry a feeling the pictures
+              alone can&rsquo;t, land in exactly the right moment, and come from a proper
+              briefing rather than a search filter. More classical, more jazzy, cinematic,
+              stripped back to just piano, whatever the scene calls for, that&rsquo;s where a
+              first conversation about the vision starts, and from there, the track takes shape
+              around it.
             </p>
             <p className="mt-6 leading-relaxed text-ink">
-              Because everything is composed and produced in his own studio, film and TV
-              licences can be arranged directly with Osman — there are no middlemen involved.
-              And if nothing in the library quite fits, he can create something bespoke: more
-              classical, more jazzy, longer, shorter, or stripped back to just piano. A thorough
-              first conversation about what you need is the best starting point.
+              Prefer something ready to go right now? His library is filled with high-quality
+              tracks across every genre and mood, suited to adverts, YouTube content, event
+              openings, weddings and more. And because everything is composed and produced in
+              his own studio, licences can be arranged directly with him, no middlemen
+              involved.
             </p>
             <p className="mt-6 border-l-2 border-accent pl-4 leading-relaxed text-ink-soft">
-              If you can&rsquo;t find the right track in the library, get in touch! There&rsquo;s
-              a good chance it can still be made.
+              If you can&rsquo;t find the right track in the library, get in touch!
+              There&rsquo;s a good chance it can still be made.
             </p>
           </Reveal>
         </Container>

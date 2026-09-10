@@ -38,9 +38,9 @@ const PRIMARY: {
       // Keynote slide 7 wording ("Live Bookings") + the deck's final service
       // names from slides 8/12/14, so the menu never disagrees with the pages.
       { label: "Live Bookings", href: "/services/concerts" },
-      { label: "Piano for Events", href: "/services/piano-for-events" },
+      { label: "Live Piano for Events", href: "/services/piano-for-events" },
       { label: "Music Production", href: "/services/music-production" },
-      { label: "Music Library", href: "/services/music-library" },
+      { label: "Original Tracks & Music Library", href: "/services/music-library" },
     ],
   },
   {
@@ -297,7 +297,7 @@ export function FullscreenMenu({ settings }: { settings: SiteSettings }) {
             {/* Meta column */}
             <div className="fs-meta flex flex-col justify-end gap-8 border-line lg:border-l lg:pl-10">
               <div>
-                <LogoWordmark label="Osman Meyredi" className="h-9 text-ink" />
+                <LogoWordmark label="Osman Meyredi" className="h-5 sm:h-6 text-ink" />
                 <p className="mt-2 text-sm leading-relaxed text-ink-soft">
                   Multi-instrumentalist · bassist · composer
                   <br />

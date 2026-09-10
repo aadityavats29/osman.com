@@ -39,19 +39,17 @@ function VideoCard({ video, delay }: { video: LiveVideoRecord; delay: number }) 
 }
 
 /**
- * Live videos — Keynote slide 18: revised heading copy, Zappatika ahead of
- * the showreel (ordering is data, see the seed/demo sortOrder), and a
- * dedicated piano rail (#piano) so visitors interested in Live Piano for
- * Events land directly on the right material. Videos are tagged "piano" in
- * the Studio to appear there.
+ * Live videos — Round 2 Keynote slides 26–30. The approved per-video
+ * descriptions live in the data (see demo/seed content); the grid ends with
+ * one clearly reserved position for the next video (client-approved visible
+ * label), and the page closes on the conversion section the client asked
+ * for — "You just watched it, now book it." — instead of the old piano
+ * block that felt random after the performance sequence.
  */
 export default async function LiveVideosPage() {
   const videos = (await getRepos().videos.list())
     .filter((v) => v.status === "PUBLISHED")
     .sort((a, b) => a.sortOrder - b.sortOrder);
-  const pianoVideos = videos.filter((v) =>
-    v.tags.some((t) => t.trim().toLowerCase() === "piano")
-  );
 
   return (
     <>
@@ -61,7 +59,6 @@ export default async function LiveVideosPage() {
           <Reveal variant="text">
             <p className="eyebrow">Shows</p>
             <h1 className="font-display mt-4 text-4xl leading-tight sm:text-5xl">Live videos</h1>
-            {/* Keynote slide 18 copy */}
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-soft">
               For the nights you couldn&rsquo;t make it — or the ones you don&rsquo;t want to
               forget. Nothing plays until you press play.
@@ -75,6 +72,21 @@ export default async function LiveVideosPage() {
                   <VideoCard video={video} delay={i * 80} />
                 </li>
               ))}
+              {/* Reserved position (brief §37) — the next video is not ready
+                  yet; the space is held with a restrained visible label. */}
+              <li aria-label="Reserved video position">
+                <Reveal variant="card" delay={Math.min(videos.length * 80, 240)}>
+                  <div
+                    className="flex items-center justify-center border border-dashed border-line-dark bg-stage/40"
+                    style={{ aspectRatio: "16/9" }}
+                  >
+                    <span className="pending-note">Reserved · next video coming soon</span>
+                  </div>
+                  <h3 className="font-display mt-4 text-xl leading-snug text-ink-faint">
+                    A place is held for the next video
+                  </h3>
+                </Reveal>
+              </li>
             </ul>
           ) : (
             <Reveal variant="text" delay={100}>
@@ -83,42 +95,26 @@ export default async function LiveVideosPage() {
               </p>
             </Reveal>
           )}
+        </Container>
+      </section>
 
-          {/* Piano rail — the direct path for event bookers (Keynote slides
-              12 + 18). scroll-mt keeps the anchor clear of the sticky header. */}
-          <div id="piano" className="mt-24 scroll-mt-24 border-t border-line pt-10">
-            <Reveal variant="text">
-              <h2 className="font-display text-3xl">Piano, live</h2>
-              <p className="mt-3 max-w-xl leading-relaxed text-ink-soft">
-                Osman at the piano — for corporate events, receptions and special occasions.
-              </p>
-            </Reveal>
-            {pianoVideos.length > 0 ? (
-              <ul className="mt-10 grid gap-x-10 gap-y-14 md:grid-cols-2">
-                {pianoVideos.map((video, i) => (
-                  <li key={`piano-${video.id}`}>
-                    <VideoCard video={video} delay={i * 80} />
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <Reveal variant="text" delay={100}>
-                <p className="mt-8 max-w-xl leading-relaxed text-ink-soft">
-                  The piano performance video is being filmed. Until it lands here, read about
-                  the performance itself —{" "}
-                  <Link href="/services/piano-for-events" className="u-link">
-                    Live Piano for Events
-                  </Link>
-                  .
-                </p>
-              </Reveal>
-            )}
-            <p className="mt-10">
-              <Link href="/services/piano-for-events" className="btn-pill" data-cursor="BOOK">
-                Book piano for your event <span className="arrow-nudge" aria-hidden="true">→</span>
+      {/* Closing conversion — Round 2 slide 30 copy, verbatim. */}
+      <section className="border-t border-line bg-stage py-24">
+        <Container>
+          <Reveal variant="text">
+            <h2 className="font-display max-w-2xl text-4xl leading-tight sm:text-5xl">
+              You just watched it, now book it.
+            </h2>
+            <p className="mt-6 max-w-xl leading-relaxed text-ink-soft">
+              This is just a selection of what he brings to a stage, whichever instrument,
+              whichever room. If you&rsquo;ve seen enough, let&rsquo;s talk about your event.
+            </p>
+            <p className="mt-9">
+              <Link href="/contact?type=CONCERTS_LIVE" className="btn-pill" data-cursor="BOOK">
+                Book Osman Meyredi <span className="arrow-nudge" aria-hidden="true">→</span>
               </Link>
             </p>
-          </div>
+          </Reveal>
         </Container>
       </section>
     </>

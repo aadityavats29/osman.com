@@ -27,12 +27,13 @@ export const SERVICES: ServiceCard[] = [
     cta: "Read more",
   },
   {
+    // Round 2 slide 10: renamed card + replacement teaser copy, verbatim.
     slug: "piano-for-events",
     href: "/services/piano-for-events",
-    title: "Piano for Events",
-    subtitle: "Corporate · Receptions · Special Events",
+    title: "Live Piano for Events",
+    subtitle: "Corporate · Receptions · Conferences · Special Events",
     intro:
-      "Osman creates live music for corporate and private occasions, such as company celebrations, brand launches, conferences, receptions and other moments where the music needs to support the atmosphere while still creating something memorable.",
+      "Osman Meyredi performs live piano for company celebrations, brand launches, conferences, receptions and private occasions, the moments where music needs to support the atmosphere while still creating something memorable.",
     cta: "Read more",
   },
   {
@@ -45,11 +46,12 @@ export const SERVICES: ServiceCard[] = [
     cta: "Read more",
   },
   {
+    // Round 2 slides 10/17/31: the service's final public name + tagline.
     slug: "music-library",
     href: "/services/music-library",
-    title: "Music Library",
+    title: "Original Tracks & Music Library",
     subtitle: "Film · TV · Documentary · Events · Online · Series · Adverts · Radio",
-    intro: "Original tracks, ready to license.",
+    intro: "Original tracks, ready to license, or made just for you.",
     cta: "Go to Library",
   },
 ];

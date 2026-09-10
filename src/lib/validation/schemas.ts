@@ -108,8 +108,17 @@ export type EventInput = z.infer<typeof eventInput>;
 export const liveVideoInput = z.object({
   title: z.string().trim().min(2).max(160),
   description: optionalText,
-  platform: z.enum(["youtube", "vimeo"]).default("youtube"),
-  videoUrl: z.string().trim().url("Paste the full YouTube or Vimeo link"),
+  platform: z.enum(["youtube", "vimeo", "file"]).default("youtube"),
+  // A full YouTube/Vimeo link, or a site path for self-hosted files (/videos/…).
+  videoUrl: z
+    .string()
+    .trim()
+    .pipe(
+      z.union([
+        z.string().url("Paste the full YouTube or Vimeo link"),
+        z.string().regex(/^\/[^\s]*$/, "Paste a full link or a site path (/videos/…)"),
+      ])
+    ),
   thumbnailUrl: optionalUrl,
   venue: optionalText,
   performanceDate: z.union([isoDate, z.literal("")]).transform((v) => (v === "" ? null : v)).nullable().default(null),
@@ -261,7 +270,16 @@ export const mediaItemInput = z.object({
   headline: z.string().trim().min(2).max(220),
   mediaType: z.enum(["ARTICLE", "INTERVIEW", "PODCAST", "REVIEW", "VIDEO"]).default("ARTICLE"),
   date: z.union([isoDate, z.literal("")]).transform((v) => (v === "" ? null : v)).nullable().default(null),
-  articleUrl: z.string().trim().url("Paste the full link to the article"),
+  // A full link, or a site path for scanned print items (e.g. /images/media/...).
+  articleUrl: z
+    .string()
+    .trim()
+    .pipe(
+      z.union([
+        z.string().url("Paste the full link to the article"),
+        z.string().regex(/^\/[^\s]*$/, "Paste a full link or a site path (/images/…)"),
+      ])
+    ),
   imageUrl: optionalUrl,
   summary: optionalText,
   status: contentStatus.default("DRAFT"),

@@ -144,7 +144,7 @@ model LiveVideo {
   slug            String        @unique
   title           String
   description     String?
-  platform        String        @default("youtube") // youtube | vimeo
+  platform        String        @default("youtube") // youtube | vimeo | file (self-hosted)
   videoUrl        String
   thumbnailUrl    String?
   venue           String?

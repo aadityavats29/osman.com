@@ -27,18 +27,21 @@ export function VideoForm({ video }: { video?: LiveVideoRecord }) {
   const checked = (name: string, fallback: boolean): boolean =>
     state.values ? state.values[name] === "true" : fallback;
 
-  const [platform, setPlatform] = useState<"youtube" | "vimeo">(() => {
+  const [platform, setPlatform] = useState<"youtube" | "vimeo" | "file">(() => {
     const submitted = state.values?.platform;
-    if (submitted === "youtube" || submitted === "vimeo") return submitted;
+    if (submitted === "youtube" || submitted === "vimeo" || submitted === "file") {
+      return submitted;
+    }
     return video?.platform ?? "youtube";
   });
 
   function detectPlatform(url: string) {
     if (youtubeId(url)) setPlatform("youtube");
     else if (vimeoId(url)) setPlatform("vimeo");
+    else if (url.startsWith("/")) setPlatform("file");
   }
 
-  const urlHelp = "Paste the full YouTube or Vimeo link.";
+  const urlHelp = "Paste the full YouTube or Vimeo link — or a site path (/videos/…) for a self-hosted file.";
   const urlErrors = state.errors?.videoUrl;
 
   return (
@@ -59,7 +62,8 @@ export function VideoForm({ video }: { video?: LiveVideoRecord }) {
           <input
             id="videoUrl"
             name="videoUrl"
-            type="url"
+            type="text"
+            inputMode="url"
             defaultValue={v("videoUrl", video?.videoUrl)}
             onChange={(e) => detectPlatform(e.target.value)}
             aria-invalid={urlErrors && urlErrors.length > 0 ? true : undefined}
@@ -76,12 +80,17 @@ export function VideoForm({ video }: { video?: LiveVideoRecord }) {
             id="platform"
             name="platform"
             value={platform}
-            onChange={(e) => setPlatform(e.target.value === "vimeo" ? "vimeo" : "youtube")}
+            onChange={(e) =>
+              setPlatform(
+                e.target.value === "vimeo" ? "vimeo" : e.target.value === "file" ? "file" : "youtube"
+              )
+            }
             aria-describedby="platform-help"
             className={inputClass}
           >
             <option value="youtube">YouTube</option>
             <option value="vimeo">Vimeo</option>
+            <option value="file">Self-hosted file</option>
           </select>
           <Help name="platform">Picked automatically from the link — you rarely need to change this.</Help>
         </div>

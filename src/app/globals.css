@@ -608,18 +608,72 @@ button:focus-visible .arrow-nudge {
 }
 
 /* ---- Brand wordmark ----
-   The traced logotype (public/images/logo.svg) applied as a mask so it takes
-   any text color via currentColor — one cached asset, crisp at every size.
+   Round 2 Keynote slide 2: the single-line horizontal logotype replaces the
+   two-row version. Traced from "Osman Meyredi _Horizontal White.png" (master
+   folder root) into public/images/logo-horizontal.svg, applied as a mask so
+   it takes any text color via currentColor — crisp at every size.
    Size it with a height utility; width follows the logo's aspect ratio. */
 .logo-mark {
   /* Block, not inline-block: an inline-block rides the parent's text
      baseline, which adds strut descender space below the mark and floats it
      a few px above true center in flex-centered bars (the header). */
   display: block;
-  aspect-ratio: 1586 / 776;
+  aspect-ratio: 3598 / 577;
   background-color: currentColor;
-  -webkit-mask: url("/images/logo.svg") center / contain no-repeat;
-  mask: url("/images/logo.svg") center / contain no-repeat;
+  -webkit-mask: url("/images/logo-horizontal.svg") center / contain no-repeat;
+  mask: url("/images/logo-horizontal.svg") center / contain no-repeat;
+}
+
+/* ---- Route-transition cue (Round 2 slide 1 / §42) ----
+   While html[data-nav-loading] is set by RouteLoadingCue, the header's vinyl
+   record spins up (the site's own motif answering the click) and a hairline
+   accent sweep runs along the header's bottom edge. Pure CSS animations on
+   compositor-friendly properties; nothing runs when the attribute is absent,
+   and reduced-motion visitors get the hairline only. */
+html[data-nav-loading] .vinyl-toggle .vinyl {
+  animation: vinyl-spin 0.9s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-nav-loading] .vinyl-toggle .vinyl {
+    animation: none;
+  }
+}
+.site-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 2px;
+  width: 28%;
+  background: var(--color-accent-strong);
+  opacity: 0;
+  transform: translateX(-100%);
+  pointer-events: none;
+}
+html[data-nav-loading] .site-header::after {
+  opacity: 1;
+  animation: nav-sweep 1.1s ease-in-out infinite;
+}
+@keyframes nav-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(460%);
+  }
+}
+
+/* ---- Production-pending note (client request 10-09-2026): a small visible
+   tag marking a slot whose final asset is still owed by Varsha. Deliberately
+   quiet — uppercase, faint, bordered — so it reads as a production note. */
+.pending-note {
+  display: inline-block;
+  border: 1px solid var(--color-line-dark);
+  padding: 0.3rem 0.55rem;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
 }
 
 /* ---- Nav links: underline draws in ---- */
