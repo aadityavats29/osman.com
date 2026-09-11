@@ -117,14 +117,8 @@ export default async function MusicPage() {
               ))}
               <Discography releases={appearsOn} />
             </div>
-            {appearsOn.some((r) => r.slug === "keep-your-eye-on-the-sparrow-special-45") && (
-              <p className="mt-4">
-                {/* Client-requested visible production note (10-09-2026). */}
-                <span className="pending-note">
-                  Special 45 cover — waiting for Varsha&rsquo;s high-res version
-                </span>
-              </p>
-            )}
+            {/* 11-09-2026: Varsha's high-res Special-45 label replaced the
+                interim photo crop — the pending note is resolved. */}
           </Container>
         </section>
       )}

@@ -91,7 +91,7 @@ click-to-play (preload="none", no autoplay); all new images are optimized (≤60
 ## Items waiting for Aditya / follow-ups
 
 - Colour version of the Concerts landscape image (Varsha) — swap when supplied; visible note in place.
-- High-res Sparrow Special-45 cover (Varsha) — swap when supplied; visible note in place.
+- ~~High-res Sparrow Special-45 cover~~ — DONE 11-09: Varsha's clean label render supplied in chat replaced the interim photo crop; pending note removed.
 - The reserved Live Videos slot — drop the next video in via the Studio when ready.
 - press@osmanmeyredi.com — revisit if that mailbox is ever created (info@ used for now).
 - The music credit for the montage footage ("written, composed and all played by Osman") stays
