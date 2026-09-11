@@ -1,6 +1,7 @@
 import type {
   CollaborationRecord,
   EventRecord,
+  FaqRecord,
   LibraryTrackRecord,
   LiveVideoRecord,
   MediaItemRecord,
@@ -467,6 +468,138 @@ export const demoMedia: MediaItemRecord[] = [
       "The Dutch music blog covers Zappatika's free live album from the 2019 U.K. tour with Ike Willis, with Osman Meyredi on keyboards.",
     status: "PUBLISHED",
     featured: true,
+    ...meta,
+  },
+];
+
+/**
+ * Practical Q&A (SEO/AI foundation brief §30). Every answer is composed
+ * strictly from copy already approved and live on the site — the About
+ * page, the Concerts & Live Performances and Live Piano final documents,
+ * the approved instrument list and the contact page. No new facts, no
+ * assumptions (§30: "only publish approved answers"); flagged for
+ * Jolene/Osman review in the implementation report. `aiApproved` marks
+ * items the future "Ask About Osman" assistant may draw on (§4).
+ */
+export const demoFaqs: FaqRecord[] = [
+  {
+    id: "faq-instruments",
+    slug: "what-instruments-does-osman-meyredi-play",
+    question: "What instruments does Osman Meyredi play?",
+    // Sources: approved instrument list (Keynote slides 2/23) + Concerts
+    // final copy ("singing, piano, synths, bass, guitar, double bass,
+    // percussion" / "he moves between instruments himself").
+    answer:
+      "Double bass, bass guitar, piano, keyboard, synthesiser, guitar, drums and percussion — and he sings. On stage he moves between instruments himself, layering them live rather than sticking to one.",
+    linkUrl: "/about",
+    linkLabel: "More about Osman Meyredi",
+    aiApproved: true,
+    status: "PUBLISHED",
+    sortOrder: 1,
+    ...meta,
+  },
+  {
+    id: "faq-corporate-events",
+    slug: "is-osman-available-for-corporate-events",
+    question: "Is Osman Meyredi available for corporate events?",
+    // Sources: Live Piano final copy (occasion list) + Concerts service
+    // card ("festival, venue, corporate event or special occasion").
+    answer:
+      "Yes. He performs live piano for company celebrations, brand launches, conferences, (wedding) receptions and other private and corporate occasions — and full live shows for festivals, venues, corporate events and special occasions.",
+    linkUrl: "/services/piano-for-events",
+    linkLabel: "Live Piano for Events",
+    aiApproved: true,
+    status: "PUBLISHED",
+    sortOrder: 2,
+    ...meta,
+  },
+  {
+    id: "faq-singer",
+    slug: "can-a-singer-be-added",
+    question: "Can a singer be added?",
+    // Source: Live Piano final copy, verbatim.
+    answer:
+      "Yes — want something with a bit more presence? A vocalist, male or female, can be added on request.",
+    linkUrl: "/services/piano-for-events",
+    linkLabel: "Live Piano for Events",
+    aiApproved: true,
+    status: "PUBLISHED",
+    sortOrder: 3,
+    ...meta,
+  },
+  {
+    id: "faq-international",
+    slug: "does-osman-meyredi-perform-internationally",
+    question: "Does Osman Meyredi perform internationally?",
+    // Source: About final copy (Languages & availability), verbatim facts.
+    answer:
+      "Yes. He is based in Amsterdam, performs regularly in the Netherlands and Italy, and travels for concerts, events and productions across Europe and beyond. He works in English, Italian and Dutch.",
+    linkUrl: "/about",
+    linkLabel: "Languages & availability",
+    aiApproved: true,
+    status: "PUBLISHED",
+    sortOrder: 4,
+    ...meta,
+  },
+  {
+    id: "faq-covers-originals",
+    slug: "does-he-play-covers-and-original-music",
+    question: "Does he play covers and original music?",
+    // Sources: Live Piano final copy (repertoire sentence) + Concerts final
+    // copy ("his own studio productions come to life").
+    answer:
+      "Both. At the piano his repertoire blends his own compositions with carefully chosen covers, drifting between light classical, jazz, pop and film music. His full live shows are built around his own studio productions.",
+    linkUrl: "/music",
+    linkLabel: "His music",
+    aiApproved: true,
+    status: "PUBLISHED",
+    sortOrder: 5,
+    ...meta,
+  },
+  {
+    id: "faq-event-types",
+    slug: "what-type-of-events-can-he-perform-at",
+    question: "What type of events can he perform at?",
+    // Sources: Concerts final copy ("festival, theatre, club night,
+    // headline slot") + Live Piano final copy (occasion list).
+    answer:
+      "Full live shows scale from festivals, theatres and club nights to headline slots. Live piano suits company celebrations, brand launches, conferences, (wedding) receptions and other private and corporate occasions.",
+    linkUrl: "/services",
+    linkLabel: "The four ways to work with Osman",
+    aiApproved: true,
+    status: "PUBLISHED",
+    sortOrder: 6,
+    ...meta,
+  },
+  {
+    id: "faq-booking",
+    slug: "how-do-i-book-osman-meyredi",
+    question: "How do I book Osman Meyredi?",
+    // Sources: contact page (direct addresses + form) + home contact band
+    // ("Tell him about the occasion, the room and the people in it…").
+    answer:
+      "Email bookings@osmanmeyredi.com directly, or use the contact form and your message lands with the right person. Tell him about the occasion, the room and the people in it — he'll come back with a concrete proposal.",
+    linkUrl: "/contact",
+    linkLabel: "Contact & booking",
+    aiApproved: true,
+    status: "PUBLISHED",
+    sortOrder: 7,
+    ...meta,
+  },
+  {
+    id: "faq-technical-setup",
+    slug: "what-technical-setup-is-required",
+    question: "What technical setup is required?",
+    // Source: Live Piano final copy (grand piano / grand-piano-style shell),
+    // verbatim. The full-show rider is not documented in approved content,
+    // so that half only routes to Contact rather than inventing specifics.
+    answer:
+      "For live piano: if the venue has its own grand piano, that's always Osman's first choice. If not, he brings his own electronic piano, built discreetly into a grand-piano-style shell. For full live shows the setup depends on the format — share the details of your event via the contact page.",
+    linkUrl: "/contact",
+    linkLabel: "Contact & booking",
+    aiApproved: true,
+    status: "PUBLISHED",
+    sortOrder: 8,
     ...meta,
   },
 ];

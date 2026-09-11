@@ -219,6 +219,28 @@ export interface ProductRecord {
   updatedAt: string;
 }
 
+/**
+ * Practical Q&A (SEO/AI foundation brief §30): a small Studio-manageable
+ * content type for questions visitors genuinely ask. Only approved answers
+ * publish; `aiApproved` additionally gates whether a future "Ask About
+ * Osman" assistant may use the item (brief §4) — public and AI-approved
+ * are separate switches.
+ */
+export interface FaqRecord {
+  id: string;
+  slug: string;
+  question: string;
+  answer: string;
+  /** Optional site path or full URL the answer points visitors to. */
+  linkUrl: string | null;
+  linkLabel: string | null;
+  aiApproved: boolean;
+  status: ContentStatus;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface SiteSettings {
   heroTagline: string;
   announcement: string | null;

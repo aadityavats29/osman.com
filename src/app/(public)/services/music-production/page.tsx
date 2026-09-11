@@ -4,13 +4,33 @@ import { Container } from "@/components/shared/Container";
 import { Reveal } from "@/components/motion/Reveal";
 import { TrackedLink } from "@/components/public/TrackedLink";
 import { ServicesSubnav } from "@/components/public/ServicesSubnav";
+import { breadcrumbJsonLd, JsonLd, pageOpenGraph } from "@/lib/seo";
+
+// §23 title direction — the production search intent page (§25).
+const PAGE_TITLE = "Music Producer & Multi-Instrumentalist in the Netherlands | Osman Meyredi";
+const PAGE_DESCRIPTION =
+  "Osman Meyredi is an artist-producer, multi-instrumentalist and composer who works with artists to develop, shape and finish their music — stepping in at the point where you need him.";
 
 export const metadata: Metadata = {
-  title: "Music Production — Why Osman Meyredi is the right producer",
-  description:
-    "Osman Meyredi is an artist-producer, multi-instrumentalist and composer who works with artists to develop, shape and finish their music — stepping in at the point where you need him.",
+  title: { absolute: PAGE_TITLE },
+  description: PAGE_DESCRIPTION,
   alternates: { canonical: "/services/music-production" },
+  openGraph: pageOpenGraph({
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    path: "/services/music-production",
+    image: "/images/services/production-studio.jpg",
+    imageAlt: "Osman Meyredi at the keys in his studio",
+    imageWidth: 1600,
+    imageHeight: 893,
+  }),
 };
+
+const BREADCRUMBS = [
+  { name: "Home", path: "/" },
+  { name: "Services", path: "/services" },
+  { name: "Music Production", path: "/services/music-production" },
+];
 
 /**
  * Music Production — Round 2 Keynote slide 16: the visitor first reads why
@@ -24,6 +44,8 @@ export const metadata: Metadata = {
 export default function MusicProductionPage() {
   return (
     <article>
+      {/* BreadcrumbList (§37) — mirrors the visible Services sub-nav hierarchy. */}
+      <JsonLd data={breadcrumbJsonLd(BREADCRUMBS)} />
       <ServicesSubnav current="/services/music-production" />
       <section className="py-24 sm:py-32">
         <Container>

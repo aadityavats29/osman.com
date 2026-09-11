@@ -5,13 +5,33 @@ import { Container } from "@/components/shared/Container";
 import { Reveal } from "@/components/motion/Reveal";
 import { TrackedLink } from "@/components/public/TrackedLink";
 import { ServicesSubnav } from "@/components/public/ServicesSubnav";
+import { breadcrumbJsonLd, JsonLd, pageOpenGraph } from "@/lib/seo";
+
+// §23 title direction for the concerts/live-performance booking page.
+const PAGE_TITLE = "Live Musician & Concert Performances | Osman Meyredi";
+const PAGE_DESCRIPTION =
+  "Book Osman Meyredi for a full live show: his own studio productions come to life through multiple instruments and a stage presence that swings from intimate to full-on spectacle. Based in Amsterdam, performing across the Netherlands, Italy and Europe.";
 
 export const metadata: Metadata = {
-  title: "Concerts & Live Performances — Book Osman Meyredi live",
-  description:
-    "Book Osman Meyredi for a full live show: his own studio productions come to life through multiple instruments and a stage presence that swings from intimate to full-on spectacle.",
+  title: { absolute: PAGE_TITLE },
+  description: PAGE_DESCRIPTION,
   alternates: { canonical: "/services/concerts" },
+  openGraph: pageOpenGraph({
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    path: "/services/concerts",
+    image: "/images/services/concerts-live-landscape.jpg",
+    imageAlt: "Osman Meyredi mid-performance at the keys, black and white",
+    imageWidth: 2400,
+    imageHeight: 1350,
+  }),
 };
+
+const BREADCRUMBS = [
+  { name: "Home", path: "/" },
+  { name: "Services", path: "/services" },
+  { name: "Concerts & Live Performances", path: "/services/concerts" },
+];
 
 /**
  * Concerts & Live Performances — Round 2 Keynote slides 11–14. The entire
@@ -41,6 +61,8 @@ const OPTIONS = [
 export default function ConcertsServicePage() {
   return (
     <article>
+      {/* BreadcrumbList (§37) — mirrors the visible Services sub-nav hierarchy. */}
+      <JsonLd data={breadcrumbJsonLd(BREADCRUMBS)} />
       <ServicesSubnav current="/services/concerts" />
       <section className="py-24 sm:py-32">
         <Container>

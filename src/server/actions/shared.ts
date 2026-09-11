@@ -1,13 +1,27 @@
 import "server-only";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireEditor } from "@/lib/auth/session";
+import { notifyIndexNow, type ChangedContent } from "@/lib/indexnow";
 import type { SessionUser } from "@/lib/types";
 
 /**
  * Helpers shared by the studio server actions.
  * Not a "use server" file — nothing here is directly callable from the client.
  */
+
+/**
+ * Every Studio mutation that changes public content calls this after the
+ * write: it refreshes the rendered site and — on production, when a key is
+ * configured — submits the affected canonical URLs through IndexNow
+ * (SEO foundation brief §19). One call, so cache and search engines can
+ * never drift apart.
+ */
+export function publicContentChanged(kind: ChangedContent): void {
+  revalidatePath("/", "layout");
+  notifyIndexNow(kind);
+}
 
 /** Every mutating action calls this first. Not signed in (or read-only) → login screen. */
 export async function guardEditor(): Promise<SessionUser> {

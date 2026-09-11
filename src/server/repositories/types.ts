@@ -1,6 +1,7 @@
 import type {
   CollaborationRecord,
   EventRecord,
+  FaqRecord,
   LibraryTrackRecord,
   LiveVideoRecord,
   MediaItemRecord,
@@ -42,6 +43,7 @@ export interface Repos {
   libraryTracks: CollectionRepo<LibraryTrackRecord>;
   collaborations: CollectionRepo<CollaborationRecord>;
   media: CollectionRepo<MediaItemRecord>;
+  faqs: CollectionRepo<FaqRecord>;
   services: CollectionRepo<ServiceRecord>;
   products: CollectionRepo<ProductRecord>;
   users: UserRepo;

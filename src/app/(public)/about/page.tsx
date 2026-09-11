@@ -1,15 +1,30 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { getRepos } from "@/server/repositories";
+import { JsonLd, pageOpenGraph, personJsonLd } from "@/lib/seo";
 import { Container } from "@/components/shared/Container";
 import { Reveal } from "@/components/motion/Reveal";
 import { Parallax } from "@/components/motion/Parallax";
 
+// §23 title direction, adjusted to the approved "Italian-born" wording.
+const ABOUT_TITLE = "About Osman Meyredi | Italian-Born Multi-Instrumentalist in the Netherlands";
+const ABOUT_DESCRIPTION =
+  "Osman Meyredi is an Italian-born artist, a multi-instrumentalist, songwriter, composer, singer, music director and producer, based in the Netherlands — performing across Europe and beyond.";
+
 export const metadata: Metadata = {
-  title: "About",
-  description:
-    "Osman Meyredi is an Italian-born artist, a multi-instrumentalist, songwriter, composer, singer, music director and producer, based in the Netherlands — performing across Europe and beyond.",
+  title: { absolute: ABOUT_TITLE },
+  description: ABOUT_DESCRIPTION,
   alternates: { canonical: "/about" },
+  openGraph: pageOpenGraph({
+    title: ABOUT_TITLE,
+    description: ABOUT_DESCRIPTION,
+    path: "/about",
+    image: "/images/about/about-performance-italy.jpg",
+    imageAlt: "Osman Meyredi performing live in Italy, black and white",
+    imageWidth: 1920,
+    imageHeight: 1071,
+  }),
 };
 
 /**
@@ -21,9 +36,21 @@ export const metadata: Metadata = {
  * approved files from Website/02.About/Images. One source typo ("Oman") is
  * corrected to "Osman" — flagged in the implementation report.
  */
-export default function AboutPage() {
+export default async function AboutPage() {
+  // Person entity on About as well as Home (brief §33) — same stable @id,
+  // sameAs from the Studio-configured official profiles only.
+  const settings = await getRepos().settings.get();
+  const socialUrls = [
+    settings.instagramUrl,
+    settings.youtubeUrl,
+    settings.tiktokUrl,
+    settings.linkedinUrl,
+    settings.facebookUrl,
+  ].filter((u): u is string => Boolean(u));
+
   return (
     <article>
+      <JsonLd data={personJsonLd(socialUrls)} />
       {/* Identity statement — the approved opening sentence (Keynote slide 7). */}
       <section className="py-24 sm:py-32">
         <Container wide>
@@ -129,7 +156,11 @@ export default function AboutPage() {
               On tour with Ike Willis, Frank Zappa&rsquo;s band
             </h2>
             <p className="mt-6 leading-relaxed">
-              He&rsquo;s most proud of his collaboration with Frank Zappa&rsquo;s band, going
+              He&rsquo;s most proud of his{" "}
+              <Link href="/music#collaborations" className="u-link">
+                collaboration with Frank Zappa&rsquo;s band
+              </Link>
+              , going
               several times on tour with Ike Willis, Frank Zappa&rsquo;s longtime vocalist,
               before Willis&rsquo;s passing on May 16, 2026. Zappa&rsquo;s music punishes
               half-listening, and those nights, playing that repertoire alongside a singer

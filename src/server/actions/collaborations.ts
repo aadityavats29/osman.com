@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { collaborationInput } from "@/lib/validation/schemas";
 import { uniqueSlug } from "@/lib/slug";
@@ -16,6 +15,7 @@ import {
   statusFromIntent,
   stripMeta,
   toRawInput,
+  publicContentChanged,
 } from "./shared";
 
 const LIST_PATH = "/studio/collaborations";
@@ -52,7 +52,7 @@ export async function saveCollaborationAction(
     });
   }
 
-  revalidatePath("/", "layout");
+  publicContentChanged("collaborations");
   redirect(LIST_PATH);
 }
 
@@ -74,7 +74,7 @@ export async function duplicateCollaborationAction(formData: FormData): Promise<
     sortOrder: nextSortOrder(all),
   });
 
-  revalidatePath("/", "layout");
+  publicContentChanged("collaborations");
   redirect(LIST_PATH);
 }
 
@@ -83,7 +83,7 @@ export async function archiveCollaborationAction(formData: FormData): Promise<vo
   const id = recordId(formData);
   if (id) {
     await getRepos().collaborations.update(id, { status: "ARCHIVED" });
-    revalidatePath("/", "layout");
+    publicContentChanged("collaborations");
   }
   redirect(LIST_PATH);
 }
@@ -93,7 +93,7 @@ export async function unpublishCollaborationAction(formData: FormData): Promise<
   const id = recordId(formData);
   if (id) {
     await getRepos().collaborations.update(id, { status: "DRAFT" });
-    revalidatePath("/", "layout");
+    publicContentChanged("collaborations");
   }
   redirect(LIST_PATH);
 }
@@ -103,7 +103,7 @@ export async function deleteCollaborationAction(formData: FormData): Promise<voi
   const id = recordId(formData);
   if (id && confirmedDeletion(formData)) {
     await getRepos().collaborations.remove(id);
-    revalidatePath("/", "layout");
+    publicContentChanged("collaborations");
   }
   redirect(LIST_PATH);
 }

@@ -1,14 +1,27 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SERVICES } from "@/data/services";
+import { pageOpenGraph } from "@/lib/seo";
 import { Container } from "@/components/shared/Container";
 import { Reveal } from "@/components/motion/Reveal";
 
+const PAGE_TITLE = "Services — Live shows, live piano, production & original tracks";
+const PAGE_DESCRIPTION =
+  "Four ways to work with Osman Meyredi: live performances for festivals and venues, solo piano for events, music production from first idea to finished track, and a library of original tracks ready to license.";
+
 export const metadata: Metadata = {
-  title: "Services — Live shows, live piano, production & original tracks",
-  description:
-    "Four ways to work with Osman Meyredi: live performances for festivals and venues, solo piano for events, music production from first idea to finished track, and a library of original tracks ready to license.",
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
   alternates: { canonical: "/services" },
+  openGraph: pageOpenGraph({
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    path: "/services",
+    image: "/images/services/concerts-live-landscape.jpg",
+    imageAlt: "Osman Meyredi mid-performance at the keys, black and white",
+    imageWidth: 2400,
+    imageHeight: 1350,
+  }),
 };
 
 /**

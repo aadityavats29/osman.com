@@ -5,15 +5,36 @@ import { Reveal } from "@/components/motion/Reveal";
 import { TrackedLink } from "@/components/public/TrackedLink";
 import { ServicesSubnav } from "@/components/public/ServicesSubnav";
 import { LibraryPlayer, type PlayableTrack } from "@/components/public/LibraryPlayer";
+import { breadcrumbJsonLd, JsonLd, pageOpenGraph } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
+// Title kept service-accurate rather than keyword-led (§25: do not
+// optimise the licensing page beyond what the service currently offers).
+const PAGE_TITLE = "Original Tracks & Music Library — Ready to license, or made just for you";
+const PAGE_DESCRIPTION =
+  "Every track in Osman Meyredi's library is composed, produced and performed by him personally, ready to license, with all copyright matters already sorted — and custom tracks on request.";
+
 export const metadata: Metadata = {
-  title: "Original Tracks & Music Library — Ready to license, or made just for you",
-  description:
-    "Every track in Osman Meyredi's library is composed, produced and performed by him personally, ready to license, with all copyright matters already sorted — and custom tracks on request.",
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
   alternates: { canonical: "/services/music-library" },
+  openGraph: pageOpenGraph({
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    path: "/services/music-library",
+    image: "/images/services/production-studio.jpg",
+    imageAlt: "Osman Meyredi at the keys in his studio",
+    imageWidth: 1600,
+    imageHeight: 893,
+  }),
 };
+
+const BREADCRUMBS = [
+  { name: "Home", path: "/" },
+  { name: "Services", path: "/services" },
+  { name: "Original Tracks & Music Library", path: "/services/music-library" },
+];
 
 /**
  * Original Tracks & Music Library — Round 2 Keynote slides 10/17/31: the
@@ -41,6 +62,8 @@ export default async function MusicLibraryPage() {
 
   return (
     <article>
+      {/* BreadcrumbList (§37) — mirrors the visible Services sub-nav hierarchy. */}
+      <JsonLd data={breadcrumbJsonLd(BREADCRUMBS)} />
       <ServicesSubnav current="/services/music-library" />
       <section className="py-24 sm:py-32">
         <Container>

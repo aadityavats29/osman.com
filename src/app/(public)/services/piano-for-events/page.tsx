@@ -5,13 +5,33 @@ import { Container } from "@/components/shared/Container";
 import { Reveal } from "@/components/motion/Reveal";
 import { TrackedLink } from "@/components/public/TrackedLink";
 import { ServicesSubnav } from "@/components/public/ServicesSubnav";
+import { breadcrumbJsonLd, JsonLd, pageOpenGraph } from "@/lib/seo";
+
+// §23 title direction — the event-booking / piano search intent page (§25).
+const PAGE_TITLE = "Live Pianist for Events in Amsterdam & the Netherlands | Osman Meyredi";
+const PAGE_DESCRIPTION =
+  "Osman Meyredi performs live piano for company celebrations, brand launches, conferences and (wedding) receptions in Amsterdam, the Netherlands and beyond — repertoire and production adapted to the setting.";
 
 export const metadata: Metadata = {
-  title: "Live Piano for Events — Corporate, receptions & special occasions",
-  description:
-    "Osman Meyredi performs live piano for company celebrations, brand launches, conferences, (wedding) receptions and other private and corporate occasions — repertoire and production adapted to the setting.",
+  title: { absolute: PAGE_TITLE },
+  description: PAGE_DESCRIPTION,
   alternates: { canonical: "/services/piano-for-events" },
+  openGraph: pageOpenGraph({
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    path: "/services/piano-for-events",
+    image: "/images/services/live-piano-rome-2025.jpg",
+    imageAlt: "Osman Meyredi performing at a grand piano in front of an audience, Rome, 2025",
+    imageWidth: 1920,
+    imageHeight: 1081,
+  }),
 };
+
+const BREADCRUMBS = [
+  { name: "Home", path: "/" },
+  { name: "Services", path: "/services" },
+  { name: "Live Piano for Events", path: "/services/piano-for-events" },
+];
 
 /**
  * Live Piano for Events — Round 2 Keynote slide 15: the entire content was
@@ -24,6 +44,8 @@ export const metadata: Metadata = {
 export default function PianoForEventsPage() {
   return (
     <article>
+      {/* BreadcrumbList (§37) — mirrors the visible Services sub-nav hierarchy. */}
+      <JsonLd data={breadcrumbJsonLd(BREADCRUMBS)} />
       <ServicesSubnav current="/services/piano-for-events" />
       <section className="py-24 sm:py-32">
         <Container>

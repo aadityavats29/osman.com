@@ -1,17 +1,30 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getRepos } from "@/server/repositories";
 import { formatEventDate } from "@/lib/events";
-import { JsonLd, articleJsonLd } from "@/lib/seo";
+import { JsonLd, articleJsonLd, pageOpenGraph } from "@/lib/seo";
 import { Container } from "@/components/shared/Container";
 import { Reveal } from "@/components/motion/Reveal";
 
 export const dynamic = "force-dynamic";
 
+const PAGE_TITLE = "Media — As Seen & Heard";
+const PAGE_DESCRIPTION =
+  "Press coverage, reviews and interviews featuring Osman Meyredi — and how to reach him for press inquiries.";
+
 export const metadata: Metadata = {
-  title: "Media — As Seen & Heard",
-  description:
-    "Press coverage, reviews and interviews featuring Osman Meyredi — and how to reach him for press inquiries.",
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
   alternates: { canonical: "/media" },
+  openGraph: pageOpenGraph({
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    path: "/media",
+    image: "/images/about/about-multi-instrumentalist.jpg",
+    imageAlt: "Osman Meyredi on stage surrounded by his instruments, black and white",
+    imageWidth: 1920,
+    imageHeight: 1071,
+  }),
 };
 
 export default async function MediaPage() {
@@ -156,6 +169,12 @@ export default async function MediaPage() {
           <a href={`mailto:${settings.contactEmail}`} className="u-link">
             {settings.contactEmail}
           </a>
+          {/* Contextual internal links (§31): Media → About/Contact. */}
+          {" · "}Writing about him?{" "}
+          <Link href="/about" className="u-link">
+            The full story is on the About page
+          </Link>
+          .
         </p>
       </Container>
     </section>

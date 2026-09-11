@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { libraryTrackInput } from "@/lib/validation/schemas";
 import { uniqueSlug } from "@/lib/slug";
@@ -16,6 +15,7 @@ import {
   statusFromIntent,
   stripMeta,
   toRawInput,
+  publicContentChanged,
 } from "./shared";
 
 const LIST_PATH = "/studio/library";
@@ -52,7 +52,7 @@ export async function saveLibraryTrackAction(
     });
   }
 
-  revalidatePath("/", "layout");
+  publicContentChanged("libraryTracks");
   redirect(LIST_PATH);
 }
 
@@ -74,7 +74,7 @@ export async function duplicateLibraryTrackAction(formData: FormData): Promise<v
     sortOrder: nextSortOrder(all),
   });
 
-  revalidatePath("/", "layout");
+  publicContentChanged("libraryTracks");
   redirect(LIST_PATH);
 }
 
@@ -83,7 +83,7 @@ export async function archiveLibraryTrackAction(formData: FormData): Promise<voi
   const id = recordId(formData);
   if (id) {
     await getRepos().libraryTracks.update(id, { status: "ARCHIVED" });
-    revalidatePath("/", "layout");
+    publicContentChanged("libraryTracks");
   }
   redirect(LIST_PATH);
 }
@@ -93,7 +93,7 @@ export async function unpublishLibraryTrackAction(formData: FormData): Promise<v
   const id = recordId(formData);
   if (id) {
     await getRepos().libraryTracks.update(id, { status: "DRAFT" });
-    revalidatePath("/", "layout");
+    publicContentChanged("libraryTracks");
   }
   redirect(LIST_PATH);
 }
@@ -103,7 +103,7 @@ export async function deleteLibraryTrackAction(formData: FormData): Promise<void
   const id = recordId(formData);
   if (id && confirmedDeletion(formData)) {
     await getRepos().libraryTracks.remove(id);
-    revalidatePath("/", "layout");
+    publicContentChanged("libraryTracks");
   }
   redirect(LIST_PATH);
 }

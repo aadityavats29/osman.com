@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getRepos } from "@/server/repositories";
 import { CONTACT_TOPICS } from "@/lib/validation/schemas";
+import { faqPageJsonLd, JsonLd, pageOpenGraph } from "@/lib/seo";
 import { Container } from "@/components/shared/Container";
 import { ContactForm } from "@/components/public/ContactForm";
 import { SocialIconLinks, socialLinks } from "@/components/public/SocialIcons";
@@ -8,11 +10,22 @@ import { Reveal } from "@/components/motion/Reveal";
 
 export const dynamic = "force-dynamic";
 
+// §23 title direction for Contact.
+const CONTACT_TITLE = "Book Osman Meyredi | Live Music, Piano & Music Production";
+const CONTACT_DESCRIPTION =
+  "Tell Osman Meyredi about it — bookings, live piano, production, licensing, collaborations and press. Direct contacts for management and bookings, or one structured form for everything else.";
+
 export const metadata: Metadata = {
-  title: "Contact & Booking",
-  description:
-    "Tell Osman Meyredi about it — bookings, live piano, production, licensing, collaborations and press. Direct contacts for management and bookings, or one structured form for everything else.",
+  title: { absolute: CONTACT_TITLE },
+  description: CONTACT_DESCRIPTION,
   alternates: { canonical: "/contact" },
+  openGraph: pageOpenGraph({
+    title: CONTACT_TITLE,
+    description: CONTACT_DESCRIPTION,
+    path: "/contact",
+    image: "/images/home-hero-landscape.jpg",
+    imageAlt: "Osman Meyredi singing at the keys under stage light",
+  }),
 };
 
 /**
@@ -43,10 +56,18 @@ export default async function ContactPage({
     ? typeParam
     : undefined;
 
-  const settings = await getRepos().settings.get();
+  const repos = getRepos();
+  const [settings, allFaqs] = await Promise.all([
+    repos.settings.get(),
+    repos.faqs.list(),
+  ]);
   const socials = socialLinks(settings);
+  const faqs = allFaqs
+    .filter((f) => f.status === "PUBLISHED")
+    .sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
+    <>
     <section className="py-24 sm:py-32">
       <Container wide>
         <Reveal variant="text">
@@ -122,5 +143,44 @@ export default async function ContactPage({
         </div>
       </Container>
     </section>
+
+    {/* Practical Q&A (SEO/AI foundation §30) — Studio-managed approved
+        answers to the questions bookers actually ask, with FAQPage
+        structured data mirroring exactly what is visible here. */}
+    {faqs.length > 0 && (
+      <section className="border-t border-line py-20 sm:py-24">
+        <JsonLd data={faqPageJsonLd(faqs)} />
+        <Container wide>
+          <Reveal variant="text">
+            <p className="eyebrow">Practical information</p>
+            <h2 className="font-display mt-4 max-w-2xl text-3xl leading-tight sm:text-4xl">
+              The questions bookers ask first
+            </h2>
+          </Reveal>
+          <dl className="mt-10 grid gap-x-14 gap-y-10 lg:grid-cols-2">
+            {faqs.map((faq, i) => (
+              <Reveal key={faq.id} variant="text" delay={Math.min(i * 60, 240)}>
+                <div className="border-t border-line pt-5">
+                  <dt className="font-display text-xl leading-snug">{faq.question}</dt>
+                  <dd className="mt-3 text-sm leading-relaxed text-ink-soft">
+                    {faq.answer}
+                    {faq.linkUrl && (
+                      <>
+                        {" "}
+                        <Link href={faq.linkUrl} className="u-link whitespace-nowrap text-ink hover:text-accent-strong">
+                          {faq.linkLabel ?? "Read more"}{" "}
+                          <span className="arrow-nudge" aria-hidden="true">→</span>
+                        </Link>
+                      </>
+                    )}
+                  </dd>
+                </div>
+              </Reveal>
+            ))}
+          </dl>
+        </Container>
+      </section>
+    )}
+    </>
   );
 }

@@ -1,10 +1,9 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { serviceInput } from "@/lib/validation/schemas";
 import { getRepos } from "@/server/repositories";
 import type { ActionState } from "@/components/studio/actionState";
-import { fieldErrors, formValues, guardEditor, recordId, toRawInput } from "./shared";
+import { publicContentChanged, fieldErrors, formValues, guardEditor, recordId, toRawInput } from "./shared";
 
 /**
  * Services are a fixed set of three pages — no create, no delete.
@@ -34,6 +33,6 @@ export async function saveServiceAction(
   }
 
   await repos.services.update(id, { ...parsed.data });
-  revalidatePath("/", "layout");
+  publicContentChanged("services");
   return { ok: true };
 }

@@ -17,6 +17,7 @@ import {
   agendaDemoEvents,
   demoCollaborations,
   demoEvents,
+  demoFaqs,
   realEvents,
   demoMedia,
   demoProducts,
@@ -177,6 +178,26 @@ async function main() {
         summary: m.summary,
         status: m.status,
         featured: m.featured,
+      },
+    });
+  }
+
+  // Practical Q&A (SEO/AI foundation §30) — create-only: after the first
+  // seed the Studio owns the answers, so re-seeding never overwrites edits.
+  for (const f of demoFaqs) {
+    await prisma.faq.upsert({
+      where: { slug: f.slug },
+      update: {},
+      create: {
+        id: f.id,
+        slug: f.slug,
+        question: f.question,
+        answer: f.answer,
+        linkUrl: f.linkUrl,
+        linkLabel: f.linkLabel,
+        aiApproved: f.aiApproved,
+        status: f.status,
+        sortOrder: f.sortOrder,
       },
     });
   }

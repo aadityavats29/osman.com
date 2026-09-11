@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getRepos } from "@/server/repositories";
 import { upcomingPublished } from "@/lib/events";
-import { JsonLd, personJsonLd } from "@/lib/seo";
+import { JsonLd, pageOpenGraph, personJsonLd } from "@/lib/seo";
 import { SERVICES } from "@/data/services";
 import { Container } from "@/components/shared/Container";
 import { EventList } from "@/components/public/EventList";
@@ -39,11 +39,27 @@ const INSTRUMENTS = [
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Home metadata — SEO foundation §23 title direction, adjusted to the
+ * approved wording: the client's Final About Content says "Italian-born",
+ * so the title says Italian-Born rather than the brief's "Italian"
+ * (§23: "verify every descriptor against the latest approved content").
+ */
+const HOME_TITLE = "Osman Meyredi | Italian-Born Multi-Instrumentalist, Composer & Producer";
+const HOME_DESCRIPTION =
+  "Osman Meyredi is an Italian-born multi-instrumentalist, composer and producer based in Amsterdam. Live shows, piano for events, music production and original tracks across the Netherlands, Italy and Europe.";
+
 export const metadata: Metadata = {
-  title: { absolute: "Osman Meyredi — Artist, multi-instrumentalist & producer" },
-  description:
-    "Osman Meyredi — artist, multi-instrumentalist, producer, music director, composer, songwriter and singer. Live shows, piano for events, music production and a licensing library.",
+  title: { absolute: HOME_TITLE },
+  description: HOME_DESCRIPTION,
   alternates: { canonical: "/" },
+  openGraph: pageOpenGraph({
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    path: "/",
+    image: "/images/home-hero-landscape.jpg",
+    imageAlt: "Osman Meyredi singing at the keys under stage light",
+  }),
 };
 
 const RELEASE_TYPE_LABELS = {

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getRepos } from "@/server/repositories";
 import { effectiveTicketing, upcomingPublished } from "@/lib/events";
+import { pageOpenGraph } from "@/lib/seo";
 import { Container } from "@/components/shared/Container";
 import { EventList } from "@/components/public/EventList";
 import { ShowsSubnav } from "@/components/public/ShowsSubnav";
@@ -9,11 +10,22 @@ import { Reveal } from "@/components/motion/Reveal";
 
 export const dynamic = "force-dynamic";
 
+// §23 title direction for the Shows section.
+const PAGE_TITLE = "Osman Meyredi | Concerts & Upcoming Gigs";
+const PAGE_DESCRIPTION =
+  "Where to hear Osman Meyredi live: concerts, upcoming shows with free entry, tickets on sale and a gallery of live videos.";
+
 export const metadata: Metadata = {
-  title: "Shows",
-  description:
-    "Where to hear Osman Meyredi live: concerts, upcoming shows with free entry, tickets on sale and a gallery of live videos.",
+  title: { absolute: PAGE_TITLE },
+  description: PAGE_DESCRIPTION,
   alternates: { canonical: "/shows" },
+  openGraph: pageOpenGraph({
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    path: "/shows",
+    image: "/images/home-hero-landscape.jpg",
+    imageAlt: "Osman Meyredi singing at the keys under stage light",
+  }),
 };
 
 /**

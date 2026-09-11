@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getRepos } from "@/server/repositories";
 import { effectiveTicketing, upcomingPublished, pastPublished } from "@/lib/events";
-import { JsonLd, musicEventJsonLd } from "@/lib/seo";
+import { breadcrumbJsonLd, JsonLd, musicEventJsonLd } from "@/lib/seo";
 import { Container } from "@/components/shared/Container";
 import { EventList } from "@/components/public/EventList";
 import { ShowsSubnav } from "@/components/public/ShowsSubnav";
@@ -34,6 +34,13 @@ export default async function ShowsConcertsPage() {
         {upcoming.map((event) => (
           <JsonLd key={event.id} data={musicEventJsonLd(event)} />
         ))}
+        <JsonLd
+          data={breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Shows", path: "/shows" },
+            { name: "Concerts", path: "/shows/concerts" },
+          ])}
+        />
 
         <Reveal variant="text">
           <p className="eyebrow">Shows</p>

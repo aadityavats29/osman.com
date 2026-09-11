@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { eventInput } from "@/lib/validation/schemas";
 import { effectiveTicketing, publishWarnings } from "@/lib/events";
@@ -17,6 +16,7 @@ import {
   statusFromIntent,
   stripMeta,
   toRawInput,
+  publicContentChanged,
 } from "./shared";
 
 const LIST_PATH = "/studio/events";
@@ -65,7 +65,7 @@ export async function saveEventAction(
     });
   }
 
-  revalidatePath("/", "layout");
+  publicContentChanged("events");
   redirect(LIST_PATH);
 }
 
@@ -86,7 +86,7 @@ export async function duplicateEventAction(formData: FormData): Promise<void> {
     publishedAt: null,
   });
 
-  revalidatePath("/", "layout");
+  publicContentChanged("events");
   redirect(LIST_PATH);
 }
 
@@ -95,7 +95,7 @@ export async function archiveEventAction(formData: FormData): Promise<void> {
   const id = recordId(formData);
   if (id) {
     await getRepos().events.update(id, { status: "ARCHIVED" });
-    revalidatePath("/", "layout");
+    publicContentChanged("events");
   }
   redirect(LIST_PATH);
 }
@@ -105,7 +105,7 @@ export async function unpublishEventAction(formData: FormData): Promise<void> {
   const id = recordId(formData);
   if (id) {
     await getRepos().events.update(id, { status: "DRAFT" });
-    revalidatePath("/", "layout");
+    publicContentChanged("events");
   }
   redirect(LIST_PATH);
 }
@@ -115,7 +115,7 @@ export async function deleteEventAction(formData: FormData): Promise<void> {
   const id = recordId(formData);
   if (id && confirmedDeletion(formData)) {
     await getRepos().events.remove(id);
-    revalidatePath("/", "layout");
+    publicContentChanged("events");
   }
   redirect(LIST_PATH);
 }

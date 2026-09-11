@@ -4,6 +4,7 @@ import { PrismaClient, Prisma } from "@/generated/prisma/client";
 import type {
   CollaborationRecord,
   EventRecord,
+  FaqRecord,
   LibraryTrackRecord,
   LiveVideoRecord,
   MediaItemRecord,
@@ -375,6 +376,49 @@ const mediaRepo: CollectionRepo<MediaItemRecord> = {
   },
 };
 
+type DbFaq = Prisma.FaqGetPayload<Record<string, never>>;
+function faqFromDb(v: DbFaq): FaqRecord {
+  return { ...v, createdAt: iso(v.createdAt), updatedAt: iso(v.updatedAt) };
+}
+function faqToDb(r: Partial<FaqRecord>): Record<string, unknown> {
+  const out: Record<string, unknown> = { ...r };
+  delete out.id;
+  delete out.createdAt;
+  delete out.updatedAt;
+  return out;
+}
+
+const faqsRepo: CollectionRepo<FaqRecord> = {
+  async list() {
+    const rows = await client().faq.findMany({ orderBy: { sortOrder: "asc" } });
+    return rows.map(faqFromDb);
+  },
+  async get(id) {
+    const row = await client().faq.findUnique({ where: { id } });
+    return row ? faqFromDb(row) : null;
+  },
+  async getBySlug(slug) {
+    const row = await client().faq.findUnique({ where: { slug } });
+    return row ? faqFromDb(row) : null;
+  },
+  async create(data) {
+    const row = await client().faq.create({
+      data: faqToDb(data as Partial<FaqRecord>) as unknown as Prisma.FaqUncheckedCreateInput,
+    });
+    return faqFromDb(row);
+  },
+  async update(id, patch) {
+    const row = await client().faq.update({
+      where: { id },
+      data: faqToDb(patch) as unknown as Prisma.FaqUncheckedUpdateInput,
+    });
+    return faqFromDb(row);
+  },
+  async remove(id) {
+    await client().faq.delete({ where: { id } });
+  },
+};
+
 type DbService = Prisma.ServiceGetPayload<Record<string, never>>;
 function serviceFromDb(v: DbService): ServiceRecord {
   return { ...v, updatedAt: iso(v.updatedAt) };
@@ -522,6 +566,7 @@ export function createPrismaRepos(): Repos {
     libraryTracks: libraryTracksRepo,
     collaborations: collaborationsRepo,
     media: mediaRepo,
+    faqs: faqsRepo,
     services: servicesRepo,
     products: productsRepo,
     users: usersRepo,
