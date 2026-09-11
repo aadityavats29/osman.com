@@ -12,19 +12,24 @@
      stage light — never red-and-black rock cliché.
      Semantics kept from the light era: "canvas" = page ground (now near-black),
      "ink" = type (now cool off-white), "stage" = deepest black feature bands. */
-  --color-canvas: #0d0e10;
-  --color-canvas-soft: #16181c;
-  --color-stage: #08090a;
-  --color-ink: #e7e8e6;
-  --color-ink-soft: #a6a8a3;
-  --color-ink-faint: #6e716c;
-  --color-line: #26282c;
-  --color-line-dark: #383b40;
-  --color-accent: #a34a45;
-  --color-accent-strong: #c05f57;
+  /* Brand palette (Osman Meyredi brand sheet, 11-09-2026):
+     #090809 · #2A2A2A · #CBC5B9 · #E9EBE6 · #A34B46 · #C15F58.
+     Canvas/stage sit on the brand blacks, type tiers on the brand off-white
+     and warm grey (faint/line values are interpolations of the same pair),
+     and both accents are the brand reds, exact. */
+  --color-canvas: #0c0c0b;
+  --color-canvas-soft: #171716;
+  --color-stage: #090809;
+  --color-ink: #e9ebe6;
+  --color-ink-soft: #cbc5b9;
+  --color-ink-faint: #7d7a72;
+  --color-line: #2a2a2a;
+  --color-line-dark: #3d3c39;
+  --color-accent: #a34b46;
+  --color-accent-strong: #c15f58;
   --color-ok: #7e9270;
   --color-warn: #c49a3d;
-  --color-danger: #cf6257;
+  --color-danger: #c15f58;
 
   /* Type — Archivo variable (wght 100–900, wdth 62–125): strong grotesk
      display voice. Inter stays the quiet body/UI voice. (Gilroy is reserved
@@ -618,10 +623,22 @@ button:focus-visible .arrow-nudge {
      baseline, which adds strut descender space below the mark and floats it
      a few px above true center in flex-centered bars (the header). */
   display: block;
-  aspect-ratio: 3598 / 577;
+  aspect-ratio: 826.6 / 133;
   background-color: currentColor;
   -webkit-mask: url("/images/logo-horizontal.svg") center / contain no-repeat;
   mask: url("/images/logo-horizontal.svg") center / contain no-repeat;
+}
+
+/* Official OM monogram (vector from OM_BLACK.pdf) — used on the vinyl
+   toggle's record label; inherits size from .vinyl-label-mark. */
+.vinyl-om {
+  display: block;
+  width: 0.95rem;
+  aspect-ratio: 511.2 / 241.9;
+  background-color: #ffffff;
+  -webkit-mask: url("/images/logo-om.svg") center / contain no-repeat;
+  mask: url("/images/logo-om.svg") center / contain no-repeat;
+  transition: width 320ms var(--ease-out-cubic);
 }
 
 /* ---- Route-transition cue (Round 2 slide 1 / §42) ----
@@ -1236,8 +1253,8 @@ a:focus-visible .text-roll > span:last-child,
   width: 38px;
   height: 38px;
 }
-.site-header[data-scrolled="true"] .vinyl-toggle .vinyl-label-mark {
-  font-size: 0.46rem;
+.site-header[data-scrolled="true"] .vinyl-toggle .vinyl-label-mark .vinyl-om {
+  width: 0.78rem;
 }
 .vinyl-toggle .vinyl-face {
   position: absolute;
@@ -1251,14 +1268,7 @@ a:focus-visible .text-roll > span:last-child,
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-variation-settings: "wdth" 80;
-  font-size: 0.52rem;
-  letter-spacing: 0.08em;
-  color: #ffffff;
   pointer-events: none;
-  transition: font-size 320ms var(--ease-out-cubic);
 }
 /* Menu open: the record eases into a slow constant spin on top of its
    scroll rotation (JS composes both) and the label mark swaps color. */

@@ -18,7 +18,7 @@ import { TrackedLink } from "@/components/public/TrackedLink";
  * no pinning, no continuous rotation for reduced motion.
  */
 
-const LABEL_TONES = ["#a34a45", "#46586b", "#4d5c48", "#3a3d41"];
+const LABEL_TONES = ["#a34b46", "#46586b", "#4d5c48", "#3a3d41"];
 
 function labelTone(i: number): string {
   return LABEL_TONES[i % LABEL_TONES.length];

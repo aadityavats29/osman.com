@@ -232,7 +232,8 @@ export function FullscreenMenu({ settings }: { settings: SiteSettings }) {
           />
         </div>
         <span className="vinyl-label-mark" aria-hidden="true">
-          OM
+          {/* Official OM monogram (brand files, 11-09-2026). */}
+          <span className="vinyl-om" />
         </span>
       </button>
 

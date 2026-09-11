@@ -145,15 +145,17 @@ export default async function HomePage() {
             </div>
           </div>
         </Container>
-        {/* Landscape hero — Website/09. Images Osman/"Landingpage image.png".
-            Full-bleed width, masked reveal, quiet ambient drift retained. */}
+        {/* Landscape hero — the client-supplied performance photograph
+            (Aditya, 11-09-2026: "It is the homepage hero image"), superseding
+            the earlier Landing image. Full-bleed width, masked reveal, quiet
+            ambient drift retained. */}
         <div className="hero-image-mask">
           <div className="hero-image-inner">
             <div className="hero-ambient">
-              <div className="relative" style={{ aspectRatio: "1672 / 941" }}>
+              <div className="relative" style={{ aspectRatio: "1920 / 1080" }}>
                 <Image
                   src="/images/home-hero-landscape.jpg"
-                  alt="Osman Meyredi live on stage with bass guitar, arm raised under warm stage light"
+                  alt="Osman Meyredi singing at the keys under stage light, black headband, dark stage"
                   fill
                   priority
                   sizes="100vw"
@@ -227,7 +229,7 @@ export default async function HomePage() {
                 <RecordSleeve
                   title={featuredRelease.title}
                   year={featuredRelease.year}
-                  tone="#a34a45"
+                  tone="#a34b46"
                   artworkUrl={featuredRelease.artworkUrl}
                   withVinyl
                   vinylClassName="transition-transform duration-500 ease-(--ease-out-cubic) group-hover/feat:translate-x-[16%]"

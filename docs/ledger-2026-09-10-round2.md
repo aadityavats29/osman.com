@@ -101,3 +101,22 @@ click-to-play (preload="none", no autoplay); all new images are optimized (≤60
   is stale; `SEED_DEMO_EVENTS=false` for launch) so existing Neon rows pick up the Round 2 content —
   the seed now refreshes descriptions, covers, links, the Wine Festival details, the band image,
   the memorial dates and contactEmail on re-seed.
+
+## Addendum — brand files applied (11-09-2026)
+
+Client-supplied brand package (chat, 11 Sept): OM_BLACK/OM_WHITE.pdf (monogram),
+Osman Meyredi Black/White_11 Sept.pdf (wordmark), Osman_Meyredi_8/11_Sept.pdf
+(brand sheets), one new performance photograph.
+
+- Official vectors replace the traced logo: `public/images/logo-horizontal.svg` is now the
+  exact wordmark from "Osman Meyredi Black_11 Sept.pdf"; `public/images/logo-om.svg` (new)
+  is the exact OM monogram from OM_BLACK.pdf. The monogram replaces the typed "OM" on the
+  vinyl menu button and anchors a regenerated favicon (vinyl disc + monogram, brand colors).
+- Brand palette (#090809 · #2A2A2A · #CBC5B9 · #E9EBE6 · #A34B46 · #C15F58) applied as the
+  site's design tokens, so every page picks it up: stage=#090809, line=#2A2A2A,
+  ink=#E9EBE6, ink-soft=#CBC5B9, accents #A34B46/#C15F58 exact (faint/line-dark/canvas
+  values are interpolations of the brand blacks/greys). Hardcoded sleeve tones updated.
+- New hero: the supplied performance photograph is now the homepage hero
+  (Aditya, 11-09: "It is the homepage hero image"), superseding Landingpage image.png.
+- Typography on the brand sheet (Megante/Gilroy) NOT applied — the standing instruction
+  keeps Archivo/Inter until Aditya says otherwise.
