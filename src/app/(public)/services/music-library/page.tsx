@@ -79,37 +79,34 @@ export default async function MusicLibraryPage() {
               Every track in Osman&rsquo;s library is composed, produced and performed by him
               personally, ready to license, with all copyright matters already sorted.
             </p>
-            {/* The red line — the document's marked text. */}
+            {/* The red line — the document's marked text; "get in touch"
+                links to the contact form (Aditya 12-09-2026). */}
             <p className="mt-6 border-l-2 border-accent pl-4 leading-relaxed text-ink-soft">
-              Know exactly what you need? Get in touch and there&rsquo;s a good chance it can
-              be made. The library itself is still being stocked, the first tracks land here
-              shortly.
+              Know exactly what you need?{" "}
+              <TrackedLink
+                href="/contact?type=ORIGINAL_TRACKS"
+                event="service_inquiry_click"
+                eventProps={{ service: "music-library", position: "hero" }}
+                className="u-link"
+              >
+                Get in touch
+              </TrackedLink>{" "}
+              and there&rsquo;s a good chance it can be made. The library itself is still
+              being stocked, the first tracks land here shortly.
             </p>
           </Reveal>
         </Container>
 
-        {/* The catalogue */}
-        <Container wide className="mt-14">
-          <Reveal variant="card" delay={80}>
-            {playable.length > 0 ? (
+        {/* The catalogue — while empty, nothing renders here: the stocking
+            note already lives in the hero red line and the closing red line
+            below (duplicate removed, Aditya 12-09-2026). */}
+        {playable.length > 0 && (
+          <Container wide className="mt-14">
+            <Reveal variant="card" delay={80}>
               <LibraryPlayer tracks={playable} />
-            ) : (
-              <p className="border-t border-line pt-8 text-ink-soft">
-                The library is being stocked — the first tracks land here shortly. If you
-                already know what you need,{" "}
-                <TrackedLink
-                  href="/contact?type=ORIGINAL_TRACKS"
-                  event="service_inquiry_click"
-                  eventProps={{ service: "music-library", position: "empty" }}
-                  className="u-link"
-                >
-                  get in touch
-                </TrackedLink>{" "}
-                and there&rsquo;s a good chance it can be made.
-              </p>
-            )}
-          </Reveal>
-        </Container>
+            </Reveal>
+          </Container>
+        )}
 
         <Container className="mt-16">
           <Reveal variant="text" delay={100}>
@@ -133,8 +130,16 @@ export default async function MusicLibraryPage() {
               involved.
             </p>
             <p className="mt-6 border-l-2 border-accent pl-4 leading-relaxed text-ink-soft">
-              If you can&rsquo;t find the right track in the library, get in touch!
-              There&rsquo;s a good chance it can still be made.
+              If you can&rsquo;t find the right track in the library,{" "}
+              <TrackedLink
+                href="/contact?type=ORIGINAL_TRACKS"
+                event="service_inquiry_click"
+                eventProps={{ service: "music-library", position: "closing" }}
+                className="u-link"
+              >
+                get in touch
+              </TrackedLink>
+              ! There&rsquo;s a good chance it can still be made.
             </p>
           </Reveal>
         </Container>

@@ -278,6 +278,9 @@ export function ContactForm({ initialTopic }: { initialTopic?: string }) {
             {fieldError("message")}
           </p>
         )}
+        {/* Round 2 slide 19 (Aditya 12-09-2026): the language line lives
+            under the message field too. */}
+        <p className="mt-2 text-xs text-ink-faint">Write in Italian, English or Dutch.</p>
       </div>
 
       {/* 6 — Submit */}

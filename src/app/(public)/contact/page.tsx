@@ -57,9 +57,13 @@ export default async function ContactPage({
     : undefined;
 
   const repos = getRepos();
+  // Q&As degrade gracefully: on a database that hasn't run the Faq
+  // migration yet (or a stale generated client), the contact page must
+  // still render — it just omits the section until `prisma generate` +
+  // `prisma migrate deploy` have been run.
   const [settings, allFaqs] = await Promise.all([
     repos.settings.get(),
-    repos.faqs.list(),
+    repos.faqs.list().catch(() => []),
   ]);
   const socials = socialLinks(settings);
   const faqs = allFaqs
@@ -82,22 +86,21 @@ export default async function ContactPage({
         </Reveal>
 
         <div className="mt-14 grid gap-16 lg:grid-cols-[1fr_2.2fr]">
-          {/* Direct contacts — for people who already know whom they need.
-              Round 2 slide 18: role labels sit quiet under the addresses so
-              the emails lead; a red rule + plain sentence marks the column's
-              purpose against the form column. */}
+          {/* Direct contacts — matched to the Round 2 slide-18 mock (Aditya
+              12-09-2026): role label first and clearly legible, then the
+              person, then the address. Osman's direct inbox stays off the
+              page (strict email rule). */}
           <Reveal variant="card" delay={90}>
             <aside aria-label="Direct contacts">
-              <h2 className="border-l-2 border-accent pl-3 font-display text-lg leading-snug">
-                Know who you need?
-              </h2>
-              <p className="mt-2 text-sm leading-relaxed text-ink-faint">
-                Email them directly.
-              </p>
+              <h2 className="eyebrow">Straight to the right person</h2>
               <ul className="mt-6">
                 {DIRECT_CONTACTS.map((c) => (
-                  <li key={c.email} className="border-t border-line py-4 last:border-b">
-                    <p>
+                  <li key={c.email} className="border-t border-line py-5 last:border-b">
+                    <p className="tabular text-xs tracking-[0.16em] text-ink-soft uppercase">
+                      {c.role}
+                    </p>
+                    {c.person && <p className="mt-1.5 text-sm text-ink">{c.person}</p>}
+                    <p className="mt-1">
                       <a
                         href={`mailto:${c.email}`}
                         className="u-link text-sm text-ink hover:text-accent-strong"
@@ -105,10 +108,6 @@ export default async function ContactPage({
                       >
                         {c.email}
                       </a>
-                    </p>
-                    <p className="mt-1 text-xs text-ink-faint">
-                      {c.role}
-                      {c.person ? ` — ${c.person}` : ""}
                     </p>
                   </li>
                 ))}
@@ -126,18 +125,11 @@ export default async function ContactPage({
             </aside>
           </Reveal>
 
-          {/* The form — for everyone else. */}
+          {/* The form — leads with its own "What's this about?" heading,
+              as on the slide. */}
           <Reveal variant="text" delay={130}>
             <div>
-              <h2 className="border-l-2 border-accent pl-3 font-display text-lg leading-snug">
-                Not sure who to write to?
-              </h2>
-              <p className="mt-2 text-sm leading-relaxed text-ink-faint">
-                Use the form — your message lands with the right person.
-              </p>
-              <div className="mt-6">
-                <ContactForm initialTopic={initialTopic} />
-              </div>
+              <ContactForm initialTopic={initialTopic} />
             </div>
           </Reveal>
         </div>

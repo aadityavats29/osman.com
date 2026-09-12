@@ -85,7 +85,15 @@ async function main() {
       where: { slug: v.slug },
       // Round 2 (10-09): re-seeding pushes the approved order and the new
       // per-video descriptions (Keynote slides 26–28) to existing rows.
-      update: { sortOrder: v.sortOrder, description: v.description },
+      // 12-09: platform/videoUrl/thumbnailUrl refresh too, so the
+      // self-hosted Website Landscape row can never stay half-migrated.
+      update: {
+        sortOrder: v.sortOrder,
+        description: v.description,
+        platform: v.platform,
+        videoUrl: v.videoUrl,
+        thumbnailUrl: v.thumbnailUrl,
+      },
       create: {
         id: v.id,
         slug: v.slug,

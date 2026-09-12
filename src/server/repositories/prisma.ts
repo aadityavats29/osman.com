@@ -136,7 +136,10 @@ type DbVideo = Prisma.LiveVideoGetPayload<Record<string, never>>;
 function videoFromDb(v: DbVideo): LiveVideoRecord {
   return {
     ...v,
-    platform: v.platform === "vimeo" ? "vimeo" : "youtube",
+    // Keep all three platforms intact — collapsing "file" to "youtube" here
+    // broke the self-hosted Website Landscape player on Postgres-backed
+    // runs (Aditya 12-09-2026: no poster, dead "Watch on YouTube" link).
+    platform: v.platform === "vimeo" ? "vimeo" : v.platform === "file" ? "file" : "youtube",
     performanceDate: v.performanceDate ? isoDay(v.performanceDate) : null,
     createdAt: iso(v.createdAt),
     updatedAt: iso(v.updatedAt),

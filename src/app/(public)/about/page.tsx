@@ -51,15 +51,22 @@ export default async function AboutPage() {
   return (
     <article>
       <JsonLd data={personJsonLd(socialUrls)} />
-      {/* Identity statement — the approved opening sentence (Keynote slide 7). */}
+      {/* Keynote slide 7 (Aditya 12-09-2026): the "way of listening" line is
+          the heading — corrected per the slide's note to include "and
+          producer" — with the approved identity sentence beneath it, and
+          the photograph below the text. */}
       <section className="py-24 sm:py-32">
         <Container wide>
           <Reveal variant="text">
             <p className="eyebrow">About</p>
             <h1 className="font-display mt-6 max-w-4xl text-4xl leading-tight sm:text-5xl lg:text-6xl">
+              Osman Meyredi is a multi-instrumentalist and producer who treats every
+              instrument as a different way of listening.
+            </h1>
+            <p className="mt-8 max-w-2xl text-lg leading-relaxed text-ink-soft">
               Osman Meyredi is an Italian-born artist, a multi-instrumentalist, songwriter,
               composer, singer, music director and producer, based in the Netherlands.
-            </h1>
+            </p>
           </Reveal>
         </Container>
       </section>

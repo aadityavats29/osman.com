@@ -14,16 +14,12 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Marquee } from "@/components/motion/Marquee";
 import { RecordsScroller } from "@/components/motion/RecordsScroller";
 
-/** Keynote slide 1: professional roles replace the location line. */
-const ROLES = [
-  "Artist",
-  "Multi-instrumentalist",
-  "Producer",
-  "Music Director",
-  "Composer",
-  "Songwriter",
-  "Singer",
-];
+/**
+ * Keynote slide 1 roles row, trimmed per Aditya 12-09-2026: "artist, music
+ * director, composer needs to be removed" from the homepage row. The full
+ * approved role list still lives in the About identity sentence.
+ */
+const ROLES = ["Multi-instrumentalist", "Producer", "Songwriter", "Singer"];
 
 /** Keynote slides 2/23: the approved instrument list. */
 const INSTRUMENTS = [

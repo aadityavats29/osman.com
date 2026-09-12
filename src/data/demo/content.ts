@@ -274,7 +274,7 @@ export const demoReleases: ReleaseRecord[] = [
     otherUrl: null,
     status: "PUBLISHED",
     featured: false,
-    sortOrder: 1,
+    sortOrder: 5,
     ...meta,
   },
   {
@@ -334,7 +334,7 @@ export const demoReleases: ReleaseRecord[] = [
     otherUrl: null,
     status: "PUBLISHED",
     featured: false,
-    sortOrder: 3,
+    sortOrder: 1,
     ...meta,
   },
   {
@@ -394,7 +394,7 @@ export const demoReleases: ReleaseRecord[] = [
     otherUrl: null,
     status: "PUBLISHED",
     featured: false,
-    sortOrder: 5,
+    sortOrder: 3,
     ...meta,
   },
   {

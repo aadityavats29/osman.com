@@ -40,7 +40,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       repos.collaborations.list(),
       repos.media.list(),
       repos.products.list(),
-      repos.faqs.list(),
+      // Tolerate a database that predates the Faq migration.
+      repos.faqs.list().catch(() => []),
     ]);
 
   const homeLastmod = newest(events, videos, releases, collaborations, media);
