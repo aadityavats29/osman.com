@@ -19,10 +19,10 @@ export const metadata: Metadata = {
     title: PAGE_TITLE,
     description: PAGE_DESCRIPTION,
     path: "/services/music-production",
-    image: "/images/services/production-studio.jpg",
-    imageAlt: "Osman Meyredi at the keys in his studio",
-    imageWidth: 1600,
-    imageHeight: 893,
+    image: "/images/services/production-zappatika-rehearsals-1.jpg",
+    imageAlt: "Osman Meyredi at the keys in rehearsal with a guitarist, black and white",
+    imageWidth: 1920,
+    imageHeight: 1282,
   }),
 };
 
@@ -70,13 +70,15 @@ export default function MusicProductionPage() {
           </Reveal>
         </Container>
 
-        {/* First image — the supplied studio photograph. */}
+        {/* First image — "1. ZAPPATIKA'S REHEARSALS 2018 (3).jpg", the file
+            numbered 1 in the master Music Production folder (Aditya
+            12-09-2026: "take the first image from there"). */}
         <Container wide className="mt-14">
           <Reveal variant="mask">
-            <div className="relative overflow-hidden border border-line" style={{ aspectRatio: "1600/893" }}>
+            <div className="relative overflow-hidden border border-line" style={{ aspectRatio: "1920/1282" }}>
               <Image
-                src="/images/services/production-studio.jpg"
-                alt="Osman Meyredi at the keys in his studio"
+                src="/images/services/production-zappatika-rehearsals-1.jpg"
+                alt="Osman Meyredi at the keys in rehearsal with a guitarist, black and white"
                 fill
                 sizes="100vw"
                 className="object-cover"
