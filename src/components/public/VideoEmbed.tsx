@@ -18,14 +18,15 @@ export function VideoEmbed({
   className = "",
 }: {
   title: string;
-  platform: "youtube" | "vimeo";
+  platform: "youtube" | "vimeo" | "file";
   videoUrl: string;
   thumbnailUrl?: string | null;
   className?: string;
 }) {
   const [playing, setPlaying] = useState(false);
-  const src = embedUrl(platform, videoUrl);
-  const thumb = thumbnailUrl ?? fallbackThumbnail(platform, videoUrl);
+  const isFile = platform === "file";
+  const src = isFile ? videoUrl : embedUrl(platform, videoUrl);
+  const thumb = isFile ? thumbnailUrl : (thumbnailUrl ?? fallbackThumbnail(platform, videoUrl));
 
   // If the URL can't be turned into an embed, fall back to a plain outbound link.
   if (!src) {
@@ -51,13 +52,28 @@ export function VideoEmbed({
         className={`relative w-full bg-ink ${className}`}
         style={{ aspectRatio: "16/9", animation: "video-in 420ms var(--ease-out-cubic) both" }}
       >
-        <iframe
-          src={src}
-          title={title}
-          allow="autoplay; encrypted-media; picture-in-picture"
-          allowFullScreen
-          className="absolute inset-0 h-full w-full border-0"
-        />
+        {isFile ? (
+          /* Self-hosted file (Round 2): native player, loads only after the
+             visitor presses play — same no-autoplay-on-page-load rule. */
+          <video
+            src={src ?? undefined}
+            title={title}
+            controls
+            autoPlay
+            playsInline
+            preload="none"
+            poster={thumb ?? undefined}
+            className="absolute inset-0 h-full w-full"
+          />
+        ) : (
+          <iframe
+            src={src ?? undefined}
+            title={title}
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowFullScreen
+            className="absolute inset-0 h-full w-full border-0"
+          />
+        )}
       </div>
     );
   }

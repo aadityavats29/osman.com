@@ -57,10 +57,12 @@ export default async function MusicPage() {
         <Container wide>
           <Reveal variant="text">
             <p className="eyebrow">Music</p>
-            <h1 className="display-caps mt-4 text-5xl sm:text-7xl">The records</h1>
+            {/* Round 2 slide 21: new heading + intro, verbatim. */}
+            <h1 className="display-caps mt-4 text-5xl sm:text-7xl">Every Record, Marked</h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-soft">
-              Osman&rsquo;s own releases, the records he appears on, and the band projects he
-              has been part of — each clearly marked, because who made a record matters.
+              Osman Meyredi&rsquo;s own releases, the records he appears on, and the band
+              projects he&rsquo;s been part of, each one clearly marked, because who played
+              what, and who made a record, matters.
             </p>
           </Reveal>
         </Container>
@@ -115,6 +117,8 @@ export default async function MusicPage() {
               ))}
               <Discography releases={appearsOn} />
             </div>
+            {/* 11-09-2026: Varsha's high-res Special-45 label replaced the
+                interim photo crop — the pending note is resolved. */}
           </Container>
         </section>
       )}
@@ -150,16 +154,19 @@ export default async function MusicPage() {
         )}
       </section>
 
-      {/* 4 — Licensing library */}
+      {/* 4 — Licensing library — Round 2 slide 24 "Change into", verbatim. */}
       <section className="border-t border-line py-16">
         <Container>
           <Reveal variant="text">
-            <p className="max-w-xl leading-relaxed text-ink-soft">
+            <p className="max-w-2xl leading-relaxed text-ink-soft">
               Looking for original tracks to license for film, TV or events? Osman&rsquo;s{" "}
               <Link href="/services/music-library" className="u-link">
                 Music Library
               </Link>{" "}
-              is composed, produced and performed by him personally — cleared and ready.
+              is composed, produced and performed entirely by him, cleared and ready to use.
+              Got something more specific in mind? Osman also writes and produces custom tracks
+              on request, for documentaries, films, radio programmes, you name it. Give him the
+              brief and the genre, and he&rsquo;ll build the track around it.
             </p>
           </Reveal>
         </Container>

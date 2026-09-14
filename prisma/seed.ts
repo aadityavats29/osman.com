@@ -82,9 +82,9 @@ async function main() {
   for (const v of demoVideos) {
     await prisma.liveVideo.upsert({
       where: { slug: v.slug },
-      // Keynote 02-09 slide 18 fixed the running order (Zappatika first);
-      // re-seeding pushes the approved order to existing rows.
-      update: { sortOrder: v.sortOrder },
+      // Round 2 (10-09): re-seeding pushes the approved order and the new
+      // per-video descriptions (Keynote slides 26–28) to existing rows.
+      update: { sortOrder: v.sortOrder, description: v.description },
       create: {
         id: v.id,
         slug: v.slug,
@@ -107,14 +107,28 @@ async function main() {
   for (const r of demoReleases) {
     await prisma.release.upsert({
       where: { slug: r.slug },
+      // Round 2: re-seeding refreshes the approved vinyl set — real covers,
+      // labels, Spotify links, running order, and the draft status of the
+      // release that has no proper cover yet.
       update: {
+        title: r.title,
         relationshipType: r.relationshipType,
         primaryArtistName: r.primaryArtistName,
         osmanCredit: r.osmanCredit,
+        labelName: r.labelName,
+        catalogNumber: r.catalogNumber,
+        artworkCredit: r.artworkCredit,
+        artworkUrl: r.artworkUrl,
         rightsStatus: r.rightsStatus,
         sourceUrl: r.sourceUrl,
         collaborationSlug: r.collaborationSlug,
+        year: r.year,
+        description: r.description,
         credits: r.credits,
+        spotifyUrl: r.spotifyUrl,
+        status: r.status,
+        featured: r.featured,
+        sortOrder: r.sortOrder,
       },
       create: {
         id: r.id,
@@ -197,8 +211,12 @@ async function main() {
     for (const e of eventRows) {
       await prisma.event.upsert({
         where: { slug: e.slug },
-        // Existing rows pick up the precision-pack metadata on re-seed.
+        // Existing rows pick up the precision-pack metadata on re-seed,
+        // plus the Round 2 slide-20 exact details (title/venue/end time).
         update: {
+          title: e.title,
+          endTime: e.endTime,
+          venue: e.venue,
           ticketingType: e.ticketingType,
           timezone: e.timezone,
           isDemo: e.isDemo,
@@ -240,9 +258,14 @@ async function main() {
     await prisma.collaboration.upsert({
       where: { slug: c.slug },
       // Verified facts + memorial refresh on re-seed; internal notes preserved.
+      // Round 2 adds the approved band image and the full memorial dates.
       update: {
         role: c.role,
         collaborators: c.collaborators,
+        heroImageUrl: c.heroImageUrl,
+        heroImageAlt: c.heroImageAlt,
+        heroImageCredit: c.heroImageCredit,
+        heroImageRights: c.heroImageRights,
         memorialTitle: c.memorialTitle,
         memorialName: c.memorialName,
         memorialYears: c.memorialYears,
@@ -284,7 +307,10 @@ async function main() {
   for (const [key, value] of settingsEntries) {
     await prisma.siteSetting.upsert({
       where: { key },
-      update: {},
+      // Settings stay Studio-owned on re-seed, with one exception: the
+      // Round 2 strict email rule (never Osman's personal inbox) must reach
+      // existing databases, so contactEmail is always refreshed.
+      update: key === "contactEmail" ? { value } : {},
       create: { key, value },
     });
   }

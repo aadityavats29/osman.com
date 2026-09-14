@@ -5,7 +5,7 @@ import { Container } from "@/components/shared/Container";
 import { Reveal } from "@/components/motion/Reveal";
 
 export const metadata: Metadata = {
-  title: "Services — Live shows, piano for events, production & music library",
+  title: "Services — Live shows, live piano, production & original tracks",
   description:
     "Four ways to work with Osman Meyredi: live performances for festivals and venues, solo piano for events, music production from first idea to finished track, and a library of original tracks ready to license.",
   alternates: { canonical: "/services" },
@@ -22,7 +22,7 @@ export default function ServicesPage() {
         <Reveal variant="text">
           <p className="eyebrow">Services</p>
           <h1 className="font-display mt-4 text-4xl leading-tight sm:text-5xl">
-            Four ways to work with Osman
+            Four ways to work with Osman Meyredi
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-soft">
             Live performances built for festivals and venues, solo piano set to the tone of your

@@ -8,7 +8,7 @@ import { Reveal } from "@/components/motion/Reveal";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Media & Press",
+  title: "Media — As Seen & Heard",
   description:
     "Press coverage, reviews and interviews featuring Osman Meyredi — and how to reach him for press inquiries.",
   alternates: { canonical: "/media" },
@@ -28,7 +28,10 @@ export default async function MediaPage() {
       <Container wide>
         <Reveal variant="text">
           <p className="eyebrow">Media</p>
-          <h1 className="font-display mt-4 text-4xl leading-tight sm:text-5xl">Press</h1>
+          {/* Round 2 slide 25: the client's new heading for this page. */}
+          <h1 className="font-display mt-4 text-4xl leading-tight sm:text-5xl">
+            As Seen &amp; Heard
+          </h1>
         </Reveal>
 
         {featured ? (
@@ -56,7 +59,8 @@ export default async function MediaPage() {
                   rel="noopener"
                   className="u-link text-sm hover:text-accent-strong"
                 >
-                  Read the article <span className="arrow-nudge" aria-hidden="true">→</span>
+                  {featured.articleUrl.startsWith("/") ? "View the article scan" : "Read the article"}{" "}
+                  <span className="arrow-nudge" aria-hidden="true">→</span>
                 </a>
               </p>
             </Reveal>
@@ -92,7 +96,8 @@ export default async function MediaPage() {
                       rel="noopener"
                       className="u-link text-sm hover:text-accent-strong"
                     >
-                      Read the article <span className="arrow-nudge" aria-hidden="true">→</span>
+                      {item.articleUrl.startsWith("/") ? "View the article scan" : "Read the article"}{" "}
+                      <span className="arrow-nudge" aria-hidden="true">→</span>
                     </a>
                   </p>
                 </Reveal>
@@ -100,6 +105,51 @@ export default async function MediaPage() {
             ))}
           </ul>
         )}
+
+        {/* On screen — Round 2 slide 32 / brief §45: film appearances live on
+            the Media page, kept separate from music. Exact client-supplied
+            titles, years, directors and casts; no timestamps or scene claims
+            (unknown), and no film stills until approved imagery exists. */}
+        <section className="mt-20 border-t border-line pt-10" aria-labelledby="on-screen">
+          <Reveal variant="text">
+            <h2 id="on-screen" className="eyebrow">
+              On screen
+            </h2>
+            <p className="mt-4 max-w-2xl leading-relaxed text-ink-soft">
+              Osman Meyredi appeared as an extra in three films.
+            </p>
+          </Reveal>
+          <ul className="mt-6">
+            {[
+              {
+                title: "La Foresta di Ghiaccio",
+                year: "2014",
+                detail:
+                  "Directed by Claudio Noce, with Emir Kusturica, Ksenia Rappoport, Domenico Diele, Adriano Giannini",
+              },
+              {
+                title: "Lezione Ventuno",
+                year: "2008",
+                detail:
+                  "Directed by Alessandro Baricco, with Noah Taylor, Leonor Watling, Clive Russell, John Hurt",
+              },
+              {
+                title: "Vincere",
+                year: "2009",
+                detail: "Directed by Marco Bellocchio, with Giovanna Mezzogiorno, Filippo Timi",
+              },
+            ].map((film, i) => (
+              <li key={film.title} className="border-t border-line py-5">
+                <Reveal variant="card" delay={Math.min(i * 80, 160)}>
+                  <p className="font-display text-xl leading-snug">
+                    {film.title} <span className="text-ink-faint">({film.year})</span>
+                  </p>
+                  <p className="mt-1 text-sm leading-relaxed text-ink-soft">{film.detail}</p>
+                </Reveal>
+              </li>
+            ))}
+          </ul>
+        </section>
 
         <p className="mt-20 border-t border-line pt-8 text-sm text-ink-soft">
           Press inquiries:{" "}

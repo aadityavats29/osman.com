@@ -16,19 +16,20 @@ export const metadata: Metadata = {
 };
 
 /**
- * Contact — precision pack 04 + technical brief + mockup.
+ * Contact — precision pack 04 + Round 2 Keynote slides 18–19.
  *
  * Two complementary ways in, never merged: role-based direct addresses for
- * people who already know whom they need (management / bookings / general /
- * Osman direct — the Xavier Rudd reference translated into this dark
- * system), and one structured form for everyone else. info@ is displayed
- * publicly (04 §5). Routing happens server-side from the selected topic.
+ * people who already know whom they need, and one structured form for
+ * everyone else. Round 2 changes: Osman's direct address is no longer shown
+ * publicly (strict email rule — topic routing still reaches him server-side),
+ * the MANAGEMENT/BOOKINGS/GENERAL labels are quieter so the addresses lead,
+ * each column states plainly who it is for (the Xavier Rudd clarity idea),
+ * and the language line reads "Write in Italian, English or Dutch."
  */
 const DIRECT_CONTACTS: Array<{ role: string; person?: string; email: string }> = [
   { role: "Management", person: "Jolene Prins", email: "jolene@osmanmeyredi.com" },
   { role: "Bookings", email: "bookings@osmanmeyredi.com" },
   { role: "General", email: "info@osmanmeyredi.com" },
-  { role: "Osman (direct)", email: "osman@osmanmeyredi.com" },
 ];
 
 export default async function ContactPage({
@@ -60,31 +61,39 @@ export default async function ContactPage({
         </Reveal>
 
         <div className="mt-14 grid gap-16 lg:grid-cols-[1fr_2.2fr]">
-          {/* Direct contacts — for people who already know whom they need. */}
+          {/* Direct contacts — for people who already know whom they need.
+              Round 2 slide 18: role labels sit quiet under the addresses so
+              the emails lead; a red rule + plain sentence marks the column's
+              purpose against the form column. */}
           <Reveal variant="card" delay={90}>
             <aside aria-label="Direct contacts">
-              <h2 className="eyebrow">Straight to the right person</h2>
-              <ul className="mt-5">
+              <h2 className="border-l-2 border-accent pl-3 font-display text-lg leading-snug">
+                Know who you need?
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-ink-faint">
+                Email them directly.
+              </p>
+              <ul className="mt-6">
                 {DIRECT_CONTACTS.map((c) => (
                   <li key={c.email} className="border-t border-line py-4 last:border-b">
-                    <p className="tabular text-xs tracking-[0.16em] text-ink-faint uppercase">
-                      {c.role}
-                    </p>
-                    {c.person && <p className="mt-1 text-sm text-ink">{c.person}</p>}
-                    <p className="mt-0.5">
+                    <p>
                       <a
                         href={`mailto:${c.email}`}
-                        className="u-link text-sm text-ink-soft hover:text-accent-strong"
+                        className="u-link text-sm text-ink hover:text-accent-strong"
                         data-cursor="MAIL"
                       >
                         {c.email}
                       </a>
                     </p>
+                    <p className="mt-1 text-xs text-ink-faint">
+                      {c.role}
+                      {c.person ? ` — ${c.person}` : ""}
+                    </p>
                   </li>
                 ))}
               </ul>
               <p className="mt-4 text-xs leading-relaxed text-ink-faint">
-                Write in English, Italian or Dutch.
+                Write in Italian, English or Dutch.
               </p>
 
               {socials.length > 0 && (
@@ -98,7 +107,17 @@ export default async function ContactPage({
 
           {/* The form — for everyone else. */}
           <Reveal variant="text" delay={130}>
-            <ContactForm initialTopic={initialTopic} />
+            <div>
+              <h2 className="border-l-2 border-accent pl-3 font-display text-lg leading-snug">
+                Not sure who to write to?
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-ink-faint">
+                Use the form — your message lands with the right person.
+              </p>
+              <div className="mt-6">
+                <ContactForm initialTopic={initialTopic} />
+              </div>
+            </div>
           </Reveal>
         </div>
       </Container>

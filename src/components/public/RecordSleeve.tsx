@@ -8,7 +8,7 @@
 export function RecordSleeve({
   title,
   year,
-  tone = "#a34a45",
+  tone = "#a34b46",
   artworkUrl = null,
   withVinyl = false,
   vinylClassName = "",

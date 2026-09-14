@@ -19,9 +19,9 @@ import type {
  * - Events are FICTIONAL DEMO FIXTURES so the interface is testable. They are
  *   clearly labelled "[DEMO]" in their titles and must be deleted before launch.
  * - Shop items are explicitly CONCEPTS (status CONCEPT), not purchasable products.
- * - No Spotify/Apple Music artist profile could be verified for Osman as of Aug 2026,
- *   so releases carry only verified Bandcamp links. Add streaming links in the Studio
- *   once profiles exist.
+ * - Round 2 (Sep 2026): the client supplied Spotify links for the four vinyls and
+ *   the own release (Keynote + the Collaboration folder's pages doc); covers are the
+ *   original artwork files from Website/04. Music/Collaboration/.
  */
 
 const now = "2026-08-10T00:00:00.000Z";
@@ -31,7 +31,8 @@ export const demoSettings: SiteSettings = {
   heroTagline:
     "Multi-instrumentalist, bassist and composer. Performing, coaching and facilitating across the Netherlands, Italy and Europe.",
   announcement: null,
-  contactEmail: "osman.meyredi@gmail.com",
+  // Round 2 strict email rule: never Osman's personal inbox — info@ everywhere public.
+  contactEmail: "info@osmanmeyredi.com",
   instagramUrl: "https://www.instagram.com/osman.meyredi/",
   youtubeUrl: "https://www.youtube.com/@theOsmanMusic",
   tiktokUrl: "https://www.tiktok.com/@ozzymeyredi",
@@ -103,8 +104,11 @@ export const demoVideos: LiveVideoRecord[] = [
     id: "vid-showreel",
     slug: "live-showreel",
     title: "Live showreel — bass guitar, keyboards, double bass and guitar",
+    // Round 2 slide 26 exact replacement copy. The Keynote types the town as
+    // "Ponte Caffero"; the brief (§35) spells the real town Ponte Caffaro —
+    // divergence flagged in the implementation report.
     description:
-      "A cross-section of Osman's live playing across four instruments.",
+      "A cross-section of Osman Meyredi's live playing across four instruments, filmed in The Netherlands and Italy. The video also includes a performance in Ponte Caffaro in Italy, with Blue Lou Marini, saxophonist from the Blues Brothers Band and some exceptional keyboard solo work.",
     platform: "youtube",
     videoUrl: "https://www.youtube.com/watch?v=3uWIoIGESxI",
     thumbnailUrl: null,
@@ -139,7 +143,8 @@ export const demoVideos: LiveVideoRecord[] = [
     id: "vid-andrew-laureth",
     slug: "andrew-laureth-trio-teatro-munganga",
     title: "Andrew Laureth Trio — live at Teatro Munganga, Amsterdam",
-    description: "Double bass with the Andrew Laureth Trio.",
+    // Round 2 slide 27 exact copy (full-name treatment).
+    description: "Osman Meyredi on double bass with the Andrew Laureth Trio.",
     platform: "youtube",
     videoUrl: "https://www.youtube.com/watch?v=EJwDdGpFFGE",
     thumbnailUrl: null,
@@ -156,7 +161,11 @@ export const demoVideos: LiveVideoRecord[] = [
     id: "vid-don-camaleon",
     slug: "don-camaleon-na-moral",
     title: "Don Camaleon — “Na Moral”",
-    description: null,
+    // Round 2 slide 27 "Add:" — verbatim, including the Keynote's
+    // "DonCameleon" spelling (§36: do not change collaborator spellings;
+    // divergence from the band's own "Don Camaleon" flagged in the report).
+    description:
+      "Osman Meyredi settling into bass guitar and backing vocals, playing with DonCameleon live at Belushi's in Amsterdam, The Netherlands.",
     platform: "youtube",
     videoUrl: "https://www.youtube.com/watch?v=d-a_XoRKmMQ",
     thumbnailUrl: null,
@@ -173,7 +182,8 @@ export const demoVideos: LiveVideoRecord[] = [
     id: "vid-turbo-trouble",
     slug: "turbo-trouble-trio-let-it-ride",
     title: "Turbo Trouble Trio — “Let It Ride” (Ryan Adams cover)",
-    description: null,
+    // Round 2 slide 28 — annotation positioned under this card.
+    description: "Osman Meyredi on double bass",
     platform: "youtube",
     videoUrl: "https://www.youtube.com/watch?v=SG1pQS-a9hs",
     thumbnailUrl: null,
@@ -190,7 +200,10 @@ export const demoVideos: LiveVideoRecord[] = [
     id: "vid-santo-stefano",
     slug: "santo-stefano-resort-teaser",
     title: "Santo Stefano Resort — live show teaser",
-    description: null,
+    // Round 2 slide 28 — the fuller residency wording of the two variants on
+    // the slide (choice explained in the implementation report).
+    description:
+      "Osman Meyredi during a three-month residency at Santo Stefano Resort in Sardinia, where he played guitar, bass, keyboards, drums and vocals.",
     platform: "youtube",
     videoUrl: "https://www.youtube.com/watch?v=ygAcIs9I8GU",
     thumbnailUrl: null,
@@ -203,9 +216,66 @@ export const demoVideos: LiveVideoRecord[] = [
     sortOrder: 6,
     ...meta,
   },
+  {
+    // Round 2 slide 29 / brief §39 — the approved Shows-folder video
+    // (Aditya confirmed "Website Landscape.mp4", 10-09-2026), transcoded
+    // from the 4K original for the web and self-hosted.
+    id: "vid-website-landscape",
+    slug: "live-highlights-landscape",
+    title: "Live highlights — bass guitar, keyboards and vocals",
+    description: null,
+    platform: "file",
+    videoUrl: "/videos/website-landscape.mp4",
+    thumbnailUrl: "/images/videos/website-landscape-poster.jpg",
+    venue: null,
+    performanceDate: null,
+    year: null,
+    tags: ["live"],
+    status: "PUBLISHED",
+    featured: false,
+    sortOrder: 7,
+    ...meta,
+  },
 ];
 
+/**
+ * Round 2 Keynote slides 3/5/21/23: the four vinyls with proper covers
+ * (Website/04. Music/Collaboration/ + the pages doc's Spotify links), plus
+ * Osman Meyredi's own release "Dance With This Mess". "Before the Shit Hit
+ * the Fan" is kept in the Studio as a draft: it is not one of the four
+ * enumerated vinyls and has no proper cover, and Round 2 bans generated
+ * sleeves — restore it once real artwork exists.
+ */
 export const demoReleases: ReleaseRecord[] = [
+  {
+    id: "rel-dance-with-this-mess",
+    slug: "dance-with-this-mess",
+    title: "Dance With This Mess",
+    releaseType: "SINGLE",
+    relationshipType: "OWN_RELEASE",
+    primaryArtistName: null,
+    osmanCredit: null,
+    labelName: null,
+    catalogNumber: null,
+    artworkCredit: "Osman Meyredi — official single artwork",
+    rightsStatus: "VERIFIED",
+    sourceUrl: "https://open.spotify.com/track/2Rri29xVddvQb7kYerkxwk",
+    collaborationSlug: null,
+    artworkUrl: "/images/releases/dance-with-this-mess.jpg",
+    releaseDate: "2021-11-14",
+    year: 2021,
+    description: null,
+    credits: null,
+    spotifyUrl: "https://open.spotify.com/track/2Rri29xVddvQb7kYerkxwk",
+    appleMusicUrl: null,
+    youtubeUrl: null,
+    bandcampUrl: null,
+    otherUrl: null,
+    status: "PUBLISHED",
+    featured: false,
+    sortOrder: 1,
+    ...meta,
+  },
   {
     id: "rel-highway-maintenance",
     slug: "highway-maintenance",
@@ -216,24 +286,114 @@ export const demoReleases: ReleaseRecord[] = [
     osmanCredit: "Osman Meyredi — engineer, keyboards, vocals",
     labelName: null,
     catalogNumber: null,
-    artworkCredit: null,
+    artworkCredit: "Ike Willis & Zappatika — official release artwork",
     rightsStatus: "VERIFIED",
     sourceUrl: "https://zappatika.bandcamp.com/album/highway-maintenance",
     collaborationSlug: "zappatika",
-    artworkUrl: null,
+    artworkUrl: "/images/releases/highway-maintenance.jpg",
     releaseDate: "2019-04-01",
     year: 2019,
     description:
       "Live album with Ike Willis & Zappatika, recorded on the 2018 U.K. tour.",
     credits: "Ike Willis & Zappatika — Osman Meyredi: engineer, keyboards, vocals",
-    spotifyUrl: null,
+    spotifyUrl: "https://open.spotify.com/album/1DknBWqPfPNWZVIkobFLmc",
     appleMusicUrl: null,
     youtubeUrl: null,
     bandcampUrl: "https://zappatika.bandcamp.com/album/highway-maintenance",
     otherUrl: null,
     status: "PUBLISHED",
     featured: true,
-    sortOrder: 1,
+    sortOrder: 2,
+    ...meta,
+  },
+  {
+    id: "rel-keep-your-eye-on-the-sparrow",
+    slug: "keep-your-eye-on-the-sparrow",
+    title: "Keep Your Eye on the Sparrow",
+    releaseType: "SINGLE",
+    relationshipType: "CONTRIBUTING_ARTIST",
+    primaryArtistName: "Disco Sparks feat. Christine Wiltshire & The D.S. Orchestra",
+    osmanCredit: "Osman Meyredi — bass",
+    labelName: "Z Records",
+    catalogNumber: null,
+    artworkCredit: "Z Records — official release artwork",
+    rightsStatus: "VERIFIED",
+    sourceUrl: "https://open.spotify.com/album/1JwSETBQc8HXWI9eDgdjkD",
+    collaborationSlug: null,
+    artworkUrl: "/images/releases/keep-your-eye-on-the-sparrow.jpg",
+    releaseDate: "2025-02-14",
+    year: 2025,
+    description: null,
+    credits:
+      "Disco Sparks feat. Christine Wiltshire & The D.S. Orchestra — Osman Meyredi: bass",
+    spotifyUrl: "https://open.spotify.com/album/1JwSETBQc8HXWI9eDgdjkD",
+    appleMusicUrl: null,
+    youtubeUrl: null,
+    bandcampUrl: null,
+    otherUrl: null,
+    status: "PUBLISHED",
+    featured: false,
+    sortOrder: 3,
+    ...meta,
+  },
+  {
+    id: "rel-keep-your-eye-on-the-sparrow-45",
+    slug: "keep-your-eye-on-the-sparrow-special-45",
+    title: "Keep Your Eye on the Sparrow (Special 45 Version)",
+    releaseType: "SINGLE",
+    relationshipType: "CONTRIBUTING_ARTIST",
+    primaryArtistName: "Disco Sparks feat. Christine Wiltshire & The D.S. Orchestra",
+    osmanCredit: "Osman Meyredi — bass",
+    labelName: "Z Records",
+    catalogNumber: "Zedd7007",
+    artworkCredit: "Z Records — official Side B label",
+    rightsStatus: "VERIFIED",
+    sourceUrl: "https://open.spotify.com/track/58gBUO0yLgaHC0gcRGVi7t",
+    collaborationSlug: null,
+    artworkUrl: "/images/releases/keep-your-eye-on-the-sparrow-45.jpg",
+    releaseDate: null,
+    year: 2024,
+    description: null,
+    credits:
+      "Disco Sparks feat. Christine Wiltshire & The D.S. Orchestra — Osman Meyredi: bass",
+    spotifyUrl: "https://open.spotify.com/track/58gBUO0yLgaHC0gcRGVi7t",
+    appleMusicUrl: null,
+    youtubeUrl: null,
+    bandcampUrl: null,
+    otherUrl: null,
+    status: "PUBLISHED",
+    featured: false,
+    sortOrder: 4,
+    ...meta,
+  },
+  {
+    id: "rel-falling-for-you",
+    slug: "falling-for-you",
+    title: "Falling for You",
+    releaseType: "SINGLE",
+    relationshipType: "COLLABORATION_RELEASE",
+    primaryArtistName: "Kassko, Ozzy Meyredi, Stephanie Laurence",
+    osmanCredit: "Osman Meyredi — keyboards, bass guitar and electric guitar",
+    labelName: "Peppermint Jam",
+    catalogNumber: "PJ314",
+    artworkCredit: "Peppermint Jam — official white-label artwork",
+    rightsStatus: "VERIFIED",
+    sourceUrl: "https://open.spotify.com/track/2D7JeBqVQzZ5vTGSMzTDMb",
+    collaborationSlug: "falling-for-you",
+    artworkUrl: "/images/releases/falling-for-you.jpg",
+    releaseDate: null,
+    year: 2025,
+    description: "Single from the album Good Things Take Time (2025).",
+    credits:
+      "Kassko: producer · Stephanie Laurence: vocals · Osman Meyredi: keyboards, bass guitar and electric guitar",
+    spotifyUrl: "https://open.spotify.com/track/2D7JeBqVQzZ5vTGSMzTDMb",
+    appleMusicUrl: null,
+    youtubeUrl: null,
+    bandcampUrl: null,
+    otherUrl: null,
+    status: "PUBLISHED",
+    featured: false,
+    sortOrder: 5,
     ...meta,
   },
   {
@@ -263,14 +423,35 @@ export const demoReleases: ReleaseRecord[] = [
     bandcampUrl:
       "https://zappatika.bandcamp.com/album/before-the-shit-hit-the-fan-live-in-the-u-k",
     otherUrl: null,
-    status: "PUBLISHED",
+    // Round 2: not among the four vinyls with proper covers; generated
+    // sleeves are banned, so it waits in the Studio until real artwork exists.
+    status: "DRAFT",
     featured: false,
-    sortOrder: 2,
+    sortOrder: 6,
     ...meta,
   },
 ];
 
 export const demoMedia: MediaItemRecord[] = [
+  {
+    // Round 2 slide 25 "Add one more" — the newspaper interview supplied as
+    // Website/06. Media/Newspaper Scan.jpeg (Corriere del Trentino, 5 March
+    // 2017, "Astri nascenti" column by Veronica Pederzolli). The scan itself
+    // is the linked article.
+    id: "med-corriere-trentino",
+    slug: "corriere-del-trentino-da-tione-fino-ad-amsterdam",
+    publication: "Corriere del Trentino",
+    headline: "Da Tione fino ad Amsterdam — «Suono e seguo il mio istinto»",
+    mediaType: "INTERVIEW",
+    date: "2017-03-05",
+    articleUrl: "/images/media/corriere-del-trentino-2017.jpg",
+    imageUrl: "/images/media/corriere-del-trentino-2017.jpg",
+    summary:
+      "The Trentino daily profiles Osman Meyredi, keyboardist of ZAPPATiKA, on following his instinct from Tione to Amsterdam.",
+    status: "PUBLISHED",
+    featured: false,
+    ...meta,
+  },
   {
     id: "med-hctf",
     slug: "here-comes-the-flood-zappatika",
@@ -412,16 +593,20 @@ export const demoCollaborations: CollaborationRecord[] = [
       "Amsterdam-based Frank Zappa project. Osman joined as keyboardist and vocalist in 2016 and toured the U.K. with Frank Zappa's longtime vocalist Ike Willis, including the October 2019 “Music Is The Best” tour captured on the live album Before the Shit Hit the Fan.",
     longDescription:
       "ZAPPATiKA performs the music of Frank Zappa with a rotating international line-up. Osman Meyredi joined on keyboards and vocals in 2016. In October 2019 the band toured the United Kingdom with Ike Willis — Zappa's longtime guitarist and vocalist, the voice of Joe's Garage — a collaboration documented on the live album Before the Shit Hit the Fan — Live in the U.K. (2020), billed to Ike Willis & Zappatika, with Osman on keyboards.",
-    heroImageUrl: null,
-    heroImageAlt: null,
-    heroImageCredit: null,
-    heroImageRights: "PENDING",
+    // Round 2 slide 22: the band image from Website/09. Images Osman —
+    // "Osman Zappatika Band_UK.jpg" (identified by the Finder screenshot on
+    // the slide). Band photography stays in its collaboration context.
+    heroImageUrl: "/images/collaborations/zappatika-band-uk.jpg",
+    heroImageAlt: "ZAPPATiKA band members standing in a field on the U.K. tour, black and white",
+    heroImageCredit: "ZAPPATiKA archive",
+    heroImageRights: "VERIFIED",
     collaborators:
       "Ike Willis · Mark Mcinnes · Emile de Jonge · Joep Oosterbaan · Sander van Elferen",
     externalUrl: "https://zappatika.bandcamp.com/",
     memorialTitle: "Dedicated to the memory of",
     memorialName: "Ike Willis",
-    memorialYears: "1955–2026",
+    // Round 2 slide 24: full approved dates.
+    memorialYears: "12 November 1955 – 16 May 2026",
     memorialText: null,
     showMemorial: true,
     publicCulturalNote: null,
@@ -430,6 +615,36 @@ export const demoCollaborations: CollaborationRecord[] = [
       "UNVERIFIED (do not publish): claim that a ZAPPATiKA poster appears for several seconds in Friends season 2. Timeline conflict — Friends S2 aired 1995–96; ZAPPATiKA formed later. Needs exact season/episode/timestamp/frame evidence before culturalNoteStatus may become VERIFIED.",
     status: "PUBLISHED",
     sortOrder: 1,
+    ...meta,
+  },
+  {
+    // Round 2 slide 23 / brief §29 — exact client-supplied metadata only.
+    id: "collab-falling-for-you",
+    slug: "falling-for-you",
+    name: "Falling for You",
+    role: "Keyboards, bass guitar & electric guitar",
+    startYear: 2025,
+    endYear: 2025,
+    ongoing: false,
+    shortDescription:
+      "Single from Kassko's album Good Things Take Time (2025). Kassko: producer. Stephanie Laurence: vocals. Osman Meyredi: keyboards, bass guitar and electric guitar.",
+    longDescription: null,
+    heroImageUrl: null,
+    heroImageAlt: null,
+    heroImageCredit: null,
+    heroImageRights: "PENDING",
+    collaborators: "Kassko (producer) · Stephanie Laurence (vocals)",
+    externalUrl: "https://open.spotify.com/track/2D7JeBqVQzZ5vTGSMzTDMb",
+    memorialTitle: null,
+    memorialName: null,
+    memorialYears: null,
+    memorialText: null,
+    showMemorial: false,
+    publicCulturalNote: null,
+    culturalNoteStatus: "PENDING",
+    internalNotes: null,
+    status: "PUBLISHED",
+    sortOrder: 2,
     ...meta,
   },
 ];
@@ -445,13 +660,14 @@ export const realEvents: EventRecord[] = [
     id: "evt-wine-festival-2026",
     slug: "amsterdam-wine-festival-2026",
     eventType: "FREE_GIG",
-    title: "Wine Festival Amsterdam",
+    // Round 2 slide 20 exact details — kept on the wall as a past event.
+    title: "Amsterdam Wine Festival",
     description:
       "A free-entry set at the Amsterdam Wine Festival in Amstelpark. For festival tickets and more info, see the festival site.",
     date: "2026-09-06",
     startTime: "18:00",
-    endTime: null,
-    venue: "Amstelpark",
+    endTime: "19:00",
+    venue: "Main Stage, Amstelpark",
     address: null,
     city: "Amsterdam",
     country: "Netherlands",
