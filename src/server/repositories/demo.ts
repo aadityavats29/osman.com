@@ -5,6 +5,7 @@ import { randomUUID } from "crypto";
 import type {
   CollaborationRecord,
   EventRecord,
+  FaqRecord,
   LibraryTrackRecord,
   LiveVideoRecord,
   MediaItemRecord,
@@ -18,6 +19,7 @@ import {
   agendaDemoEvents,
   demoCollaborations,
   demoEvents,
+  demoFaqs,
   demoLibraryTracks,
   realEvents,
   demoMedia,
@@ -46,6 +48,7 @@ interface DemoState {
   libraryTracks: LibraryTrackRecord[];
   collaborations: CollaborationRecord[];
   media: MediaItemRecord[];
+  faqs: FaqRecord[];
   services: ServiceRecord[];
   products: ProductRecord[];
   settings: SiteSettings;
@@ -64,6 +67,7 @@ function seedState(): DemoState {
     libraryTracks: structuredClone(demoLibraryTracks),
     collaborations: structuredClone(demoCollaborations),
     media: structuredClone(demoMedia),
+    faqs: structuredClone(demoFaqs),
     services: structuredClone(demoServices),
     products: structuredClone(demoProducts),
     settings: structuredClone(demoSettings),
@@ -108,6 +112,7 @@ function makeCollection<T extends { id: string; slug: string }>(
     | "libraryTracks"
     | "collaborations"
     | "media"
+    | "faqs"
     | "services"
     | "products"
 ): CollectionRepo<T> {
@@ -209,6 +214,7 @@ export function createDemoRepos(): Repos {
     libraryTracks: makeCollection<LibraryTrackRecord>("libraryTracks"),
     collaborations: makeCollection<CollaborationRecord>("collaborations"),
     media: makeCollection<MediaItemRecord>("media"),
+    faqs: makeCollection<FaqRecord>("faqs"),
     services: makeCollection<ServiceRecord>("services"),
     products: makeCollection<ProductRecord>("products"),
     users: demoUsers,

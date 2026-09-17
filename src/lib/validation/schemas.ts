@@ -287,6 +287,25 @@ export const mediaItemInput = z.object({
 });
 export type MediaItemInput = z.infer<typeof mediaItemInput>;
 
+/**
+ * Practical Q&A (SEO/AI foundation §30). Answers are meant to be short and
+ * factual; the optional link points visitors at the page that carries the
+ * full story. `aiApproved` is the separate gate for future assistant use.
+ */
+export const faqInput = z.object({
+  question: z.string().trim().min(5, "Write the question as visitors would ask it").max(200),
+  answer: z
+    .string()
+    .trim()
+    .min(10, "Give a short, factual answer — a sentence or two.")
+    .max(1200),
+  linkUrl: optionalAssetUrl,
+  linkLabel: optionalText,
+  aiApproved: z.coerce.boolean().default(true),
+  status: contentStatus.default("DRAFT"),
+});
+export type FaqInput = z.infer<typeof faqInput>;
+
 export const serviceInput = z.object({
   title: z.string().trim().min(2).max(140),
   shortDescription: z.string().trim().min(2).max(300),

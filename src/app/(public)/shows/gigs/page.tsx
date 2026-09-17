@@ -7,7 +7,7 @@ import {
   upcomingPublished,
 } from "@/lib/events";
 import type { EventRecord } from "@/lib/types";
-import { JsonLd, musicEventJsonLd } from "@/lib/seo";
+import { breadcrumbJsonLd, JsonLd, musicEventJsonLd } from "@/lib/seo";
 import { Container } from "@/components/shared/Container";
 import { AgendaWall, type AgendaRow } from "@/components/public/AgendaWall";
 import { ShowsSubnav } from "@/components/public/ShowsSubnav";
@@ -61,9 +61,18 @@ export default async function UpcomingGigsPage() {
       <ShowsSubnav current="/shows/gigs" />
       <section className="py-20 sm:py-24">
         <Container wide>
+          {/* Event JSON-LD for upcoming gigs only — past events stay on the
+              wall visually but are never marked up as bookable (§35). */}
           {upcoming.map((event) => (
             <JsonLd key={event.id} data={musicEventJsonLd(event)} />
           ))}
+          <JsonLd
+            data={breadcrumbJsonLd([
+              { name: "Home", path: "/" },
+              { name: "Shows", path: "/shows" },
+              { name: "Upcoming gigs", path: "/shows/gigs" },
+            ])}
+          />
 
           <Reveal variant="text">
             <p className="eyebrow">Shows</p>

@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { productInput } from "@/lib/validation/schemas";
 import { uniqueSlug } from "@/lib/slug";
@@ -15,6 +14,7 @@ import {
   recordId,
   stripMeta,
   toRawInput,
+  publicContentChanged,
 } from "./shared";
 
 const LIST_PATH = "/studio/shop";
@@ -52,7 +52,7 @@ export async function saveProductAction(
     });
   }
 
-  revalidatePath("/", "layout");
+  publicContentChanged("products");
   redirect(LIST_PATH);
 }
 
@@ -75,7 +75,7 @@ export async function duplicateProductAction(formData: FormData): Promise<void> 
     sortOrder: nextSortOrder(all),
   });
 
-  revalidatePath("/", "layout");
+  publicContentChanged("products");
   redirect(LIST_PATH);
 }
 
@@ -84,7 +84,7 @@ export async function archiveProductAction(formData: FormData): Promise<void> {
   const id = recordId(formData);
   if (id) {
     await getRepos().products.update(id, { status: "ARCHIVED" });
-    revalidatePath("/", "layout");
+    publicContentChanged("products");
   }
   redirect(LIST_PATH);
 }
@@ -94,7 +94,7 @@ export async function deleteProductAction(formData: FormData): Promise<void> {
   const id = recordId(formData);
   if (id && confirmedDeletion(formData)) {
     await getRepos().products.remove(id);
-    revalidatePath("/", "layout");
+    publicContentChanged("products");
   }
   redirect(LIST_PATH);
 }

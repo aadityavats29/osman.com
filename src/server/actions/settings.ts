@@ -1,10 +1,9 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { siteSettingsInput } from "@/lib/validation/schemas";
 import { getRepos } from "@/server/repositories";
 import type { ActionState } from "@/components/studio/actionState";
-import { fieldErrors, formValues, guardEditor, toRawInput } from "./shared";
+import { publicContentChanged, fieldErrors, formValues, guardEditor, toRawInput } from "./shared";
 
 export async function saveSettingsAction(
   _prev: ActionState,
@@ -27,6 +26,6 @@ export async function saveSettingsAction(
   }
 
   await getRepos().settings.set(data);
-  revalidatePath("/", "layout");
+  publicContentChanged("settings");
   return { ok: true };
 }

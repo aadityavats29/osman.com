@@ -6,14 +6,26 @@ import { Container } from "@/components/shared/Container";
 import { VideoEmbed } from "@/components/public/VideoEmbed";
 import { ShowsSubnav } from "@/components/public/ShowsSubnav";
 import { Reveal } from "@/components/motion/Reveal";
+import { breadcrumbJsonLd, JsonLd, pageOpenGraph, videoJsonLd } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
+// §23 title direction for the live-videos gallery.
+const PAGE_TITLE = "Osman Meyredi Live | Performance Videos";
+const PAGE_DESCRIPTION =
+  "Watch Osman Meyredi live — from U.K. tours with Ike Willis & Zappatika to trio nights in Amsterdam, plus piano performances for event bookers.";
+
 export const metadata: Metadata = {
-  title: "Live Videos",
-  description:
-    "Watch Osman Meyredi live — from U.K. tours with Ike Willis & Zappatika to trio nights in Amsterdam, plus piano performances for event bookers.",
+  title: { absolute: PAGE_TITLE },
+  description: PAGE_DESCRIPTION,
   alternates: { canonical: "/shows/live-videos" },
+  openGraph: pageOpenGraph({
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    path: "/shows/live-videos",
+    image: "/images/videos/website-landscape-poster.jpg",
+    imageAlt: "Osman Meyredi performing live — video still",
+  }),
 };
 
 function VideoCard({ video, delay }: { video: LiveVideoRecord; delay: number }) {
@@ -53,6 +65,19 @@ export default async function LiveVideosPage() {
 
   return (
     <>
+      {/* VideoObject per published video (§36/§40) — names, approved
+          descriptions and real thumbnails only; upload dates and durations
+          are unknown and therefore never emitted. */}
+      {videos.map((video) => (
+        <JsonLd key={video.id} data={videoJsonLd(video)} />
+      ))}
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Shows", path: "/shows" },
+          { name: "Live videos", path: "/shows/live-videos" },
+        ])}
+      />
       <ShowsSubnav current="/shows/live-videos" />
       <section className="py-20 sm:py-28">
         <Container wide>
@@ -109,9 +134,14 @@ export default async function LiveVideosPage() {
               This is just a selection of what he brings to a stage, whichever instrument,
               whichever room. If you&rsquo;ve seen enough, let&rsquo;s talk about your event.
             </p>
-            <p className="mt-9">
+            <p className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
               <Link href="/contact?type=CONCERTS_LIVE" className="btn-pill" data-cursor="BOOK">
                 Book Osman Meyredi <span className="arrow-nudge" aria-hidden="true">→</span>
+              </Link>
+              {/* Contextual internal link (§31): Live Videos → the concerts
+                  & live performances service page. */}
+              <Link href="/services/concerts" className="u-link text-sm text-ink-soft hover:text-accent-strong">
+                How a live booking works
               </Link>
             </p>
           </Reveal>

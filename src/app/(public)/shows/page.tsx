@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getRepos } from "@/server/repositories";
-import { effectiveTicketing, upcomingPublished } from "@/lib/events";
+import type { EventRecord } from "@/lib/types";
+import { effectiveTicketing, formatAgendaDate, pastPublished, upcomingPublished } from "@/lib/events";
+import { pageOpenGraph } from "@/lib/seo";
 import { Container } from "@/components/shared/Container";
 import { EventList } from "@/components/public/EventList";
 import { ShowsSubnav } from "@/components/public/ShowsSubnav";
@@ -9,11 +11,22 @@ import { Reveal } from "@/components/motion/Reveal";
 
 export const dynamic = "force-dynamic";
 
+// §23 title direction for the Shows section.
+const PAGE_TITLE = "Osman Meyredi | Concerts & Upcoming Gigs";
+const PAGE_DESCRIPTION =
+  "Where to hear Osman Meyredi live: concerts, upcoming shows with free entry, tickets on sale and a gallery of live videos.";
+
 export const metadata: Metadata = {
-  title: "Shows",
-  description:
-    "Where to hear Osman Meyredi live: concerts, upcoming shows with free entry, tickets on sale and a gallery of live videos.",
+  title: { absolute: PAGE_TITLE },
+  description: PAGE_DESCRIPTION,
   alternates: { canonical: "/shows" },
+  openGraph: pageOpenGraph({
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    path: "/shows",
+    image: "/images/home-hero-landscape.jpg",
+    imageAlt: "Osman Meyredi singing at the keys under stage light",
+  }),
 };
 
 /**
@@ -21,13 +34,42 @@ export const metadata: Metadata = {
  * Live Videos, with the local Shows sub-nav so nobody has to route back
  * through the fullscreen menu.
  */
+/**
+ * Past nights on the overview too (Round 2 slide 20, applied 12-09-2026):
+ * the same treatment as the gigs agenda — struck through, lighter, never
+ * linking out — so a passed date like the Amsterdam Wine Festival stays
+ * visible and clearly reads as played.
+ */
+function PastRows({ events }: { events: EventRecord[] }) {
+  if (events.length === 0) return null;
+  return (
+    <ul className="mt-6">
+      {events.map((event) => (
+        <li
+          key={event.id}
+          className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-line py-3 text-sm text-ink-faint"
+        >
+          <span className="tabular shrink-0 line-through">{formatAgendaDate(event.date)}</span>
+          <span className="line-through">
+            {event.title} · {event.venue}, {event.city}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export default async function ShowsPage() {
-  const events = upcomingPublished(await getRepos().events.list());
+  const allEvents = await getRepos().events.list();
+  const events = upcomingPublished(allEvents);
   const concerts = events.filter((e) => effectiveTicketing(e) === "TICKETED").slice(0, 3);
   const gigs = events.filter((e) => effectiveTicketing(e) !== "TICKETED").slice(0, 3);
   const onSale = events.filter(
     (e) => effectiveTicketing(e) === "TICKETED" && e.ticketUrl && e.eventState === "SCHEDULED"
   );
+  const past = pastPublished(allEvents).sort((a, b) => b.date.localeCompare(a.date));
+  const pastConcerts = past.filter((e) => effectiveTicketing(e) === "TICKETED").slice(0, 4);
+  const pastGigs = past.filter((e) => effectiveTicketing(e) !== "TICKETED").slice(0, 4);
 
   return (
     <>
@@ -70,6 +112,9 @@ export default async function ShowsPage() {
                   </p>
                 </Reveal>
               )}
+              <Reveal variant="text" delay={140}>
+                <PastRows events={pastConcerts} />
+              </Reveal>
             </div>
           </div>
 
@@ -102,6 +147,9 @@ export default async function ShowsPage() {
                   </p>
                 </Reveal>
               )}
+              <Reveal variant="text" delay={140}>
+                <PastRows events={pastGigs} />
+              </Reveal>
             </div>
           </div>
 

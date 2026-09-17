@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { isPreviewDeployment, siteUrl } from "@/lib/site";
 import "./globals.css";
 
 /**
@@ -37,20 +38,60 @@ const inter = localFont({
 // favicon; it is not registered as a webfont. Its woff2 remains in src/fonts
 // for an easy re-enable if the brand direction changes again.
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.osmanmeyredi.com";
+/**
+ * Global metadata (SEO foundation brief, part D).
+ * - metadataBase resolves every relative canonical/OG url against the one
+ *   preferred host (§16) — see src/lib/site.ts for the resolution order.
+ * - Preview deployments are noindex,nofollow at the page level too (§21),
+ *   on top of the preview robots.txt and X-Robots-Tag header.
+ * - Search Console / Bing verification tags appear as soon as the env vars
+ *   are set (§20) — no code change needed at verification time.
+ * Titles, descriptions and OG objects are unique per page (§22); these are
+ * only the fallbacks and shared defaults.
+ */
+const preview = isPreviewDeployment();
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(siteUrl()),
   title: {
     default: "Osman Meyredi — Artist, multi-instrumentalist & producer",
     template: "%s — Osman Meyredi",
   },
   description:
     "Osman Meyredi — artist, multi-instrumentalist, producer, music director, composer, songwriter and singer. Live shows, piano for events, music production and a licensing library across the Netherlands, Italy and Europe.",
+  robots: preview
+    ? { index: false, follow: false }
+    : {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          "max-image-preview": "large",
+          "max-snippet": -1,
+          "max-video-preview": -1,
+        },
+      },
+  verification: {
+    ...(process.env.GOOGLE_SITE_VERIFICATION
+      ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+      : {}),
+    ...(process.env.BING_SITE_VERIFICATION
+      ? { other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION } }
+      : {}),
+  },
   openGraph: {
     type: "website",
     siteName: "Osman Meyredi",
-    url: siteUrl,
+    url: siteUrl(),
+    images: [
+      {
+        url: "/images/home-hero-landscape.jpg",
+        width: 1920,
+        height: 1080,
+        alt: "Osman Meyredi singing at the keys under stage light",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",

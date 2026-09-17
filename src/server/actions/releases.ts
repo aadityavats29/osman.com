@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { releaseInput } from "@/lib/validation/schemas";
 import { uniqueSlug } from "@/lib/slug";
@@ -16,6 +15,7 @@ import {
   statusFromIntent,
   stripMeta,
   toRawInput,
+  publicContentChanged,
 } from "./shared";
 
 const LIST_PATH = "/studio/releases";
@@ -69,7 +69,7 @@ export async function saveReleaseAction(
     });
   }
 
-  revalidatePath("/", "layout");
+  publicContentChanged("releases");
   redirect(LIST_PATH);
 }
 
@@ -91,7 +91,7 @@ export async function duplicateReleaseAction(formData: FormData): Promise<void> 
     sortOrder: nextSortOrder(all),
   });
 
-  revalidatePath("/", "layout");
+  publicContentChanged("releases");
   redirect(LIST_PATH);
 }
 
@@ -100,7 +100,7 @@ export async function archiveReleaseAction(formData: FormData): Promise<void> {
   const id = recordId(formData);
   if (id) {
     await getRepos().releases.update(id, { status: "ARCHIVED" });
-    revalidatePath("/", "layout");
+    publicContentChanged("releases");
   }
   redirect(LIST_PATH);
 }
@@ -110,7 +110,7 @@ export async function unpublishReleaseAction(formData: FormData): Promise<void> 
   const id = recordId(formData);
   if (id) {
     await getRepos().releases.update(id, { status: "DRAFT" });
-    revalidatePath("/", "layout");
+    publicContentChanged("releases");
   }
   redirect(LIST_PATH);
 }
@@ -120,7 +120,7 @@ export async function deleteReleaseAction(formData: FormData): Promise<void> {
   const id = recordId(formData);
   if (id && confirmedDeletion(formData)) {
     await getRepos().releases.remove(id);
-    revalidatePath("/", "layout");
+    publicContentChanged("releases");
   }
   redirect(LIST_PATH);
 }

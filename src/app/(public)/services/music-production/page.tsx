@@ -4,13 +4,33 @@ import { Container } from "@/components/shared/Container";
 import { Reveal } from "@/components/motion/Reveal";
 import { TrackedLink } from "@/components/public/TrackedLink";
 import { ServicesSubnav } from "@/components/public/ServicesSubnav";
+import { breadcrumbJsonLd, JsonLd, pageOpenGraph } from "@/lib/seo";
+
+// §23 title direction — the production search intent page (§25).
+const PAGE_TITLE = "Music Producer & Multi-Instrumentalist in the Netherlands | Osman Meyredi";
+const PAGE_DESCRIPTION =
+  "Osman Meyredi is an artist-producer, multi-instrumentalist and composer who works with artists to develop, shape and finish their music — stepping in at the point where you need him.";
 
 export const metadata: Metadata = {
-  title: "Music Production — Why Osman Meyredi is the right producer",
-  description:
-    "Osman Meyredi is an artist-producer, multi-instrumentalist and composer who works with artists to develop, shape and finish their music — stepping in at the point where you need him.",
+  title: { absolute: PAGE_TITLE },
+  description: PAGE_DESCRIPTION,
   alternates: { canonical: "/services/music-production" },
+  openGraph: pageOpenGraph({
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    path: "/services/music-production",
+    image: "/images/services/production-zappatika-rehearsals-1.jpg",
+    imageAlt: "Osman Meyredi at the keys in rehearsal with a guitarist, black and white",
+    imageWidth: 1920,
+    imageHeight: 1282,
+  }),
 };
+
+const BREADCRUMBS = [
+  { name: "Home", path: "/" },
+  { name: "Services", path: "/services" },
+  { name: "Music Production", path: "/services/music-production" },
+];
 
 /**
  * Music Production — Round 2 Keynote slide 16: the visitor first reads why
@@ -24,6 +44,8 @@ export const metadata: Metadata = {
 export default function MusicProductionPage() {
   return (
     <article>
+      {/* BreadcrumbList (§37) — mirrors the visible Services sub-nav hierarchy. */}
+      <JsonLd data={breadcrumbJsonLd(BREADCRUMBS)} />
       <ServicesSubnav current="/services/music-production" />
       <section className="py-24 sm:py-32">
         <Container>
@@ -48,13 +70,15 @@ export default function MusicProductionPage() {
           </Reveal>
         </Container>
 
-        {/* First image — the supplied studio photograph. */}
+        {/* First image — "1. ZAPPATIKA'S REHEARSALS 2018 (3).jpg", the file
+            numbered 1 in the master Music Production folder (Aditya
+            12-09-2026: "take the first image from there"). */}
         <Container wide className="mt-14">
           <Reveal variant="mask">
-            <div className="relative overflow-hidden border border-line" style={{ aspectRatio: "1600/893" }}>
+            <div className="relative overflow-hidden border border-line" style={{ aspectRatio: "1920/1282" }}>
               <Image
-                src="/images/services/production-studio.jpg"
-                alt="Osman Meyredi at the keys in his studio"
+                src="/images/services/production-zappatika-rehearsals-1.jpg"
+                alt="Osman Meyredi at the keys in rehearsal with a guitarist, black and white"
                 fill
                 sizes="100vw"
                 className="object-cover"

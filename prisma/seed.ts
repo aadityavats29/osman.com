@@ -17,6 +17,7 @@ import {
   agendaDemoEvents,
   demoCollaborations,
   demoEvents,
+  demoFaqs,
   realEvents,
   demoMedia,
   demoProducts,
@@ -84,7 +85,15 @@ async function main() {
       where: { slug: v.slug },
       // Round 2 (10-09): re-seeding pushes the approved order and the new
       // per-video descriptions (Keynote slides 26–28) to existing rows.
-      update: { sortOrder: v.sortOrder, description: v.description },
+      // 12-09: platform/videoUrl/thumbnailUrl refresh too, so the
+      // self-hosted Website Landscape row can never stay half-migrated.
+      update: {
+        sortOrder: v.sortOrder,
+        description: v.description,
+        platform: v.platform,
+        videoUrl: v.videoUrl,
+        thumbnailUrl: v.thumbnailUrl,
+      },
       create: {
         id: v.id,
         slug: v.slug,
@@ -177,6 +186,26 @@ async function main() {
         summary: m.summary,
         status: m.status,
         featured: m.featured,
+      },
+    });
+  }
+
+  // Practical Q&A (SEO/AI foundation §30) — create-only: after the first
+  // seed the Studio owns the answers, so re-seeding never overwrites edits.
+  for (const f of demoFaqs) {
+    await prisma.faq.upsert({
+      where: { slug: f.slug },
+      update: {},
+      create: {
+        id: f.id,
+        slug: f.slug,
+        question: f.question,
+        answer: f.answer,
+        linkUrl: f.linkUrl,
+        linkLabel: f.linkLabel,
+        aiApproved: f.aiApproved,
+        status: f.status,
+        sortOrder: f.sortOrder,
       },
     });
   }

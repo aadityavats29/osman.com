@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getRepos } from "@/server/repositories";
 import type { ReleaseRecord } from "@/lib/types";
-import { JsonLd, musicAlbumJsonLd } from "@/lib/seo";
+import { JsonLd, musicAlbumJsonLd, pageOpenGraph } from "@/lib/seo";
 import { Container } from "@/components/shared/Container";
 import { Reveal } from "@/components/motion/Reveal";
 import { Discography } from "@/components/public/Discography";
@@ -10,11 +10,24 @@ import { CollaborationFeature } from "@/components/public/CollaborationFeature";
 
 export const dynamic = "force-dynamic";
 
+// §23 title direction for the Music page.
+const MUSIC_TITLE = "Music by Osman Meyredi | Releases & Collaborations";
+const MUSIC_DESCRIPTION =
+  "Osman Meyredi's music in three clear layers: his own releases, records he appears on, and collaborations & band projects — including ZAPPATiKA with Frank Zappa's longtime vocalist Ike Willis.";
+
 export const metadata: Metadata = {
-  title: "Music — Own releases, appearances & collaborations",
-  description:
-    "Osman Meyredi's music in three clear layers: his own releases, records he appears on, and collaborations & band projects — including ZAPPATiKA with Frank Zappa's longtime vocalist Ike Willis.",
+  title: { absolute: MUSIC_TITLE },
+  description: MUSIC_DESCRIPTION,
   alternates: { canonical: "/music" },
+  openGraph: pageOpenGraph({
+    title: MUSIC_TITLE,
+    description: MUSIC_DESCRIPTION,
+    path: "/music",
+    image: "/images/releases/dance-with-this-mess.jpg",
+    imageAlt: "Dance With This Mess — Osman Meyredi's own release, cover artwork",
+    imageWidth: 1200,
+    imageHeight: 1200,
+  }),
 };
 
 /**
@@ -136,11 +149,17 @@ export default async function MusicPage() {
           </Reveal>
         </Container>
         {collaborations.map((collaboration) => (
-          <CollaborationFeature
-            key={collaboration.id}
-            collaboration={collaboration}
-            releases={releasesFor(collaboration.slug)}
-          />
+          <div key={collaboration.id}>
+            {/* Album JSON-LD for collaboration-attached releases too (§34) —
+                billed to the real primary artist, Osman as contributor. */}
+            {releasesFor(collaboration.slug).map((r) => (
+              <JsonLd key={r.id} data={musicAlbumJsonLd(r)} />
+            ))}
+            <CollaborationFeature
+              collaboration={collaboration}
+              releases={releasesFor(collaboration.slug)}
+            />
+          </div>
         ))}
         {unattached.length > 0 && (
           <Container className="pb-16">

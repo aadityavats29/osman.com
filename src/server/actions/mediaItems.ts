@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { mediaItemInput } from "@/lib/validation/schemas";
 import { uniqueSlug } from "@/lib/slug";
@@ -15,6 +14,7 @@ import {
   statusFromIntent,
   stripMeta,
   toRawInput,
+  publicContentChanged,
 } from "./shared";
 
 const LIST_PATH = "/studio/media";
@@ -49,7 +49,7 @@ export async function saveMediaItemAction(
     });
   }
 
-  revalidatePath("/", "layout");
+  publicContentChanged("media");
   redirect(LIST_PATH);
 }
 
@@ -69,7 +69,7 @@ export async function duplicateMediaItemAction(formData: FormData): Promise<void
     status: "DRAFT",
   });
 
-  revalidatePath("/", "layout");
+  publicContentChanged("media");
   redirect(LIST_PATH);
 }
 
@@ -78,7 +78,7 @@ export async function archiveMediaItemAction(formData: FormData): Promise<void> 
   const id = recordId(formData);
   if (id) {
     await getRepos().media.update(id, { status: "ARCHIVED" });
-    revalidatePath("/", "layout");
+    publicContentChanged("media");
   }
   redirect(LIST_PATH);
 }
@@ -88,7 +88,7 @@ export async function unpublishMediaItemAction(formData: FormData): Promise<void
   const id = recordId(formData);
   if (id) {
     await getRepos().media.update(id, { status: "DRAFT" });
-    revalidatePath("/", "layout");
+    publicContentChanged("media");
   }
   redirect(LIST_PATH);
 }
@@ -98,7 +98,7 @@ export async function deleteMediaItemAction(formData: FormData): Promise<void> {
   const id = recordId(formData);
   if (id && confirmedDeletion(formData)) {
     await getRepos().media.remove(id);
-    revalidatePath("/", "layout");
+    publicContentChanged("media");
   }
   redirect(LIST_PATH);
 }

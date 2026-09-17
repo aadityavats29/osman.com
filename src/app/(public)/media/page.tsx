@@ -1,17 +1,31 @@
 import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
 import { getRepos } from "@/server/repositories";
 import { formatEventDate } from "@/lib/events";
-import { JsonLd, articleJsonLd } from "@/lib/seo";
+import { JsonLd, articleJsonLd, pageOpenGraph } from "@/lib/seo";
 import { Container } from "@/components/shared/Container";
 import { Reveal } from "@/components/motion/Reveal";
 
 export const dynamic = "force-dynamic";
 
+const PAGE_TITLE = "Media — As Seen & Heard";
+const PAGE_DESCRIPTION =
+  "Press coverage, reviews and interviews featuring Osman Meyredi — and how to reach him for press inquiries.";
+
 export const metadata: Metadata = {
-  title: "Media — As Seen & Heard",
-  description:
-    "Press coverage, reviews and interviews featuring Osman Meyredi — and how to reach him for press inquiries.",
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
   alternates: { canonical: "/media" },
+  openGraph: pageOpenGraph({
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    path: "/media",
+    image: "/images/about/about-multi-instrumentalist.jpg",
+    imageAlt: "Osman Meyredi on stage surrounded by his instruments, black and white",
+    imageWidth: 1920,
+    imageHeight: 1071,
+  }),
 };
 
 export default async function MediaPage() {
@@ -77,6 +91,27 @@ export default async function MediaPage() {
               <li key={item.id} className="border-t border-line py-8">
                 <Reveal variant="card" delay={Math.min(i * 80, 160)}>
                   <JsonLd data={articleJsonLd(item)} />
+                  {/* Slide 25 shows the newspaper scan itself — surface the
+                      stored image (e.g. the Corriere del Trentino page)
+                      beside the entry when one exists. */}
+                  {item.imageUrl && (
+                    <a
+                      href={item.articleUrl}
+                      target="_blank"
+                      rel="noopener"
+                      className="float-right mb-4 ml-6 block w-28 border border-line sm:w-36"
+                      aria-label={`View: ${item.headline}`}
+                    >
+                      <Image
+                        src={item.imageUrl}
+                        alt={`${item.publication} — article scan`}
+                        width={400}
+                        height={560}
+                        sizes="(min-width: 640px) 9rem, 7rem"
+                        className="h-auto w-full"
+                      />
+                    </a>
+                  )}
                   <p className="eyebrow">{item.publication}</p>
                   <h2 className="font-display mt-2 text-2xl leading-snug">{item.headline}</h2>
                   {item.date && (
@@ -119,6 +154,9 @@ export default async function MediaPage() {
               Osman Meyredi appeared as an extra in three films.
             </p>
           </Reveal>
+          {/* 12-09-2026 (Aditya): cover images beside each film — cropped
+              from the client's own photograph of the three DVDs (rights-
+              clean; swap 1:1 for sharper scans when Jolene supplies them). */}
           <ul className="mt-6">
             {[
               {
@@ -126,25 +164,51 @@ export default async function MediaPage() {
                 year: "2014",
                 detail:
                   "Directed by Claudio Noce, with Emir Kusturica, Ksenia Rappoport, Domenico Diele, Adriano Giannini",
+                poster: "/images/media/movies-la-foresta-di-ghiaccio-poster.jpg",
+                posterAlt: "La Foresta di Ghiaccio (2014) DVD cover",
+                width: 426,
+                height: 618,
               },
               {
                 title: "Lezione Ventuno",
                 year: "2008",
                 detail:
                   "Directed by Alessandro Baricco, with Noah Taylor, Leonor Watling, Clive Russell, John Hurt",
+                poster: "/images/media/movies-lezione-ventuno-cover.jpg",
+                posterAlt: "Lezione Ventuno (2008) DVD cover",
+                width: 416,
+                height: 582,
               },
               {
                 title: "Vincere",
                 year: "2009",
                 detail: "Directed by Marco Bellocchio, with Giovanna Mezzogiorno, Filippo Timi",
+                poster: "/images/media/movies-vincere-poster.jpg",
+                posterAlt: "Vincere (2009) DVD cover",
+                width: 370,
+                height: 570,
               },
             ].map((film, i) => (
-              <li key={film.title} className="border-t border-line py-5">
+              <li key={film.title} className="border-t border-line py-6">
                 <Reveal variant="card" delay={Math.min(i * 80, 160)}>
-                  <p className="font-display text-xl leading-snug">
-                    {film.title} <span className="text-ink-faint">({film.year})</span>
-                  </p>
-                  <p className="mt-1 text-sm leading-relaxed text-ink-soft">{film.detail}</p>
+                  <div className="flex items-start gap-6">
+                    <div className="w-24 shrink-0 border border-line sm:w-28">
+                      <Image
+                        src={film.poster}
+                        alt={film.posterAlt}
+                        width={film.width}
+                        height={film.height}
+                        sizes="(min-width: 640px) 7rem, 6rem"
+                        className="h-auto w-full"
+                      />
+                    </div>
+                    <div>
+                      <p className="font-display text-xl leading-snug">
+                        {film.title} <span className="text-ink-faint">({film.year})</span>
+                      </p>
+                      <p className="mt-1 text-sm leading-relaxed text-ink-soft">{film.detail}</p>
+                    </div>
+                  </div>
                 </Reveal>
               </li>
             ))}
@@ -156,6 +220,12 @@ export default async function MediaPage() {
           <a href={`mailto:${settings.contactEmail}`} className="u-link">
             {settings.contactEmail}
           </a>
+          {/* Contextual internal links (§31): Media → About/Contact. */}
+          {" · "}Writing about him?{" "}
+          <Link href="/about" className="u-link">
+            The full story is on the About page
+          </Link>
+          .
         </p>
       </Container>
     </section>

@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { liveVideoInput } from "@/lib/validation/schemas";
 import { uniqueSlug } from "@/lib/slug";
@@ -17,6 +16,7 @@ import {
   statusFromIntent,
   stripMeta,
   toRawInput,
+  publicContentChanged,
 } from "./shared";
 
 const LIST_PATH = "/studio/videos";
@@ -63,7 +63,7 @@ export async function saveVideoAction(
     });
   }
 
-  revalidatePath("/", "layout");
+  publicContentChanged("videos");
   redirect(LIST_PATH);
 }
 
@@ -85,7 +85,7 @@ export async function duplicateVideoAction(formData: FormData): Promise<void> {
     sortOrder: nextSortOrder(all),
   });
 
-  revalidatePath("/", "layout");
+  publicContentChanged("videos");
   redirect(LIST_PATH);
 }
 
@@ -94,7 +94,7 @@ export async function archiveVideoAction(formData: FormData): Promise<void> {
   const id = recordId(formData);
   if (id) {
     await getRepos().videos.update(id, { status: "ARCHIVED" });
-    revalidatePath("/", "layout");
+    publicContentChanged("videos");
   }
   redirect(LIST_PATH);
 }
@@ -104,7 +104,7 @@ export async function unpublishVideoAction(formData: FormData): Promise<void> {
   const id = recordId(formData);
   if (id) {
     await getRepos().videos.update(id, { status: "DRAFT" });
-    revalidatePath("/", "layout");
+    publicContentChanged("videos");
   }
   redirect(LIST_PATH);
 }
@@ -114,7 +114,7 @@ export async function deleteVideoAction(formData: FormData): Promise<void> {
   const id = recordId(formData);
   if (id && confirmedDeletion(formData)) {
     await getRepos().videos.remove(id);
-    revalidatePath("/", "layout");
+    publicContentChanged("videos");
   }
   redirect(LIST_PATH);
 }
